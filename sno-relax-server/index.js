@@ -1,73 +1,82 @@
+// server/index.js
 const express = require("express");
 const crypto = require("crypto");
-const app = express();
+const fs = require("fs");
+const path = require("path");
 const cors = require("cors");
 
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ✅ Health check route
-app.get("/", (req, res) => {
-  res.send("✅ Sno-Relax backend is running!");
-});
+const USERS_FILE = path.join(__dirname, "users.json");
 
-app.post("/api/generate-id", (req, res) => {
+// Helpers
+function readUsers() {
+  if (!fs.existsSync(USERS_FILE)) return [];
+  return JSON.parse(fs.readFileSync(USERS_FILE, "utf-8"));
+}
+function writeUsers(users) {
+  fs.writeFileSync(USERS_FILE, JSON.stringify(users, null, 2));
+}
+
+// ✅ Register & Generate ID
+app.post("/api/create-user", (req, res) => {
   try {
-    const { firstName, lastName, email, phone, location } = req.body;
-
-    console.log("📩 Incoming body:", req.body);
-
-    // ✅ Basic required fields
+    const { firstName, lastName, email, phone, city, latitude, longitude } = req.body;
     if (!firstName || !lastName || !email || !phone) {
-      return res.status(400).json({
-        error: "All fields (firstName, lastName, email, phone) are required",
-      });
+      return res.status(400).json({ error: "All fields required" });
     }
 
-    // ✅ Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      return res.status(400).json({ error: "Invalid email format" });
-    }
-
-    // ✅ Phone validation (10–15 digits, allows country code)
-    const phoneRegex = /^\+?\d{10,15}$/;
-    if (!phoneRegex.test(phone)) {
-      return res.status(400).json({ error: "Invalid phone number" });
-    }
-
-    // ✅ Generate user ID
-    const initials = `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
     const now = new Date();
     const month = String(now.getMonth() + 1).padStart(2, "0");
     const year = now.getFullYear();
 
-    // Stronger randomness (hex → uppercase)
-    const code = crypto.randomBytes(3).toString("hex").toUpperCase(); // e.g. "A1F3B2"
+    // First char of names
+    const initials = `${firstName[0].toUpperCase()}${lastName[0].toUpperCase()}`;
 
-    // ✅ Location handling (string or object)
-    let locCode = "XXX";
-    if (typeof location === "string" && location.trim() !== "") {
-      locCode = location.slice(0, 3).toUpperCase();
-    } else if (typeof location === "object" && location !== null) {
-      const locString = Object.values(location)[0]; // e.g. { city: "Delhi" }
-      if (typeof locString === "string") {
-        locCode = locString.slice(0, 3).toUpperCase();
-      }
-    }
+    // City code (first 3 letters or NAN)
+    const cityCode = city && city.length >= 3
+      ? city.slice(0, 3).toUpperCase()
+      : "NAN";
 
-    const userId = `${initials}-${month}-${year}-${locCode}-${code}`;
+    // Unique hash from email + phone
+    const hash = crypto
+      .createHash("sha256")
+      .update(email + phone)
+      .digest("hex")
+      .slice(0, 7); // short unique id like "anc20aa"
 
-    console.log("✅ New User Registered:", { userId, email, phone, location });
+    const userId = `${initials}-${month}-${year}-${cityCode}-${hash}`;
+
+    // Save
+    const users = readUsers();
+    const user = { userId, firstName, lastName, email, phone, city, latitude, longitude };
+    users.push(user);
+    writeUsers(users);
+
+    console.log("✅ User saved:", user);
 
     return res.json({ ok: true, userId });
   } catch (err) {
-    console.error("❌ Error generating user ID:", err);
-    return res.status(500).json({ error: "Internal server error" });
+    console.error(err);
+    res.status(500).json({ error: "Internal error" });
   }
 });
 
-// Example: start server
-app.listen(4000, () => {
-  console.log("🚀 Server running on http://localhost:4000");
+// ✅ Login with existing ID
+app.post("/api/login", (req, res) => {
+  const { userId } = req.body;
+  if (!userId) return res.status(400).json({ error: "User ID required" });
+
+  const users = readUsers();
+  const user = users.find((u) => u.userId === userId);
+
+  if (!user) return res.status(404).json({ error: "User not found" });
+
+  res.json({ ok: true, user });
+});
+
+app.listen(5000, () => {
+  console.log("🚀 Server running at http://localhost:5000");
 });
