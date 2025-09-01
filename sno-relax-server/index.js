@@ -80,3 +80,29 @@ app.post("/api/login", (req, res) => {
 app.listen(5000, () => {
   console.log("🚀 Server running at http://localhost:5000");
 });
+
+
+// server/index.js (add below your login route)
+
+// ✅ Chatbot API
+app.post("/api/chat", (req, res) => {
+  const { message } = req.body;
+  if (!message) {
+    return res.status(400).json({ error: "Message required" });
+  }
+
+  let reply = "I'm here for you 💙. Tell me more.";
+
+  // Simple keyword rules
+  if (message.toLowerCase().includes("sad")) {
+    reply = "I'm sorry you're feeling sad 😔. Remember, it's okay to feel this way.";
+  } else if (message.toLowerCase().includes("happy")) {
+    reply = "That's wonderful! 🎉 Keep enjoying the good vibes!";
+  } else if (message.toLowerCase().includes("stress")) {
+    reply = "Try closing your eyes and taking a deep breath 🌿.";
+  } else if (message.toLowerCase().includes("angry")) {
+    reply = "It helps to pause and count to 10. You're not alone 💚.";
+  }
+
+  res.json({ sender: "bot", text: reply });
+});

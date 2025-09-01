@@ -6,7 +6,6 @@ import {
   Activity,
   HelpCircle,
   Users,
-  Bot,
   BookOpen,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -23,7 +22,6 @@ export default function Dashboard() {
 
   const navigate = useNavigate();
 
-  // Load user info from localStorage
   useEffect(() => {
     const userInfo = {
       userId: localStorage.getItem("sno_userId") || "N/A",
@@ -35,7 +33,6 @@ export default function Dashboard() {
     setUserData(userInfo);
   }, []);
 
-  // Lock/unlock scroll when sidebar is open
   useEffect(() => {
     if (menuOpen) {
       document.body.classList.add("sidebar-open");
@@ -77,14 +74,14 @@ export default function Dashboard() {
           <button onClick={() => navigate("/profile")}>
             <User size={20} /> Profile
           </button>
-          
           <button>
             <Settings size={20} /> Settings
           </button>
           <button>
             <HelpCircle size={20} /> Help
           </button>
-          <button onClick={() => navigate("/health-vault.html")}>
+          {/* ✅ Open static health-vault.html */}
+          <button onClick={() => window.location.href = "/health-vault.html"}>
             <BookOpen size={20} /> Health Vault
           </button>
           <button>
@@ -93,8 +90,10 @@ export default function Dashboard() {
         </nav>
       </div>
 
-      {/* Overlay (mobile only) */}
-      {menuOpen && <div className="overlay active" onClick={() => setMenuOpen(false)} />}
+      {/* Overlay */}
+      {menuOpen && (
+        <div className="overlay active" onClick={() => setMenuOpen(false)} />
+      )}
 
       {/* Dashboard Container */}
       <div className="dashboard-container">
@@ -103,11 +102,13 @@ export default function Dashboard() {
           <p>Your personal SnoRelax space</p>
         </header>
 
-        {/* Widgets */}
         <div className="dashboard-grid">
           <div className="widget">
             <h2>😃 Mood Tracker</h2>
-            <button onClick={() => navigate("/mood-tracker")} className="btn">
+            <button
+              onClick={() => navigate("/mood-tracker")}
+              className="btn"
+            >
               Open Mood Tracker
             </button>
           </div>
@@ -122,11 +123,15 @@ export default function Dashboard() {
           <div className="widget">
             <h2>🧘 Relaxation Exercises</h2>
             <p>Try guided breathing or meditation exercises.</p>
+            <button className="btn">Start Exercise</button>
           </div>
 
           <div className="widget">
             <h2>📝 Therapist Notes</h2>
-            <button onClick={() => navigate("/therapist-notes")} className="btn">
+            <button
+              onClick={() => navigate("/therapist-notes")}
+              className="btn"
+            >
               Open Notes
             </button>
           </div>
