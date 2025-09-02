@@ -1,13 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "../styles/Dashboard.css";
-import {
-  User,
-  Settings,
-  Activity,
-  HelpCircle,
-  Users,
-  BookOpen,
-} from "lucide-react";
+import { User, Settings, Activity, HelpCircle, Users, BookOpen } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function Dashboard() {
@@ -41,6 +34,18 @@ export default function Dashboard() {
     }
   }, [menuOpen]);
 
+  const menuItems = [
+    { label: "Profile", icon: <User size={20} />, path: "/profile" },
+    { label: "Settings", icon: <Settings size={20} />, path: "/settings" },
+    { label: "Help", icon: <HelpCircle size={20} />, path: "/help" },
+    {
+      label: "Health Vault",
+      icon: <BookOpen size={20} />,
+      action: () => (window.location.href = `${process.env.PUBLIC_URL}/health-vault.html`),
+    },
+    { label: "Join Community", icon: <Users size={20} />, path: "/community" },
+  ];
+
   return (
     <div className="dashboard dark-theme">
       {/* Navbar */}
@@ -48,6 +53,7 @@ export default function Dashboard() {
         <button
           className={`hamburger ${menuOpen ? "open" : ""}`}
           onClick={() => setMenuOpen(!menuOpen)}
+          aria-label="Toggle Sidebar"
         >
           <span></span>
           <span></span>
@@ -64,36 +70,24 @@ export default function Dashboard() {
             alt="Profile"
             className="avatar"
           />
-          <h3>
-            {userData.firstName} {userData.lastName}
-          </h3>
+          <h3>{userData.firstName} {userData.lastName}</h3>
           <p className="uuid">ID: {userData.userId}</p>
         </div>
 
         <nav className="menu-options">
-          <button onClick={() => navigate("/profile")}>
-            <User size={20} /> Profile
-          </button>
-          <button>
-            <Settings size={20} /> Settings
-          </button>
-          <button>
-            <HelpCircle size={20} /> Help
-          </button>
-          {/* ✅ Open static health-vault.html */}
-          <button onClick={() => window.location.href = "/health-vault.html"}>
-            <BookOpen size={20} /> Health Vault
-          </button>
-          <button>
-            <Users size={20} /> Join Community
-          </button>
+          {menuItems.map((item, i) => (
+            <button
+              key={i}
+              onClick={item.path ? () => navigate(item.path) : item.action}
+            >
+              {item.icon} {item.label}
+            </button>
+          ))}
         </nav>
       </div>
 
       {/* Overlay */}
-      {menuOpen && (
-        <div className="overlay active" onClick={() => setMenuOpen(false)} />
-      )}
+      {menuOpen && <div className="overlay active" onClick={() => setMenuOpen(false)} />}
 
       {/* Dashboard Container */}
       <div className="dashboard-container">
@@ -105,10 +99,7 @@ export default function Dashboard() {
         <div className="dashboard-grid">
           <div className="widget">
             <h2>😃 Mood Tracker</h2>
-            <button
-              onClick={() => navigate("/mood-tracker")}
-              className="btn"
-            >
+            <button onClick={() => navigate("/mood-tracker")} className="btn">
               Open Mood Tracker
             </button>
           </div>
@@ -128,10 +119,7 @@ export default function Dashboard() {
 
           <div className="widget">
             <h2>📝 Therapist Notes</h2>
-            <button
-              onClick={() => navigate("/therapist-notes")}
-              className="btn"
-            >
+            <button onClick={() => navigate("/therapist-notes")} className="btn">
               Open Notes
             </button>
           </div>
