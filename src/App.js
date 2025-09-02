@@ -8,7 +8,7 @@ import TherapistNotesPage from "./pages/TherapistNotesPage";
 
 function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/SnoRelax">
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/dashboard" element={<Dashboard />} />

@@ -1,8 +1,9 @@
-// src/pages/Login.js
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom"; // ✅ import
 import "../styles/Login.css";
 
 export default function Login() {
+  const navigate = useNavigate(); // ✅ initialize
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -11,7 +12,6 @@ export default function Login() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
-  // ✅ Detect city + coords
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -25,15 +25,7 @@ export default function Login() {
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
             );
             const data = await res.json();
-            if (data.address?.city) {
-              setCity(data.address.city);
-            } else if (data.address?.town) {
-              setCity(data.address.town);
-            } else if (data.address?.village) {
-              setCity(data.address.village);
-            } else {
-              setCity("NAN"); // fallback
-            }
+            setCity(data.address?.city || data.address?.town || data.address?.village || "NAN");
           } catch (err) {
             setCity("NAN");
           }
@@ -67,7 +59,7 @@ export default function Login() {
         localStorage.setItem("sno_lat", latitude);
         localStorage.setItem("sno_lon", longitude);
 
-        window.location.href = "/dashboard";
+        navigate("/dashboard"); // ✅ use navigate instead of window.location.href
       } else {
         alert("Login failed, try again.");
       }
