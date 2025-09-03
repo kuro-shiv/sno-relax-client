@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom"; // ✅ import
+import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
 export default function Login() {
-  const navigate = useNavigate(); // ✅ initialize
+  const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
@@ -11,6 +11,12 @@ export default function Login() {
   const [city, setCity] = useState("Detecting...");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+
+  // ✅ API base URL (local vs production)
+  const API_BASE =
+    process.env.NODE_ENV === "production"
+      ? "https://sno-relax-server.vercel.app"
+      : "http://localhost:5000";
 
   useEffect(() => {
     if (navigator.geolocation) {
@@ -25,7 +31,12 @@ export default function Login() {
               `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
             );
             const data = await res.json();
-            setCity(data.address?.city || data.address?.town || data.address?.village || "NAN");
+            setCity(
+              data.address?.city ||
+                data.address?.town ||
+                data.address?.village ||
+                "NAN"
+            );
           } catch (err) {
             setCity("NAN");
           }
@@ -41,10 +52,18 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch("http://localhost:5000/api/create-user", {
+      const res = await fetch(`${API_BASE}/api/create-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ firstName, lastName, email, phone, city, latitude, longitude }),
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phone,
+          city,
+          latitude,
+          longitude,
+        }),
       });
 
       const data = await res.json();
@@ -59,7 +78,7 @@ export default function Login() {
         localStorage.setItem("sno_lat", latitude);
         localStorage.setItem("sno_lon", longitude);
 
-        navigate("/dashboard"); // ✅ use navigate instead of window.location.href
+        navigate("/dashboard");
       } else {
         alert("Login failed, try again.");
       }

@@ -1,135 +1,130 @@
-import React, { useState, useEffect } from "react";
-import "../styles/Dashboard.css";
-import { User, Settings, Activity, HelpCircle, Users, BookOpen } from "lucide-react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import {
+  User,
+  Settings,
+  Activity,
+  HelpCircle,
+  Users,
+  BookOpen,
+  HeartPulse,
+  Hospital,
+  Handshake,
+  Bot,
+  Menu,
+  LogOut,
+} from "lucide-react";
+import "../styles/Dashboard.css";
 
 export default function Dashboard() {
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [userData, setUserData] = useState({
-    userId: "",
-    firstName: "",
-    lastName: "",
-    email: "",
-    phone: "",
-  });
-
   const navigate = useNavigate();
+  const [firstName, setFirstName] = useState("");
+  const [city, setCity] = useState("");
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
-    const userInfo = {
-      userId: localStorage.getItem("sno_userId") || "N/A",
-      firstName: localStorage.getItem("sno_firstName") || "Guest",
-      lastName: localStorage.getItem("sno_lastName") || "",
-      email: localStorage.getItem("sno_email") || "Not Provided",
-      phone: localStorage.getItem("sno_phone") || "Not Provided",
-    };
-    setUserData(userInfo);
+    setFirstName(localStorage.getItem("sno_firstName") || "Guest");
+    setCity(localStorage.getItem("sno_city") || "Unknown");
   }, []);
 
-  useEffect(() => {
-    if (menuOpen) {
-      document.body.classList.add("sidebar-open");
-    } else {
-      document.body.classList.remove("sidebar-open");
-    }
-  }, [menuOpen]);
-
-  const menuItems = [
-    { label: "Profile", icon: <User size={20} />, path: "/profile" },
-    { label: "Settings", icon: <Settings size={20} />, path: "/settings" },
-    { label: "Help", icon: <HelpCircle size={20} />, path: "/help" },
-    {
-      label: "Health Vault",
-      icon: <BookOpen size={20} />,
-      action: () => (window.location.href = `${process.env.PUBLIC_URL}/health-vault.html`),
-    },
-    { label: "Join Community", icon: <Users size={20} />, path: "/community" },
-  ];
+  const handleLogout = () => {
+    localStorage.clear();
+    navigate("/");
+  };
 
   return (
-    <div className="dashboard dark-theme">
-      {/* Navbar */}
-      <header className="navbar">
-        <button
-          className={`hamburger ${menuOpen ? "open" : ""}`}
-          onClick={() => setMenuOpen(!menuOpen)}
-          aria-label="Toggle Sidebar"
-        >
-          <span></span>
-          <span></span>
-          <span></span>
-        </button>
-        <h1 className="app-title">🌙 SnoRelax</h1>
-      </header>
-
+    <div className="dashboard-container">
       {/* Sidebar */}
-      <div className={`sidebar ${menuOpen ? "open" : ""}`}>
-        <div className="sidebar-profile">
-          <img
-            src={`https://api.dicebear.com/7.x/identicon/svg?seed=${userData.userId}`}
-            alt="Profile"
-            className="avatar"
-          />
-          <h3>{userData.firstName} {userData.lastName}</h3>
-          <p className="uuid">ID: {userData.userId}</p>
-        </div>
-
-        <nav className="menu-options">
-          {menuItems.map((item, i) => (
-            <button
-              key={i}
-              onClick={item.path ? () => navigate(item.path) : item.action}
-            >
-              {item.icon} {item.label}
-            </button>
-          ))}
+      <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
+        <h2 className="logo">🌙 SnoRelax</h2>
+        <nav>
+          <button onClick={() => navigate("/profile")}>
+            <User size={18} /> Profile
+          </button>
+          <button onClick={() => navigate("/chatbot")}>
+            <Activity size={18} /> Recent Activity
+          </button>
+          <button onClick={() => navigate("/mood-tracker")}>
+            <BookOpen size={18} /> Mood Tracker
+          </button>
+          <button onClick={() => navigate("/therapist-notes")}>
+            <Handshake size={18} /> Therapist Notes
+          </button>
+          <button>
+            <HelpCircle size={18} /> Help
+          </button>
+          <button>
+            <Settings size={18} /> Settings
+          </button>
         </nav>
-      </div>
 
-      {/* Overlay */}
-      {menuOpen && <div className="overlay active" onClick={() => setMenuOpen(false)} />}
+        <div className="sidebar-footer">
+          <button onClick={handleLogout}>
+            <LogOut size={18} /> Logout
+          </button>
+        </div>
+      </aside>
 
-      {/* Dashboard Container */}
-      <div className="dashboard-container">
-        <header className="dashboard-header">
-          <h2>Welcome back, {userData.firstName} ✨</h2>
-          <p>Your personal SnoRelax space</p>
-        </header>
-
-        <div className="dashboard-grid">
-          <div className="widget">
-            <h2>😃 Mood Tracker</h2>
-            <button onClick={() => navigate("/mood-tracker")} className="btn">
-              Open Mood Tracker
-            </button>
-          </div>
-
-          <div className="widget">
-            <h2>🤖 AI Chatbot</h2>
-            <button onClick={() => navigate("/chatbot")} className="btn">
-              Open Chatbot
-            </button>
-          </div>
-
-          <div className="widget">
-            <h2>🧘 Relaxation Exercises</h2>
-            <p>Try guided breathing or meditation exercises.</p>
-            <button className="btn">Start Exercise</button>
-          </div>
-
-          <div className="widget">
-            <h2>📝 Therapist Notes</h2>
-            <button onClick={() => navigate("/therapist-notes")} className="btn">
-              Open Notes
-            </button>
+      {/* Main content */}
+      <main className="main-content">
+        {/* Topbar */}
+        <div className="topbar">
+          <button
+            className="hamburger"
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+          >
+            <Menu size={24} />
+          </button>
+          <div>
+            <h1>
+              Welcome, <span className="highlight">{firstName}</span>
+            </h1>
+            <p className="city">📍 {city}</p>
           </div>
         </div>
-      </div>
 
-      {/* Footer */}
-      <footer className="footer">
-        <p>© {new Date().getFullYear()} SnoRelax. All rights reserved.</p>
-      </footer>
+        {/* Widgets */}
+        <div className="widgets">
+          <div className="widget" onClick={() => navigate("/chatbot")}>
+            <Bot size={28} />
+            <h3>AI Chatbot</h3>
+            <p>Talk with SnoRelax bot for stress relief.</p>
+          </div>
+
+          <div className="widget" onClick={() => navigate("/mood-tracker")}>
+            <BookOpen size={28} />
+            <h3>Mood Tracker</h3>
+            <p>Log your daily mood & monitor changes.</p>
+          </div>
+
+          <div className="widget" onClick={() => navigate("/therapist-notes")}>
+            <Handshake size={28} />
+            <h3>Therapist Guide</h3>
+            <p>View and manage your therapist’s notes.</p>
+          </div>
+
+          <div className="widget">
+            <Hospital size={28} />
+            <h3>Hospital Reports</h3>
+            <p>Store prescriptions & medical history.</p>
+          </div>
+
+          <div className="widget"
+            onClick={() => window.open("/health-vault", "_blank")}
+          >
+            <HeartPulse size={28} />
+            <h3>HealthVault</h3>
+            <p>A guideline how to be fit.</p>
+          </div>
+
+  
+          <div className="widget">
+            <Users size={28} />
+            <h3>Community</h3>
+            <p>Join groups & connect with others.</p>
+          </div>
+        </div>
+      </main>
     </div>
   );
 }
