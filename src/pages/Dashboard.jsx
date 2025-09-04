@@ -109,13 +109,15 @@ export default function Dashboard() {
             <p>Store prescriptions & medical history.</p>
           </div>
 
-          <div className="widget"
-            onClick={() => window.open("/health-vault", "_blank")}
+          <div
+            className="widget"
+            onClick={() => window.open("/SnoRelax/health-vault.html")}
           >
             <HeartPulse size={28} />
             <h3>HealthVault</h3>
             <p>A guideline how to be fit.</p>
           </div>
+
 
   
           <div className="widget">
