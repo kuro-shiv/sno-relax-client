@@ -1,5 +1,5 @@
 {
   "rewrites": [
-    { "source": "/((?!health-vault\\.html).*)", "destination": "/" }
+    { "source": "/(.*)", "destination": "/" }
   ]
 }

@@ -9,7 +9,7 @@ import HealthVault from "./pages/HealthVault";
 
 function App() {
   return (
-    <BrowserRouter basename="/SnoRelax">
+    <BrowserRouter>
       <Routes>
         {/* Default homepage → Login */}
         <Route path="/" element={<Login />} />
