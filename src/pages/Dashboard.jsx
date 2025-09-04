@@ -117,8 +117,6 @@ export default function Dashboard() {
             <h3>HealthVault</h3>
             <p>A guideline how to be fit.</p>
           </div>
-
-
   
           <div className="widget">
             <Users size={28} />

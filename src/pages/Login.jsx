@@ -12,10 +12,10 @@ export default function Login() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
-  // ✅ API base URL (local vs production)
+  // ✅ API base URL (Render backend for production, localhost for dev)
   const API_BASE =
     process.env.NODE_ENV === "production"
-      ? "https://sno-relax-server.vercel.app"
+      ? "https://sno-relax-server-hostside.onrender.com"
       : "http://localhost:5000";
 
   useEffect(() => {
@@ -37,7 +37,7 @@ export default function Login() {
                 data.address?.village ||
                 "NAN"
             );
-          } catch (err) {
+          } catch {
             setCity("NAN");
           }
         },
@@ -69,6 +69,7 @@ export default function Login() {
       const data = await res.json();
 
       if (data.userId) {
+        // ✅ Save to localStorage for dashboard use
         localStorage.setItem("sno_userId", data.userId);
         localStorage.setItem("sno_firstName", firstName);
         localStorage.setItem("sno_lastName", lastName);
@@ -100,24 +101,28 @@ export default function Login() {
             placeholder="First Name"
             value={firstName}
             onChange={(e) => setFirstName(e.target.value)}
+            required
           />
           <input
             type="text"
             placeholder="Last Name"
             value={lastName}
             onChange={(e) => setLastName(e.target.value)}
+            required
           />
           <input
             type="email"
             placeholder="Email"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
+            required
           />
           <input
             type="tel"
             placeholder="Phone"
             value={phone}
             onChange={(e) => setPhone(e.target.value)}
+            required
           />
           <button type="submit">Login</button>
         </form>
