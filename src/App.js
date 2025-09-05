@@ -5,26 +5,19 @@ import ChatbotPage from "./pages/ChatbotPage";
 import Profile from "./pages/Profile";
 import MoodTrackerPage from "./pages/MoodTrackerPage";
 import TherapistNotesPage from "./pages/TherapistNotesPage";
+import CommunityPage from "./pages/CommunityPage"; // ✅ import
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Default homepage → Login */}
         <Route path="/" element={<Login />} />
-
-        {/* Your app pages */}
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chatbot" element={<ChatbotPage />} />
         <Route path="/profile" element={<Profile />} />
-        <Route
-          path="/health-vault"
-          element={<Navigate to="/health-vault.html" />}
-        />
         <Route path="/mood-tracker" element={<MoodTrackerPage />} />
         <Route path="/therapist-notes" element={<TherapistNotesPage />} />
-
-        {/* Catch-all (redirect everything unknown → Login) */}
+        <Route path="/community" element={<CommunityPage />} /> 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

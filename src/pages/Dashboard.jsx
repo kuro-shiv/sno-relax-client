@@ -50,10 +50,13 @@ export default function Dashboard() {
           <button onClick={() => navigate("/therapist-notes")}>
             <Handshake size={18} /> Therapist Notes
           </button>
-          <button>
+          <button onClick={() => navigate("/community")}>
+            <Users size={18} /> Community
+          </button>
+          <button onClick={() => alert("Help section coming soon!")}>
             <HelpCircle size={18} /> Help
           </button>
-          <button>
+          <button onClick={() => alert("Settings coming soon!")}>
             <Settings size={18} /> Settings
           </button>
         </nav>
@@ -111,11 +114,20 @@ export default function Dashboard() {
 
           <div
             className="widget cursor-pointer"
-            onClick={() => window.open("https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html", "_blank")}
+            onClick={() =>
+              window.open(
+                "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
+                "_blank"
+              )
+            }
             role="button"
             tabIndex={0}
             onKeyPress={(e) => {
-              if (e.key === "Enter") window.open("https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html", "_blank");
+              if (e.key === "Enter")
+                window.open(
+                  "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
+                  "_blank"
+                );
             }}
           >
             <HeartPulse size={28} />
@@ -123,8 +135,7 @@ export default function Dashboard() {
             <p>A guideline how to be fit.</p>
           </div>
 
-  
-          <div className="widget">
+          <div className="widget" onClick={() => navigate("/community")}>
             <Users size={28} />
             <h3>Community</h3>
             <p>Join groups & connect with others.</p>
