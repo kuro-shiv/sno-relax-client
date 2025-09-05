@@ -5,7 +5,6 @@ import ChatbotPage from "./pages/ChatbotPage";
 import Profile from "./pages/Profile";
 import MoodTrackerPage from "./pages/MoodTrackerPage";
 import TherapistNotesPage from "./pages/TherapistNotesPage";
-import HealthVault from "./pages/HealthVault";
 
 function App() {
   return (
@@ -18,7 +17,10 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/chatbot" element={<ChatbotPage />} />
         <Route path="/profile" element={<Profile />} />
-        <Route path="/health-vault" element={<HealthVault />} />
+        <Route
+          path="/health-vault"
+          element={<Navigate to="/health-vault.html" />}
+        />
         <Route path="/mood-tracker" element={<MoodTrackerPage />} />
         <Route path="/therapist-notes" element={<TherapistNotesPage />} />
 

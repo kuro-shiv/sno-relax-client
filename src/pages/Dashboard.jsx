@@ -110,13 +110,19 @@ export default function Dashboard() {
           </div>
 
           <div
-            className="widget"
-            onClick={() => window.open("/SnoRelax/health-vault.html")}
+            className="widget cursor-pointer"
+            onClick={() => window.open("https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html", "_blank")}
+            role="button"
+            tabIndex={0}
+            onKeyPress={(e) => {
+              if (e.key === "Enter") window.open("https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html", "_blank");
+            }}
           >
             <HeartPulse size={28} />
             <h3>HealthVault</h3>
             <p>A guideline how to be fit.</p>
           </div>
+
   
           <div className="widget">
             <Users size={28} />
