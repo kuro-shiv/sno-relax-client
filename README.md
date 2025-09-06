@@ -53,10 +53,10 @@ SnoRelax is a web application designed to support mental wellness through mood t
 Below are some screenshots of the SnoRelax frontend:
 
 ### Login Page
-![Login Page](./screenshot/login.png)
+![Login Page](./screenshots/login.jpg)
 
 ### Dashboard
-![Dashboard](./screenshot/dashboard.png)
+![Dashboard](./screenshots/Dashboard.jpg)
 
 ### Mood Tracker
 ![Mood Tracker](./screenshot/mood-tracker.png)
