@@ -1,70 +1,123 @@
-# Getting Started with Create React App
+# SnoRelax Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is the frontend for **SnoRelax**, a mental wellness and community platform.  
+Built with React, it provides a user-friendly interface for all core features.
 
-## Available Scripts
+---
 
-In the project directory, you can run:
+## Table of Contents
 
-### `npm start`
+- [Project Overview](#project-overview)
+- [Features](#features)
+- [Screenshots](#screenshots)
+- [Setup Instructions](#setup-instructions)
+- [Usage](#usage)
+- [Deployment](#deployment)
+- [Project Structure](#project-structure)
+- [Authors](#authors)
+- [Connected App Links](#connected-app-links)
+- [License](#license)
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+---
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## Project Overview
 
-### `npm test`
+SnoRelax is a web application designed to support mental wellness through mood tracking, community engagement, and chatbot support. The frontend provides a responsive and interactive user experience.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+---
 
-### `npm run build`
+## Features
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- **User Registration & Login:**  
+  Simple forms for user onboarding and authentication.
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- **Mood Tracker:**  
+  Users can log and visualize their mood history.
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- **Community Dashboard:**  
+  Admins can create and manage communities. Users can view and join communities.
 
-### `npm run eject`
+- **Chatbot:**  
+  Users can chat with a supportive bot for mental wellness.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Responsive Design:**  
+  Works well on desktop and mobile devices.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+- **API Integration:**  
+  Connects seamlessly with the backend for all features.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+---
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+## Screenshots
 
-## Learn More
+> _Add screenshots of your app here for better presentation (optional)._
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+---
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## Setup Instructions
 
-### Code Splitting
+1. **Clone the repository and install dependencies:**
+   ```bash
+   npm install
+   ```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+2. **Run locally:**
+   ```bash
+   npm start
+   ```
 
-### Analyzing the Bundle Size
+3. **API Configuration:**  
+   The frontend automatically connects to the correct backend URL for development and production.
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+---
 
-### Making a Progressive Web App
+## Usage
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- Register or log in to access the dashboard.
+- Track your mood and view analytics.
+- Join or create communities (admin only).
+- Chat with the built-in chatbot for support.
 
-### Advanced Configuration
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+## Deployment
 
-### Deployment
+The frontend is hosted on Vercel:  
+**[https://sno-relax-client.vercel.app/](https://sno-relax-client.vercel.app/)**
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+To deploy:
+- Push your code to a Git repository.
+- Connect the repo to [Vercel](https://vercel.com/).
+- Set environment variables if needed.
 
-### `npm run build` fails to minify
+---
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+## Project Structure
+
+- `src/pages/` — Main pages (Login, Dashboard, etc.)
+- `src/components/` — Reusable UI components (Chatbot, MoodTracker, etc.)
+- `src/api.js` — API helper functions
+- `public/` — Static assets
+
+---
+
+## Authors
+
+- Shivam Dubey (Admin)
+- [Add your team members here]
+
+---
+
+## Connected App Links
+
+- **Frontend:** [https://sno-relax-client.vercel.app/](https://sno-relax-client.vercel.app/)
+- **Backend:** [https://sno-relax-server-hostside.onrender.com/](https://sno-relax-server-hostside.onrender.com/)
+
+---
+
+## License
+
+This project is for educational purposes as part of a final year project.  
+[Specify your license here, e.g., MIT, if desired.]
+
+---
