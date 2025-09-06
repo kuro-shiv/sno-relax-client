@@ -31,6 +31,33 @@ export async function chat(message) {
   return res.json();
 }
 
+export async function getMoods(userId) {
+  const res = await fetch(
+    `${
+      process.env.NODE_ENV === "production"
+        ? "https://sno-relax-server-hostside.onrender.com"
+        : "http://localhost:5000"
+    }/api/moods?userId=${userId}`
+  );
+  return res.json();
+}
+
+export async function addMood(userId, mood) {
+  const res = await fetch(
+    `${
+      process.env.NODE_ENV === "production"
+        ? "https://sno-relax-server-hostside.onrender.com"
+        : "http://localhost:5000"
+    }/api/moods`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userId, mood }),
+    }
+  );
+  return res.json();
+}
+
 function Chatbot() {
   // ...existing code...
 
