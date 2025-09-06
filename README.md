@@ -50,7 +50,22 @@ SnoRelax is a web application designed to support mental wellness through mood t
 
 ## Screenshots
 
-> _Add screenshots of your app here for better presentation (optional)._
+Below are some screenshots of the SnoRelax frontend:
+
+### Login Page
+![Login Page](./screenshot/login.png)
+
+### Dashboard
+![Dashboard](./screenshot/dashboard.png)
+
+### Mood Tracker
+![Mood Tracker](./screenshot/mood-tracker.png)
+
+### Community Page
+![Community Page](./screenshot/community.png)
+
+### Chatbot
+![Chatbot](./screenshot/chatbot.png)
 
 ---
 
@@ -103,8 +118,8 @@ To deploy:
 
 ## Authors
 
-- Shivam Dubey (Admin)
-- [Add your team members here]
+- Shivam Kumar Dubey (Admin)
+- Suryakant Mishra (Admin)
 
 ---
 
