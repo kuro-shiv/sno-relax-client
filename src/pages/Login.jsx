@@ -52,7 +52,7 @@ export default function Login() {
     e.preventDefault();
 
     try {
-      const res = await fetch(`${API_BASE}/api/create-user`, {
+      const res = await fetch(`${API_BASE}/api/auth/create-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -81,7 +81,7 @@ export default function Login() {
 
         navigate("/dashboard");
       } else {
-        alert("Login failed, try again.");
+        alert(data.error || "Login failed, try again.");
       }
     } catch (err) {
       console.error("Error logging in:", err);
