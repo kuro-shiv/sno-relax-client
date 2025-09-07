@@ -257,3 +257,44 @@
     font-size: 2rem;
   }
 }
+/* 🌍 Base (mobile-first) */
+.profile-container {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; /* ✅ align from top */
+  padding: 4rem 2rem 2rem; /* ✅ extra top padding */
+  min-height: 100vh;
+  background: #0b1e3d; /* deep blue */
+  color: #e0eaff;
+  box-sizing: border-box;
+  overflow-y: auto; /* ✅ scroll if content overflows */
+}
+
+.profile-card {
+  background: #12264d;
+  border-radius: 20px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+  text-align: center;
+  transition: all 0.3s ease;
+  margin-top: 2rem; /* ✅ prevent profile-pic cutoff */
+}
+
+.profile-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.profile-pic {
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  border: 3px solid #4aa0e2;
+  object-fit: cover;
+  margin-top: -60px; /* ✅ optional floating effect */
+  background: #0b1e3d; /* ✅ fallback bg */
+}
