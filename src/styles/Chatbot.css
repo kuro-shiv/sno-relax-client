@@ -1,3 +1,49 @@
+/* Fullscreen container */
+.chat-fullscreen {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(160deg, #0f172a, #1e293b);
+  font-family: "Segoe UI", sans-serif;
+  color: white;
+  overflow: hidden;
+}
+
+/* Sticky header */
+.chat-header {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #0f172a;
+  padding: 0.8rem 1rem;
+  border-bottom: 1px solid #334155;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+.chat-header h1 {
+  font-size: 1.2rem;
+  margin: 0;
+  color: #34d399;
+  text-align: center;
+  flex: 1;
+}
+.back-btn {
+  background: none;
+  border: none;
+  color: #34d399;
+  font-size: 1.2rem;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+.back-btn:hover {
+  color: #10b981;
+}
+.spacer {
+  width: 30px; /* keeps title centered */
+}
+
 /* Chat window */
 .chat-window {
   flex: 1;
@@ -6,8 +52,9 @@
   display: flex;
   flex-direction: column;
   gap: 14px;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   line-height: 1.6;
+  scroll-behavior: smooth;
 }
 
 /* Messages */
@@ -38,20 +85,19 @@
   border-bottom-left-radius: 4px;
 }
 
-/* Typing indicator bubble */
+/* Typing indicator - Dark Blue */
 .typing-indicator {
   display: flex;
   align-items: center;
   gap: 6px;
-  background: rgba(52, 211, 153, 0.15);
-  color: #34d399;
-  font-size: 1.1rem;
+  background: rgba(37, 99, 235, 0.15);
+  color: #2563eb;
 }
 .typing-indicator span {
   display: block;
   width: 8px;
   height: 8px;
-  background: #34d399;
+  background: #2563eb;
   border-radius: 50%;
   animation: blink 1.4s infinite both;
 }
@@ -91,6 +137,9 @@
   background: #1e293b;
   color: #fff;
 }
+.chat-input input::placeholder {
+  color: #94a3b8;
+}
 .chat-input button {
   width: 42px;
   height: 42px;
@@ -123,7 +172,7 @@
   }
 }
 
-/* Responsive adjustments */
+/* Responsiveness */
 @media (max-width: 768px) {
   .chat-window {
     padding: 1rem;

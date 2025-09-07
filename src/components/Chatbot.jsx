@@ -1,5 +1,6 @@
 // src/components/Chatbot.jsx
 import React, { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Chatbot.css";
 
 export default function Chatbot() {
@@ -9,6 +10,7 @@ export default function Chatbot() {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const navigate = useNavigate();
 
   const API_BASE =
     process.env.NODE_ENV === "production"
@@ -50,6 +52,16 @@ export default function Chatbot() {
 
   return (
     <div className="chat-fullscreen">
+      {/* Header */}
+      <header className="chat-header">
+        <button className="back-btn" onClick={() => navigate("/dashboard")}>
+          ⬅
+        </button>
+        <h1>🤖 SnoBot</h1>
+        <div className="spacer" />
+      </header>
+
+      {/* Chat window */}
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
@@ -70,6 +82,7 @@ export default function Chatbot() {
         <div ref={messagesEndRef} />
       </div>
 
+      {/* Input bar */}
       <div className="chat-input">
         <input
           value={input}
