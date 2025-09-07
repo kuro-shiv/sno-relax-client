@@ -1,12 +1,15 @@
 import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import "../styles/Profile.css";
 
 export default function Profile() {
+  const navigate = useNavigate();
   const [user, setUser] = useState({
     id: "",
     name: "",
     email: "",
     phone: "",
+    emergency: "",
     dob: "",
     avatar: "https://i.imgur.com/KR0NKdM.png", // default avatar
     history: "",
@@ -26,6 +29,7 @@ export default function Profile() {
     const lastName = localStorage.getItem("sno_lastName") || "";
     const email = localStorage.getItem("sno_email") || "";
     const phone = localStorage.getItem("sno_phone") || "";
+    const emergency = localStorage.getItem("sno_emergency") || "";
     const dob = localStorage.getItem("sno_dob") || "";
     const avatar = localStorage.getItem("sno_avatar") || "https://i.imgur.com/KR0NKdM.png";
     const history = localStorage.getItem("sno_history") || "";
@@ -38,6 +42,7 @@ export default function Profile() {
       name: `${firstName} ${lastName}`.trim() || "Anonymous User",
       email,
       phone,
+      emergency,
       dob,
       avatar,
       history,
@@ -71,6 +76,7 @@ export default function Profile() {
     localStorage.setItem("sno_lastName", user.name.split(" ").slice(1).join(" ") || "");
     localStorage.setItem("sno_email", user.email);
     localStorage.setItem("sno_phone", user.phone);
+    localStorage.setItem("sno_emergency", user.emergency);
     localStorage.setItem("sno_dob", user.dob);
     localStorage.setItem("sno_avatar", user.avatar);
     localStorage.setItem("sno_history", user.history);
@@ -109,13 +115,9 @@ export default function Profile() {
 
         {/* Quick Actions */}
         <div className="profile-actions">
-          <button>AI Chatbot</button>
-          <button>Guided Exercises</button>
-          <button>View Reports</button>
-          <button className="logout" onClick={() => {
-            localStorage.clear();
-            window.location.href = "/";
-          }}>Logout</button>
+          <button onClick={() => navigate("/chatbot")}>AI Chatbot</button>
+          <button onClick={() => navigate("/exercises")}>Guided Exercises</button>
+          <button onClick={() => navigate("/reports")}>View Reports</button>
         </div>
 
         {/* Edit Section */}
@@ -129,6 +131,9 @@ export default function Profile() {
 
             <label>Phone</label>
             <input name="phone" value={user.phone} onChange={handleChange} />
+
+            <label>Emergency Number</label>
+            <input name="emergency" value={user.emergency} onChange={handleChange} />
 
             <label>Date of Birth</label>
             <input type="date" name="dob" value={user.dob} onChange={handleChange} />
@@ -149,6 +154,7 @@ export default function Profile() {
           <div className="profile-details">
             <p><strong>Email:</strong> {user.email}</p>
             <p><strong>Phone:</strong> {user.phone}</p>
+            <p><strong>Emergency Number:</strong> {user.emergency}</p>
             <p><strong>Date of Birth:</strong> {user.dob}</p>
             <p><strong>Emergency / Medical Info:</strong> {user.history}</p>
             <button className="edit-btn" onClick={() => setIsEditing(true)}>
