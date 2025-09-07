@@ -85,6 +85,18 @@ export default function Profile() {
 
   return (
     <div className="profile-container">
+      {/* Top Bar */}
+      <div className="profile-topbar">
+        <button
+          className="back-btn"
+          onClick={() => navigate("/dashboard")}
+          aria-label="Back to Dashboard"
+        >
+          ← Back to Dashboard
+        </button>
+        <span className="profile-app-title">SnoRelax</span>
+      </div>
+
       <div className="profile-card">
         {/* Avatar & Info */}
         <div className="profile-header">
