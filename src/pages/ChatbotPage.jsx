@@ -8,20 +8,18 @@ export default function ChatbotPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="chatbot-page">
-      <div className="chat-container">
-        {/* Header */}
-        <header className="chat-header">
-          <button className="back-btn" onClick={() => navigate("/dashboard")}>
-            ⬅
-          </button>
-          <h1>🤖 SnoBot</h1>
-          <div className="spacer" />
-        </header>
+    <div className="chat-fullscreen">
+      {/* Sticky header */}
+      <header className="chat-header">
+        <button className="back-btn" onClick={() => navigate("/dashboard")}>
+          ⬅
+        </button>
+        <h1>🤖 SnoBot</h1>
+        <div className="spacer" />
+      </header>
 
-        {/* Chatbot Component */}
-        <Chatbot />
-      </div>
+      {/* Chatbot content */}
+      <Chatbot />
     </div>
   );
 }
