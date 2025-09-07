@@ -1,75 +1,12 @@
-/* Page layout */
-.chatbot-page {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-  background: linear-gradient(160deg, #0f172a, #1e293b);
-  font-family: "Segoe UI", sans-serif;
-  color: white;
-  padding: 0.5rem;
-  box-sizing: border-box;
-}
-
-/* Chat container (mobile = full width, desktop = centered card) */
-.chat-container {
-  display: flex;
-  flex-direction: column;
-  width: 100%;
-  max-width: 1000px;
-  height: 100%;
-  background: #1e293b;
-  border-radius: clamp(0px, 2vw, 16px);
-  overflow: hidden;
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
-}
-
-/* Sticky header */
-.chat-header {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: #0f172a;
-  padding: 0.8rem 1rem;
-  border-bottom: 1px solid #334155;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
-.chat-header h1 {
-  font-size: clamp(1rem, 2vw, 1.5rem);
-  margin: 0;
-  color: #34d399;
-  text-align: center;
-  flex: 1;
-}
-
-.back-btn {
-  background: none;
-  border: none;
-  color: #34d399;
-  font-size: clamp(1rem, 2vw, 1.2rem);
-  cursor: pointer;
-  padding: 4px 8px;
-}
-.back-btn:hover {
-  color: #10b981;
-}
-
-.spacer {
-  width: 30px; /* keeps SnoBot centered */
-}
-
 /* Chat window */
 .chat-window {
   flex: 1;
   overflow-y: auto;
-  padding: clamp(0.8rem, 2vw, 1.5rem);
+  padding: 1.2rem 2rem;
   display: flex;
   flex-direction: column;
   gap: 14px;
-  font-size: clamp(0.9rem, 1.8vw, 1.1rem);
+  font-size: 1.1rem;
   line-height: 1.6;
 }
 
@@ -88,6 +25,7 @@
   border-radius: 18px;
   max-width: 70%;
   word-wrap: break-word;
+  animation: fadeUp 0.25s ease-in-out;
 }
 .message.user .bubble {
   background: #34d399;
@@ -100,6 +38,40 @@
   border-bottom-left-radius: 4px;
 }
 
+/* Typing indicator bubble */
+.typing-indicator {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(52, 211, 153, 0.15);
+  color: #34d399;
+  font-size: 1.1rem;
+}
+.typing-indicator span {
+  display: block;
+  width: 8px;
+  height: 8px;
+  background: #34d399;
+  border-radius: 50%;
+  animation: blink 1.4s infinite both;
+}
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+@keyframes blink {
+  0%, 80%, 100% {
+    opacity: 0.2;
+    transform: scale(0.9);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+}
+
 /* Input bar */
 .chat-input {
   display: flex;
@@ -109,18 +81,16 @@
   background: #0f172a;
   gap: 0.5rem;
 }
-
 .chat-input input {
   flex: 1;
-  padding: clamp(10px, 2vw, 14px) clamp(12px, 2vw, 16px);
+  padding: 12px 16px;
   border-radius: 20px;
   border: none;
   outline: none;
-  font-size: clamp(0.9rem, 2vw, 1rem);
+  font-size: 1rem;
   background: #1e293b;
   color: #fff;
 }
-
 .chat-input button {
   width: 42px;
   height: 42px;
@@ -141,39 +111,32 @@
   color: #fff;
 }
 
-/* ======================
-   Responsive Breakpoints
-   ====================== */
+/* Animations */
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
 
-/* Small phones */
-@media (max-width: 360px) {
-  .chat-header h1 {
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chat-window {
+    padding: 1rem;
     font-size: 1rem;
   }
+}
+@media (max-width: 480px) {
   .chat-input input {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
+    padding: 10px 14px;
   }
-}
-
-/* Tablets (portrait + landscape) */
-@media (min-width: 768px) {
-  .chat-container {
-    height: 90vh;
-    border-radius: 16px;
-  }
-}
-
-/* Laptops */
-@media (min-width: 1024px) {
-  .chat-container {
-    height: 85vh;
-  }
-}
-
-/* Large Desktops / Ultrawide */
-@media (min-width: 1440px) {
-  .chat-container {
-    height: 80vh;
-    max-width: 1200px;
+  .chat-input button {
+    width: 38px;
+    height: 38px;
   }
 }

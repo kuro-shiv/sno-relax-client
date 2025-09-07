@@ -10,13 +10,11 @@ export default function Chatbot() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // ✅ API base URL (switches for dev/prod automatically)
   const API_BASE =
     process.env.NODE_ENV === "production"
       ? "https://sno-relax-server-hostside.onrender.com"
       : "http://localhost:5000";
 
-  // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
@@ -40,7 +38,7 @@ export default function Chatbot() {
       if (data.text) {
         setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
       }
-    } catch (err) {
+    } catch {
       setMessages((prev) => [
         ...prev,
         { sender: "bot", text: "⚠️ Sorry, I couldn’t connect to the server." },
@@ -51,8 +49,7 @@ export default function Chatbot() {
   };
 
   return (
-    <>
-      {/* Chat window */}
+    <div className="chat-fullscreen">
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
@@ -73,7 +70,6 @@ export default function Chatbot() {
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input bar */}
       <div className="chat-input">
         <input
           value={input}
@@ -83,6 +79,6 @@ export default function Chatbot() {
         />
         <button onClick={handleSend}>➤</button>
       </div>
-    </>
+    </div>
   );
 }
