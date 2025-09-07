@@ -82,7 +82,7 @@ export default function Profile() {
         </div>
 
         {/* Edit Section */}
-        {isEditing && (
+        {isEditing ? (
           <div className="edit-section">
             <label>Name</label>
             <input name="name" value={user.name} onChange={handleChange} />
@@ -108,12 +108,17 @@ export default function Profile() {
               Save
             </button>
           </div>
-        )}
+        ) : (
+          <div className="profile-details">
+            <p><strong>Email:</strong> {user.email}</p>
+            <p><strong>Phone:</strong> {user.phone}</p>
+            <p><strong>Date of Birth:</strong> {user.dob}</p>
+            <p><strong>Emergency / Medical Info:</strong> {user.history}</p>
 
-        {!isEditing && (
-          <button className="edit-btn" onClick={() => setIsEditing(true)}>
-            Edit Profile
-          </button>
+            <button className="edit-btn" onClick={() => setIsEditing(true)}>
+              Edit Profile
+            </button>
+          </div>
         )}
       </div>
     </div>

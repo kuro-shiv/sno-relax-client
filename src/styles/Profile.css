@@ -18,6 +18,7 @@
   max-width: 400px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
   text-align: center;
+  transition: all 0.3s ease;
 }
 
 /* Header */
@@ -109,6 +110,7 @@
   color: #fff;
   cursor: pointer;
   transition: 0.3s;
+  font-size: 1rem;
 }
 
 .profile-actions button:hover {
@@ -175,12 +177,107 @@
   background: #357ab8;
 }
 
-/* Responsive */
+/* -------------------------------- */
+/* 📱 Small screens (phones <480px) */
 @media (max-width: 480px) {
   .profile-card {
     padding: 1.2rem;
+    max-width: 95%;
+  }
+  .profile-pic {
+    width: 90px;
+    height: 90px;
   }
   .username {
     font-size: 1.2rem;
+  }
+  .profile-actions button {
+    font-size: 0.9rem;
+    padding: 8px;
+  }
+}
+
+/* 📲 Tablets (481px–768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .profile-card {
+    max-width: 500px;
+  }
+  .profile-pic {
+    width: 100px;
+    height: 100px;
+  }
+  .username {
+    font-size: 1.3rem;
+  }
+  .profile-actions {
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .profile-actions button {
+    flex: 1 1 45%;
+  }
+}
+
+/* 💻 Laptops (769px–1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .profile-card {
+    max-width: 600px;
+  }
+  .profile-pic {
+    width: 110px;
+    height: 110px;
+  }
+  .username {
+    font-size: 1.4rem;
+  }
+  .profile-actions {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+  .profile-actions button {
+    flex: 1 1 48%;
+  }
+}
+
+/* 🖥️ Large desktops (1025px–1440px) */
+@media (min-width: 1025px) and (max-width: 1440px) {
+  .profile-card {
+    max-width: 700px;
+  }
+  .profile-pic {
+    width: 130px;
+    height: 130px;
+  }
+  .username {
+    font-size: 1.6rem;
+  }
+  .profile-actions {
+    flex-direction: row;
+    justify-content: space-around;
+  }
+  .profile-actions button {
+    flex: 1 1 22%;
+  }
+}
+
+/* 🖥️ Ultra-wide screens (1441px+) */
+@media (min-width: 1441px) {
+  .profile-card {
+    max-width: 800px;
+  }
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+  }
+  .username {
+    font-size: 1.8rem;
+  }
+  .profile-actions {
+    flex-direction: row;
+    justify-content: space-evenly;
+  }
+  .profile-actions button {
+    flex: 1 1 20%;
   }
 }
