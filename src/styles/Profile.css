@@ -1,43 +1,64 @@
 /* 🌍 Base (mobile-first) */
 .profile-container {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  padding: 4rem 2rem 2rem;
   min-height: 100vh;
+  width: 100vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Top align, but card is centered horizontally */
   background: #0b1e3d;
   color: #e0eaff;
   box-sizing: border-box;
-  overflow-y: auto;
+  padding: 0;
+  margin: 0;
+  overflow-x: hidden;
 }
 
 .profile-card {
+  width: 100%;
+  max-width: 480px;
+  margin: 2.5rem auto 0 auto;
   background: #12264d;
   border-radius: 20px;
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 400px;
+  padding: 2rem 1.5rem 2rem 1.5rem;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
   text-align: center;
-  transition: all 0.3s ease;
-  margin-top: 2rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+@media (max-width: 600px) {
+  .profile-card {
+    max-width: 98vw;
+    padding: 1rem 0.5rem;
+  }
 }
 
 .profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
   gap: 0.6rem;
+  margin-bottom: 1rem;
+  margin-top: 0;
+  width: 100%;
 }
 
 .profile-pic {
+  align-self: center;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
   width: 120px;
   height: 120px;
   border-radius: 50%;
   border: 3px solid #4aa0e2;
   object-fit: cover;
-  margin-top: -60px;
   background: #0b1e3d;
+  box-shadow: 0 2px 12px rgba(74, 160, 226, 0.15);
+  position: relative;
+  top: 0;
 }
 
 .username {
@@ -59,6 +80,7 @@
 .profile-mood {
   margin: 1.5rem 0 1rem 0;
   text-align: left;
+  width: 100%;
 }
 
 .profile-mood h3 {
@@ -100,6 +122,7 @@
   flex-direction: column;
   gap: 0.7rem;
   margin: 1.2rem 0 1.5rem 0;
+  width: 100%;
 }
 
 .profile-actions button {
@@ -113,6 +136,7 @@
   cursor: pointer;
   transition: background 0.2s, color 0.2s, box-shadow 0.2s;
   box-shadow: 0 2px 8px rgba(74, 160, 226, 0.08);
+  width: 100%;
 }
 
 .profile-actions button:hover,
@@ -129,6 +153,7 @@
   display: flex;
   flex-direction: column;
   gap: 0.7rem;
+  width: 100%;
 }
 
 .edit-section label {
@@ -168,6 +193,7 @@
   margin-top: 0.7rem;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
+  width: 100%;
 }
 
 .save-btn:hover,
@@ -184,6 +210,7 @@
   text-align: left;
   margin-top: 1.2rem;
   font-size: 1rem;
+  width: 100%;
 }
 
 .profile-details p {
@@ -222,172 +249,34 @@
   border-radius: 2px;
 }
 
-/* =============================== */
-/* 📱 Phones (320px–480px) */
-/* =============================== */
-@media (max-width: 320px) {
+/* Responsive adjustments for card and image */
+@media (max-width: 600px) {
   .profile-card {
-    padding: 1rem;
-    max-width: 95%;
+    max-width: 98vw;
+    padding: 1rem 0.5rem;
   }
-  .profile-pic {
-    width: 70px;
-    height: 70px;
-    margin-top: -35px;
-  }
-  .username {
-    font-size: 1rem;
-  }
-}
-@media (min-width: 321px) and (max-width: 375px) {
   .profile-pic {
     width: 80px;
     height: 80px;
-    margin-top: -40px;
-  }
-  .username {
-    font-size: 1.1rem;
-  }
-}
-@media (min-width: 376px) and (max-width: 425px) {
-  .profile-pic {
-    width: 90px;
-    height: 90px;
-    margin-top: -45px;
-  }
-  .username {
-    font-size: 1.2rem;
-  }
-}
-@media (min-width: 426px) and (max-width: 480px) {
-  .profile-pic {
-    width: 100px;
-    height: 100px;
-    margin-top: -50px;
-  }
-  .username {
-    font-size: 1.3rem;
   }
 }
 
-/* =============================== */
-/* 📲 Tablets (481px–768px) */
-/* =============================== */
-@media (min-width: 481px) and (max-width: 600px) {
-  .profile-card {
-    max-width: 500px;
-  }
-  .profile-pic {
-    width: 110px;
-    height: 110px;
-    margin-top: -55px;
-  }
-}
-@media (min-width: 601px) and (max-width: 700px) {
-  .profile-card {
-    max-width: 550px;
-  }
-  .profile-pic {
-    width: 120px;
-    height: 120px;
-    margin-top: -60px;
-  }
-}
-@media (min-width: 701px) and (max-width: 768px) {
+@media (min-width: 601px) and (max-width: 900px) {
   .profile-card {
     max-width: 600px;
   }
   .profile-pic {
-    width: 130px;
-    height: 130px;
-    margin-top: -65px;
+    width: 110px;
+    height: 110px;
   }
 }
 
-/* =============================== */
-/* 💻 Laptops (769px–1024px) */
-/* =============================== */
-@media (min-width: 769px) and (max-width: 900px) {
-  .profile-card {
-    max-width: 650px;
-  }
-  .profile-pic {
-    width: 140px;
-    height: 140px;
-    margin-top: -70px;
-  }
-}
-@media (min-width: 901px) and (max-width: 1024px) {
+@media (min-width: 901px) {
   .profile-card {
     max-width: 700px;
   }
   .profile-pic {
-    width: 150px;
-    height: 150px;
-    margin-top: -75px;
-  }
-}
-
-/* =============================== */
-/* 🖥️ Desktops (1025px–1440px) */
-/* =============================== */
-@media (min-width: 1025px) and (max-width: 1200px) {
-  .profile-card {
-    max-width: 750px;
-  }
-  .profile-pic {
-    width: 160px;
-    height: 160px;
-    margin-top: -80px;
-  }
-}
-@media (min-width: 1201px) and (max-width: 1440px) {
-  .profile-card {
-    max-width: 850px;
-  }
-  .profile-pic {
-    width: 170px;
-    height: 170px;
-    margin-top: -85px;
-  }
-  .username {
-    font-size: 1.7rem;
-  }
-}
-
-/* =============================== */
-/* 🖥️ Ultra-wide (1441px+) */
-/* =============================== */
-@media (min-width: 1441px) and (max-width: 1600px) {
-  .profile-card {
-    max-width: 900px;
-  }
-  .profile-pic {
-    width: 180px;
-    height: 180px;
-    margin-top: -90px;
-  }
-}
-@media (min-width: 1601px) and (max-width: 1920px) {
-  .profile-card {
-    max-width: 1000px;
-  }
-  .profile-pic {
-    width: 200px;
-    height: 200px;
-    margin-top: -100px;
-  }
-}
-@media (min-width: 1921px) {
-  .profile-card {
-    max-width: 1100px;
-  }
-  .profile-pic {
-    width: 220px;
-    height: 220px;
-    margin-top: -110px;
-  }
-  .username {
-    font-size: 2rem;
+    width: 140px;
+    height: 140px;
   }
 }
