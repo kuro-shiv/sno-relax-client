@@ -12,7 +12,6 @@ export default function Login() {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
 
-  // ✅ API base URL (Render backend for production, localhost for dev)
   const API_BASE =
     process.env.NODE_ENV === "production"
       ? "https://sno-relax-server-hostside.onrender.com"
@@ -69,7 +68,6 @@ export default function Login() {
       const data = await res.json();
 
       if (data.userId) {
-        // ✅ Save to localStorage for dashboard use
         localStorage.setItem("sno_userId", data.userId);
         localStorage.setItem("sno_firstName", firstName);
         localStorage.setItem("sno_lastName", lastName);
