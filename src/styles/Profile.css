@@ -1,11 +1,10 @@
 /* 🌍 Base (mobile-first) */
 .profile-container {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: flex-start; /* Top align */
+  justify-content: center;
+  align-items: flex-start;
+  padding: 4rem 2rem 2rem;
   min-height: 100vh;
-  padding: 2rem 1rem;
   background: #0b1e3d;
   color: #e0eaff;
   box-sizing: border-box;
@@ -13,46 +12,32 @@
 }
 
 .profile-card {
-  width: 100%;
-  max-width: 400px;
-  margin: 2rem auto 0 auto;
   background: #12264d;
   border-radius: 20px;
   padding: 1.5rem;
+  width: 100%;
+  max-width: 400px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
   text-align: center;
   transition: all 0.3s ease;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
+  margin-top: 2rem;
 }
 
 .profile-header {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: flex-start;
   gap: 0.6rem;
-  margin-bottom: 1rem;
-  margin-top: 0;
-  padding-top: 0;
-  width: 100%;
-  position: relative;
 }
 
 .profile-pic {
-  align-self: center;
-  margin-top: 0;
-  margin-bottom: 0.5rem;
   width: 120px;
   height: 120px;
   border-radius: 50%;
   border: 3px solid #4aa0e2;
   object-fit: cover;
-  background: #0b1e3d; /* ✅ fallback bg */
-  box-shadow: 0 2px 12px rgba(74, 160, 226, 0.15);
-  position: relative;
-  top: 0;
+  margin-top: -60px;
+  background: #0b1e3d;
 }
 
 .username {
