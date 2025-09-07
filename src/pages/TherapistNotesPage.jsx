@@ -1,16 +1,21 @@
 import React from "react";
 import TherapistNotes from "../components/TherapistNotes";
 import { useNavigate } from "react-router-dom";
-import "../components/therapistNotes.css";
+import styles from "./therapistNotesPage.module.css"; // ✅ single CSS module
 
 export default function TherapistNotesPage() {
   const navigate = useNavigate();
 
   return (
-    <div className="page">
+    <div className={styles.page}>
       <h1>📝 Therapist Notes</h1>
-      <TherapistNotes />
-      <button onClick={() => navigate("/dashboard")} className="btn back-btn">
+      <div className={styles.notesWrapper}>
+        <TherapistNotes />
+      </div>
+      <button
+        onClick={() => navigate("/dashboard")}
+        className={`${styles.btn} ${styles.backBtn}`}
+      >
         ⬅ Back to Dashboard
       </button>
     </div>

@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import "./therapistNotes.css";
 
 export default function TherapistNotes() {
   const [notes, setNotes] = useState([]);
