@@ -1,44 +1,34 @@
-import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import "../styles/Profile.css";
-import {
-  Edit,
-  ArrowLeft,
-  Mail,
-  Phone,
-  Hash,
-  Calendar,
-  FileText,
-  UserCircle,
-} from "lucide-react";
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Edit, ArrowLeft, Mail, Phone, Hash, Calendar, FileText, UserCircle } from 'lucide-react';
+import '../styles/Profile.css';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const navigate = useNavigate();
 
-  // Load user from localStorage
   useEffect(() => {
-    const storedUserId = localStorage.getItem("sno_userId");
+    const storedUserId = localStorage.getItem('sno_userId');
     if (!storedUserId) return;
 
     setUser({
       id: storedUserId,
-      firstName: localStorage.getItem("sno_firstName") || "Guest",
-      lastName: localStorage.getItem("sno_lastName") || "",
-      email: localStorage.getItem("sno_email") || "not-found@gmail.com",
-      phone: localStorage.getItem("sno_phone") || "N/A",
-      avatar: localStorage.getItem("sno_avatar") || null,
-      dob: localStorage.getItem("sno_dob") || "1998-07-12",
-      history: localStorage.getItem("sno_history") || "No major illnesses reported.",
+      firstName: localStorage.getItem('sno_firstName') || 'Guest',
+      lastName: localStorage.getItem('sno_lastName') || '',
+      email: localStorage.getItem('sno_email') || 'not-found@gmail.com',
+      phone: localStorage.getItem('sno_phone') || 'N/A',
+      avatar: localStorage.getItem('sno_avatar') || null,
+      dob: localStorage.getItem('sno_dob') || '1998-07-12',
+      history: localStorage.getItem('sno_history') || 'No major illnesses reported.',
     });
   }, []);
 
   if (!user) {
     return (
-      <div className="profile-page min-h-screen flex flex-col items-center justify-center bg-gray-100">
+      <div className="profile-page flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
         <h2 className="text-2xl font-bold mb-2">No profile found ❌</h2>
-        <p className="text-gray-500">Please login first.</p>
+        <p className="text-gray-400">Please login first.</p>
       </div>
     );
   }
@@ -53,61 +43,56 @@ export default function Profile() {
   };
 
   return (
-    <div className="profile-page min-h-screen bg-gray-100 flex flex-col items-center px-4 py-6">
-      {/* Top Bar */}
-      <div className="w-full max-w-4xl flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-2 sm:gap-0">
+    <div className="profile-page flex flex-col items-center justify-center min-h-screen bg-gray-900 text-white">
+      <div className="top-bar flex justify-between items-center w-full max-w-4xl mb-6">
         <button
           onClick={() => navigate(-1)}
-          className="flex items-center gap-1 text-sm px-3 py-1 bg-gray-200 rounded-lg hover:bg-gray-300 transition"
+          className="btn flex items-center gap-2 px-4 py-2 bg-gray-700 hover:bg-gray-600 rounded-lg transition"
         >
           <ArrowLeft className="w-4 h-4" /> Back
         </button>
-
         <button
           onClick={() => (isEditing ? handleSave() : setIsEditing(true))}
-          className="flex items-center gap-1 px-4 py-2 bg-blue-500 text-white rounded-lg shadow hover:bg-blue-600 transition"
+          className="btn flex items-center gap-2 px-4 py-2 bg-green-500 hover:bg-green-600 rounded-lg transition text-black"
         >
-          <Edit className="w-4 h-4" /> {isEditing ? "Save" : "Edit"}
+          <Edit className="w-4 h-4" /> {isEditing ? 'Save' : 'Edit'}
         </button>
       </div>
 
-      {/* Profile Card */}
-      <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-4xl flex flex-col md:flex-row gap-6">
-        {/* Avatar */}
+      <div className="profile-card bg-gray-800 rounded-2xl shadow-lg p-6 w-full max-w-4xl flex flex-col md:flex-row gap-6">
         {user.avatar ? (
           <img
             src={user.avatar}
             alt="Profile"
-            className="w-32 h-32 rounded-full border-4 border-gray-200 shadow-md object-cover mx-auto md:mx-0"
+            className="avatar w-32 h-32 rounded-full border-4 border-gray-700 shadow-md object-cover mx-auto md:mx-0"
           />
         ) : (
-          <div className="w-32 h-32 flex items-center justify-center rounded-full border-4 border-gray-200 bg-gray-200 text-gray-500 shadow-md mx-auto md:mx-0">
+          <div className="avatar w-32 h-32 flex items-center justify-center rounded-full border-4 border-gray-700 bg-gray-700 text-gray-400 shadow-md mx-auto md:mx-0">
             <UserCircle className="w-16 h-16" />
           </div>
         )}
 
-        {/* Info */}
-        <div className="flex-1 text-gray-800 space-y-3">
+        <div className="info flex-1 text-gray-200 space-y-3">
           {isEditing ? (
             <>
-              {["firstName", "lastName", "email", "phone", "dob", "history"].map((field) => (
+              {['firstName', 'lastName', 'email', 'phone', 'dob', 'history'].map((field) => (
                 <div key={field}>
-                  <label className="text-sm font-semibold capitalize">{field.replace(/([A-Z])/g, ' $1')}</label>
-                  {field === "history" ? (
+                  <label className="text-sm font-semibold capitalize">{field}</label>
+                  {field === 'history' ? (
                     <textarea
                       name={field}
                       value={user[field]}
                       onChange={handleChange}
-                      className="w-full border rounded px-3 py-2 mt-1"
+                      className="input w-full border rounded px-3 py-2 mt-1 bg-gray-700 text-white border-gray-600"
                       rows={3}
                     />
                   ) : (
                     <input
-                      type={field === "dob" ? "date" : "text"}
+                      type={field === 'dob' ? 'date' : 'text'}
                       name={field}
                       value={user[field]}
                       onChange={handleChange}
-                      className="w-full border rounded px-3 py-2 mt-1"
+                      className="input w-full border rounded px-3 py-2 mt-1 bg-gray-700 text-white border-gray-600"
                     />
                   )}
                 </div>
@@ -118,7 +103,7 @@ export default function Profile() {
                   name="id"
                   value={user.id}
                   disabled
-                  className="w-full border rounded px-3 py-2 mt-1 bg-gray-100"
+                  className="input w-full border rounded px-3 py-2 mt-1 bg-gray-600 text-gray-400 border-gray-500"
                 />
               </div>
             </>
@@ -127,19 +112,19 @@ export default function Profile() {
               <h2 className="text-2xl font-bold text-center md:text-left">
                 {user.firstName} {user.lastName}
               </h2>
-              <p className="flex items-center gap-2 text-gray-600">
+              <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4" /> {user.email}
               </p>
-              <p className="flex items-center gap-2 text-gray-600">
+              <p className="flex items-center gap-2">
                 <Phone className="w-4 h-4" /> {user.phone}
               </p>
-              <p className="flex items-center gap-2 text-gray-600">
+              <p className="flex items-center gap-2">
                 <Hash className="w-4 h-4" /> {user.id}
               </p>
-              <p className="flex items-center gap-2 text-gray-600">
+              <p className="flex items-center gap-2">
                 <Calendar className="w-4 h-4" /> {user.dob}
               </p>
-              <p className="flex items-center gap-2 text-gray-600">
+              <p className="flex items-center gap-2">
                 <FileText className="w-4 h-4" /> {user.history}
               </p>
             </>
