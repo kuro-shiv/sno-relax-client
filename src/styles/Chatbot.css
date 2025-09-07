@@ -41,7 +41,7 @@
   width: 30px;
 }
 
-/* Chat window (scrollable area above input) */
+/* Chat window takes full height minus input bar */
 .chat-window {
   flex: 1;
   overflow-y: auto;
@@ -52,7 +52,10 @@
   font-size: 1rem;
   line-height: 1.6;
   scroll-behavior: smooth;
-  margin-bottom: 60px; /* prevent overlap with input */
+
+  /* 👇 input bar is ~70px tall, reserve space */
+  height: calc(100vh - 70px - 50px); /* screen - input - header */
+  box-sizing: border-box;
 }
 
 /* Messages */
@@ -131,6 +134,7 @@
   background: #0f172a;
   gap: 0.5rem;
   z-index: 20;
+  height: 70px; /* 👈 fixed height so chat window calc works */
 }
 .chat-input input {
   flex: 1;

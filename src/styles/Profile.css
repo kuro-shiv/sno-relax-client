@@ -1,36 +1,39 @@
-/* src/components/Profile.css */
-.profile-container {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
+.profile-page {
+  width: 100vw;
+  min-height: 100vh;
+  background: #f3f4f6;
   padding: 1rem;
-  background: #f8fafc;
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  max-width: 400px;
-}
-
-.profile-img {
-  width: 64px;
-  height: 64px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 2px solid #ddd;
-}
-
-.profile-info {
   display: flex;
   flex-direction: column;
+  align-items: center;
 }
 
-.profile-info h2 {
-  font-size: 1.2rem;
-  margin: 0;
-  color: #111827;
+/* Inputs & Textareas */
+.profile-page input,
+.profile-page textarea {
+  font-size: 0.95rem;
+  outline: none;
 }
 
-.profile-info p {
-  font-size: 0.9rem;
-  margin: 0;
-  color: #6b7280;
+/* Avatar */
+.profile-page img,
+.profile-page .UserCircle {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive for small screens */
+@media (max-width: 768px) {
+  .profile-page .flex-1 {
+    text-align: center;
+  }
+  .profile-page .flex-1 h2 {
+    font-size: 1.5rem;
+  }
+  .profile-page .flex-1 p {
+    font-size: 0.9rem;
+  }
+  .profile-page .bg-white {
+    padding: 1.5rem;
+  }
 }
