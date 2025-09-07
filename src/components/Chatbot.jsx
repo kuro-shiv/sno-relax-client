@@ -10,7 +10,7 @@ export default function Chatbot() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef(null);
 
-  // ✅ API base URL (Render backend for production, localhost for dev)
+  // ✅ API base URL (switches for dev/prod automatically)
   const API_BASE =
     process.env.NODE_ENV === "production"
       ? "https://sno-relax-server-hostside.onrender.com"
@@ -19,13 +19,14 @@ export default function Chatbot() {
   // Auto-scroll to bottom
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages]);
+  }, [messages, loading]);
 
   const handleSend = async () => {
     if (!input.trim()) return;
 
     const newMessages = [...messages, { sender: "user", text: input }];
     setMessages(newMessages);
+    setInput("");
     setLoading(true);
 
     try {
@@ -44,10 +45,9 @@ export default function Chatbot() {
         ...prev,
         { sender: "bot", text: "⚠️ Sorry, I couldn’t connect to the server." },
       ]);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
-    setInput("");
   };
 
   return (
@@ -56,16 +56,20 @@ export default function Chatbot() {
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
-            <div className="bubble">{msg.text}</div>
+            <div className="bubble fade-in">{msg.text}</div>
           </div>
         ))}
 
+        {/* Typing indicator */}
         {loading && (
           <div className="message bot">
-            <div className="bubble">SnoBot is thinking...</div>
+            <div className="bubble typing-indicator">
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
           </div>
         )}
-
         <div ref={messagesEndRef} />
       </div>
 
