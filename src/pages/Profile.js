@@ -33,9 +33,13 @@ export default function Profile() {
       avatar: localStorage.getItem("sno_avatar") || null,
       dob: localStorage.getItem("sno_dob") || "1998-07-12",
       history:
-        localStorage.getItem("sno_history") || "No major illnesses reported.",
+        localStorage.getItem("sno_history") ||
+        "Emergency Contact: None. Medical Info: None.",
     });
-    setPreviewAvatar(localStorage.getItem("sno_avatar") || null);
+    setPreviewAvatar(
+      localStorage.getItem("sno_avatar") ||
+        "https://i.imgur.com/KR0NKdM.png" // default anime avatar
+    );
   }, []);
 
   if (!user) {
@@ -124,32 +128,41 @@ export default function Profile() {
         <div className="info flex-1 space-y-3 text-gray-200">
           {isEditing ? (
             <>
-              {["firstName", "lastName", "email", "phone", "dob", "history"].map(
-                (field) => (
-                  <div key={field}>
-                    <label className="text-sm font-semibold capitalize">
-                      {field === "dob" ? "Date of Birth" : field}
-                    </label>
-                    {field === "history" ? (
-                      <textarea
-                        name={field}
-                        value={user[field]}
-                        onChange={handleChange}
-                        className="input w-full border rounded px-3 py-2 mt-1 bg-gray-700 text-white border-gray-600"
-                        rows={3}
-                      />
-                    ) : (
-                      <input
-                        type={field === "dob" ? "date" : "text"}
-                        name={field}
-                        value={user[field]}
-                        onChange={handleChange}
-                        className="input w-full border rounded px-3 py-2 mt-1 bg-gray-700 text-white border-gray-600"
-                      />
-                    )}
-                  </div>
-                )
-              )}
+              {[
+                "firstName",
+                "lastName",
+                "email",
+                "phone",
+                "dob",
+                "history",
+              ].map((field) => (
+                <div key={field}>
+                  <label className="text-sm font-semibold capitalize">
+                    {field === "dob"
+                      ? "Date of Birth"
+                      : field === "history"
+                      ? "Emergency / Medical Info"
+                      : field}
+                  </label>
+                  {field === "history" ? (
+                    <textarea
+                      name={field}
+                      value={user[field]}
+                      onChange={handleChange}
+                      className="input w-full border rounded px-3 py-2 mt-1 bg-gray-700 text-white border-gray-600"
+                      rows={3}
+                    />
+                  ) : (
+                    <input
+                      type={field === "dob" ? "date" : "text"}
+                      name={field}
+                      value={user[field]}
+                      onChange={handleChange}
+                      className="input w-full border rounded px-3 py-2 mt-1 bg-gray-700 text-white border-gray-600"
+                    />
+                  )}
+                </div>
+              ))}
               <div>
                 <label className="text-sm font-semibold">User ID</label>
                 <input
