@@ -14,6 +14,49 @@
   overflow-x: hidden;
 }
 
+/* Add at the end of your Profile.css */
+
+.profile-topbar {
+  width: 100vw;
+  max-width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.2rem 2rem 0.5rem 2rem;
+  box-sizing: border-box;
+  background: transparent;
+  position: relative;
+  z-index: 2;
+}
+
+.back-btn {
+  background: #4aa0e2;
+  color: #12264d;
+  border: none;
+  border-radius: 8px;
+  padding: 0.5rem 1.1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 2px 8px rgba(74, 160, 226, 0.08);
+}
+
+.back-btn:hover,
+.back-btn:focus {
+  background: #6ee7b7;
+  color: #0b1e3d;
+  outline: none;
+}
+
+.profile-app-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #6ee7b7;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 8px rgba(74, 160, 226, 0.15);
+}
+
 .profile-card {
   width: 100%;
   max-width: 480px;
@@ -280,3 +323,5 @@
     height: 140px;
   }
 }
+
+
