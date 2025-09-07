@@ -2,265 +2,6 @@
 .profile-container {
   display: flex;
   justify-content: center;
-  align-items: center;
-  padding: 2rem;
-  min-height: 100vh;
-  background: #0b1e3d; /* deep blue */
-  color: #e0eaff;
-}
-
-.profile-card {
-  background: #12264d;
-  border-radius: 20px;
-  padding: 1.5rem;
-  width: 100%;
-  max-width: 400px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-  text-align: center;
-  transition: all 0.3s ease;
-}
-
-.profile-pic {
-  width: 100px;
-  height: 100px;
-  border-radius: 50%;
-  border: 3px solid #4aa0e2;
-  object-fit: cover;
-}
-
-.username {
-  font-size: 1.3rem;
-  font-weight: bold;
-}
-
-.user-id {
-  font-size: 0.9rem;
-  color: #a8c6ff;
-}
-
-/* Mood Tracker */
-.mood-bar {
-  margin-bottom: 0.7rem;
-}
-.bar {
-  width: 100%;
-  background: #1a335b;
-  border-radius: 10px;
-  height: 12px;
-  margin-top: 3px;
-}
-.fill {
-  height: 12px;
-  background: #4aa0e2;
-  border-radius: 10px;
-  transition: width 0.5s ease;
-}
-
-/* Buttons */
-.profile-actions {
-  display: flex;
-  flex-direction: column;
-  gap: 0.8rem;
-  margin-top: 1.5rem;
-}
-.profile-actions button {
-  padding: 10px;
-  border: none;
-  border-radius: 10px;
-  background: #4aa0e2;
-  color: #fff;
-  cursor: pointer;
-  transition: 0.3s;
-  font-size: 1rem;
-}
-.profile-actions button:hover {
-  background: #357ab8;
-}
-.profile-actions .logout {
-  background: #ff5252;
-}
-.profile-actions .logout:hover {
-  background: #e04646;
-}
-
-/* =============================== */
-/* 📱 Phones (320px–480px) */
-/* =============================== */
-@media (max-width: 320px) {
-  .profile-card {
-    padding: 1rem;
-    max-width: 95%;
-  }
-  .profile-pic {
-    width: 70px;
-    height: 70px;
-  }
-  .username {
-    font-size: 1rem;
-  }
-  .profile-actions button {
-    font-size: 0.8rem;
-    padding: 6px;
-  }
-}
-@media (min-width: 321px) and (max-width: 375px) {
-  .profile-pic {
-    width: 80px;
-    height: 80px;
-  }
-  .username {
-    font-size: 1.1rem;
-  }
-}
-@media (min-width: 376px) and (max-width: 425px) {
-  .profile-pic {
-    width: 90px;
-    height: 90px;
-  }
-  .username {
-    font-size: 1.2rem;
-  }
-}
-@media (min-width: 426px) and (max-width: 480px) {
-  .profile-pic {
-    width: 100px;
-    height: 100px;
-  }
-  .username {
-    font-size: 1.3rem;
-  }
-}
-
-/* =============================== */
-/* 📲 Tablets (481px–768px) */
-/* =============================== */
-@media (min-width: 481px) and (max-width: 600px) {
-  .profile-card {
-    max-width: 500px;
-  }
-  .profile-pic {
-    width: 110px;
-    height: 110px;
-  }
-}
-@media (min-width: 601px) and (max-width: 700px) {
-  .profile-card {
-    max-width: 550px;
-  }
-  .profile-pic {
-    width: 120px;
-    height: 120px;
-  }
-}
-@media (min-width: 701px) and (max-width: 768px) {
-  .profile-card {
-    max-width: 600px;
-  }
-  .profile-pic {
-    width: 130px;
-    height: 130px;
-  }
-  .profile-actions {
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-  .profile-actions button {
-    flex: 1 1 45%;
-  }
-}
-
-/* =============================== */
-/* 💻 Laptops (769px–1024px) */
-/* =============================== */
-@media (min-width: 769px) and (max-width: 900px) {
-  .profile-card {
-    max-width: 650px;
-  }
-  .profile-pic {
-    width: 140px;
-    height: 140px;
-  }
-}
-@media (min-width: 901px) and (max-width: 1024px) {
-  .profile-card {
-    max-width: 700px;
-  }
-  .profile-pic {
-    width: 150px;
-    height: 150px;
-  }
-  .profile-actions {
-    flex-direction: row;
-    justify-content: space-between;
-  }
-  .profile-actions button {
-    flex: 1 1 48%;
-  }
-}
-
-/* =============================== */
-/* 🖥️ Desktops (1025px–1440px) */
-/* =============================== */
-@media (min-width: 1025px) and (max-width: 1200px) {
-  .profile-card {
-    max-width: 750px;
-  }
-  .profile-pic {
-    width: 160px;
-    height: 160px;
-  }
-}
-@media (min-width: 1201px) and (max-width: 1440px) {
-  .profile-card {
-    max-width: 850px;
-  }
-  .profile-pic {
-    width: 170px;
-    height: 170px;
-  }
-  .username {
-    font-size: 1.7rem;
-  }
-}
-
-/* =============================== */
-/* 🖥️ Ultra-wide (1441px+) */
-/* =============================== */
-@media (min-width: 1441px) and (max-width: 1600px) {
-  .profile-card {
-    max-width: 900px;
-  }
-  .profile-pic {
-    width: 180px;
-    height: 180px;
-  }
-}
-@media (min-width: 1601px) and (max-width: 1920px) {
-  .profile-card {
-    max-width: 1000px;
-  }
-  .profile-pic {
-    width: 200px;
-    height: 200px;
-  }
-}
-@media (min-width: 1921px) {
-  .profile-card {
-    max-width: 1100px;
-  }
-  .profile-pic {
-    width: 220px;
-    height: 220px;
-  }
-  .username {
-    font-size: 2rem;
-  }
-}
-/* 🌍 Base (mobile-first) */
-.profile-container {
-  display: flex;
-  justify-content: center;
   align-items: flex-start; /* ✅ align from top */
   padding: 4rem 2rem 2rem; /* ✅ extra top padding */
   min-height: 100vh;
@@ -295,6 +36,186 @@
   border-radius: 50%;
   border: 3px solid #4aa0e2;
   object-fit: cover;
-  margin-top: -60px; /* ✅ optional floating effect */
+  margin-top: -60px; /* ✅ floating effect */
   background: #0b1e3d; /* ✅ fallback bg */
+}
+
+.username {
+  font-size: 1.3rem;
+  font-weight: bold;
+}
+
+.user-id {
+  font-size: 0.9rem;
+  color: #a8c6ff;
+}
+
+/* =============================== */
+/* 📱 Phones (320px–480px) */
+/* =============================== */
+@media (max-width: 320px) {
+  .profile-card {
+    padding: 1rem;
+    max-width: 95%;
+  }
+  .profile-pic {
+    width: 70px;
+    height: 70px;
+    margin-top: -35px;
+  }
+  .username {
+    font-size: 1rem;
+  }
+}
+@media (min-width: 321px) and (max-width: 375px) {
+  .profile-pic {
+    width: 80px;
+    height: 80px;
+    margin-top: -40px;
+  }
+  .username {
+    font-size: 1.1rem;
+  }
+}
+@media (min-width: 376px) and (max-width: 425px) {
+  .profile-pic {
+    width: 90px;
+    height: 90px;
+    margin-top: -45px;
+  }
+  .username {
+    font-size: 1.2rem;
+  }
+}
+@media (min-width: 426px) and (max-width: 480px) {
+  .profile-pic {
+    width: 100px;
+    height: 100px;
+    margin-top: -50px;
+  }
+  .username {
+    font-size: 1.3rem;
+  }
+}
+
+/* =============================== */
+/* 📲 Tablets (481px–768px) */
+/* =============================== */
+@media (min-width: 481px) and (max-width: 600px) {
+  .profile-card {
+    max-width: 500px;
+  }
+  .profile-pic {
+    width: 110px;
+    height: 110px;
+    margin-top: -55px;
+  }
+}
+@media (min-width: 601px) and (max-width: 700px) {
+  .profile-card {
+    max-width: 550px;
+  }
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+    margin-top: -60px;
+  }
+}
+@media (min-width: 701px) and (max-width: 768px) {
+  .profile-card {
+    max-width: 600px;
+  }
+  .profile-pic {
+    width: 130px;
+    height: 130px;
+    margin-top: -65px;
+  }
+}
+
+/* =============================== */
+/* 💻 Laptops (769px–1024px) */
+/* =============================== */
+@media (min-width: 769px) and (max-width: 900px) {
+  .profile-card {
+    max-width: 650px;
+  }
+  .profile-pic {
+    width: 140px;
+    height: 140px;
+    margin-top: -70px;
+  }
+}
+@media (min-width: 901px) and (max-width: 1024px) {
+  .profile-card {
+    max-width: 700px;
+  }
+  .profile-pic {
+    width: 150px;
+    height: 150px;
+    margin-top: -75px;
+  }
+}
+
+/* =============================== */
+/* 🖥️ Desktops (1025px–1440px) */
+/* =============================== */
+@media (min-width: 1025px) and (max-width: 1200px) {
+  .profile-card {
+    max-width: 750px;
+  }
+  .profile-pic {
+    width: 160px;
+    height: 160px;
+    margin-top: -80px;
+  }
+}
+@media (min-width: 1201px) and (max-width: 1440px) {
+  .profile-card {
+    max-width: 850px;
+  }
+  .profile-pic {
+    width: 170px;
+    height: 170px;
+    margin-top: -85px;
+  }
+  .username {
+    font-size: 1.7rem;
+  }
+}
+
+/* =============================== */
+/* 🖥️ Ultra-wide (1441px+) */
+/* =============================== */
+@media (min-width: 1441px) and (max-width: 1600px) {
+  .profile-card {
+    max-width: 900px;
+  }
+  .profile-pic {
+    width: 180px;
+    height: 180px;
+    margin-top: -90px;
+  }
+}
+@media (min-width: 1601px) and (max-width: 1920px) {
+  .profile-card {
+    max-width: 1000px;
+  }
+  .profile-pic {
+    width: 200px;
+    height: 200px;
+    margin-top: -100px;
+  }
+}
+@media (min-width: 1921px) {
+  .profile-card {
+    max-width: 1100px;
+  }
+  .profile-pic {
+    width: 220px;
+    height: 220px;
+    margin-top: -110px;
+  }
+  .username {
+    font-size: 2rem;
+  }
 }
