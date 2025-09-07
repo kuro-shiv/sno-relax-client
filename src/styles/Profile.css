@@ -50,6 +50,178 @@
   color: #a8c6ff;
 }
 
+.user-city {
+  font-size: 0.95rem;
+  color: #b3d1ff;
+  margin-bottom: 0.5rem;
+}
+
+.profile-mood {
+  margin: 1.5rem 0 1rem 0;
+  text-align: left;
+}
+
+.profile-mood h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+  color: #4aa0e2;
+}
+
+.mood-bar {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0.4rem;
+}
+
+.mood-bar span {
+  width: 70px;
+  font-size: 0.98rem;
+}
+
+.bar {
+  flex: 1;
+  height: 12px;
+  background: #1a3760;
+  border-radius: 8px;
+  margin-left: 10px;
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  background: linear-gradient(90deg, #4aa0e2, #6ee7b7);
+  border-radius: 8px;
+  transition: width 0.4s;
+}
+
+/* Quick Actions */
+.profile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 1.2rem 0 1.5rem 0;
+}
+
+.profile-actions button {
+  background: #4aa0e2;
+  color: #0b1e3d;
+  border: none;
+  border-radius: 8px;
+  padding: 0.7rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px rgba(74, 160, 226, 0.08);
+}
+
+.profile-actions button:hover,
+.profile-actions button:focus {
+  background: #6ee7b7;
+  color: #12264d;
+  outline: none;
+}
+
+/* Edit Section */
+.edit-section {
+  text-align: left;
+  margin-top: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+}
+
+.edit-section label {
+  font-size: 0.97rem;
+  color: #a8c6ff;
+  margin-bottom: 0.1rem;
+}
+
+.edit-section input,
+.edit-section textarea {
+  width: 100%;
+  padding: 0.5rem 0.7rem;
+  border-radius: 7px;
+  border: 1px solid #4aa0e2;
+  background: #1a3760;
+  color: #e0eaff;
+  font-size: 1rem;
+  margin-bottom: 0.2rem;
+  transition: border 0.2s;
+}
+
+.edit-section input:focus,
+.edit-section textarea:focus {
+  border: 1.5px solid #6ee7b7;
+  outline: none;
+}
+
+.save-btn,
+.edit-btn {
+  background: #6ee7b7;
+  color: #12264d;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 0;
+  font-size: 1rem;
+  font-weight: 600;
+  margin-top: 0.7rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.save-btn:hover,
+.edit-btn:hover,
+.save-btn:focus,
+.edit-btn:focus {
+  background: #4aa0e2;
+  color: #0b1e3d;
+  outline: none;
+}
+
+/* Profile Details */
+.profile-details {
+  text-align: left;
+  margin-top: 1.2rem;
+  font-size: 1rem;
+}
+
+.profile-details p {
+  margin: 0.3rem 0;
+}
+
+.upload-btn {
+  display: inline-block;
+  margin-top: 0.5rem;
+  background: #1a3760;
+  color: #4aa0e2;
+  border-radius: 6px;
+  padding: 0.3rem 0.8rem;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.upload-btn input[type="file"] {
+  display: none;
+}
+
+.upload-btn:hover,
+.upload-btn:focus {
+  background: #4aa0e2;
+  color: #12264d;
+  outline: none;
+}
+
+/* Divider */
+.profile-divider {
+  width: 100%;
+  height: 1.5px;
+  background: linear-gradient(90deg, #4aa0e2 0%, #6ee7b7 100%);
+  margin: 1.2rem 0 1rem 0;
+  border-radius: 2px;
+}
+
 /* =============================== */
 /* 📱 Phones (320px–480px) */
 /* =============================== */
