@@ -1,4 +1,4 @@
-/* Container */
+/* 🌍 Base (mobile-first) */
 .profile-container {
   display: flex;
   justify-content: center;
@@ -9,11 +9,10 @@
   color: #e0eaff;
 }
 
-/* Card */
 .profile-card {
   background: #12264d;
   border-radius: 20px;
-  padding: 2rem;
+  padding: 1.5rem;
   width: 100%;
   max-width: 400px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
@@ -21,37 +20,16 @@
   transition: all 0.3s ease;
 }
 
-/* Header */
-.profile-header {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.6rem;
-}
-
 .profile-pic {
-  width: 120px;
-  height: 120px;
+  width: 100px;
+  height: 100px;
   border-radius: 50%;
   border: 3px solid #4aa0e2;
   object-fit: cover;
 }
 
-.upload-btn {
-  display: inline-block;
-  margin-top: 0.5rem;
-  background: #1a335b;
-  padding: 0.3rem 0.8rem;
-  border-radius: 8px;
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-.upload-btn input {
-  display: none;
-}
-
 .username {
-  font-size: 1.5rem;
+  font-size: 1.3rem;
   font-weight: bold;
 }
 
@@ -61,24 +39,9 @@
 }
 
 /* Mood Tracker */
-.profile-mood {
-  margin-top: 1.5rem;
-  text-align: left;
-}
-
-.profile-mood h3 {
-  margin-bottom: 0.8rem;
-  font-size: 1.1rem;
-}
-
 .mood-bar {
   margin-bottom: 0.7rem;
 }
-
-.mood-bar span {
-  font-size: 0.9rem;
-}
-
 .bar {
   width: 100%;
   background: #1a335b;
@@ -86,7 +49,6 @@
   height: 12px;
   margin-top: 3px;
 }
-
 .fill {
   height: 12px;
   background: #4aa0e2;
@@ -94,14 +56,13 @@
   transition: width 0.5s ease;
 }
 
-/* Quick Actions */
+/* Buttons */
 .profile-actions {
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
   margin-top: 1.5rem;
 }
-
 .profile-actions button {
   padding: 10px;
   border: none;
@@ -112,11 +73,9 @@
   transition: 0.3s;
   font-size: 1rem;
 }
-
 .profile-actions button:hover {
   background: #357ab8;
 }
-
 .profile-actions .logout {
   background: #ff5252;
 }
@@ -124,66 +83,36 @@
   background: #e04646;
 }
 
-/* Edit Section */
-.edit-section {
-  margin-top: 1.5rem;
-  text-align: left;
-}
-
-.edit-section label {
-  display: block;
-  margin-top: 0.5rem;
-  font-size: 0.9rem;
-}
-
-.edit-section input,
-.edit-section textarea {
-  width: 100%;
-  padding: 0.5rem;
-  margin-top: 0.3rem;
-  border-radius: 8px;
-  border: 1px solid #4aa0e2;
-  background: #0b1e3d;
-  color: #fff;
-}
-
-.save-btn {
-  margin-top: 1rem;
-  width: 100%;
-  padding: 10px;
-  background: #4aa0e2;
-  border: none;
-  border-radius: 10px;
-  cursor: pointer;
-  color: #fff;
-}
-
-.save-btn:hover {
-  background: #357ab8;
-}
-
-/* Edit Button */
-.edit-btn {
-  margin-top: 1.2rem;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 10px;
-  background: #4aa0e2;
-  cursor: pointer;
-  color: #fff;
-}
-
-.edit-btn:hover {
-  background: #357ab8;
-}
-
-/* -------------------------------- */
-/* 📱 Small screens (phones <480px) */
-@media (max-width: 480px) {
+/* =============================== */
+/* 📱 Phones (320px–480px) */
+/* =============================== */
+@media (max-width: 320px) {
   .profile-card {
-    padding: 1.2rem;
+    padding: 1rem;
     max-width: 95%;
   }
+  .profile-pic {
+    width: 70px;
+    height: 70px;
+  }
+  .username {
+    font-size: 1rem;
+  }
+  .profile-actions button {
+    font-size: 0.8rem;
+    padding: 6px;
+  }
+}
+@media (min-width: 321px) and (max-width: 375px) {
+  .profile-pic {
+    width: 80px;
+    height: 80px;
+  }
+  .username {
+    font-size: 1.1rem;
+  }
+}
+@media (min-width: 376px) and (max-width: 425px) {
   .profile-pic {
     width: 90px;
     height: 90px;
@@ -191,23 +120,45 @@
   .username {
     font-size: 1.2rem;
   }
-  .profile-actions button {
-    font-size: 0.9rem;
-    padding: 8px;
-  }
 }
-
-/* 📲 Tablets (481px–768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  .profile-card {
-    max-width: 500px;
-  }
+@media (min-width: 426px) and (max-width: 480px) {
   .profile-pic {
     width: 100px;
     height: 100px;
   }
   .username {
     font-size: 1.3rem;
+  }
+}
+
+/* =============================== */
+/* 📲 Tablets (481px–768px) */
+/* =============================== */
+@media (min-width: 481px) and (max-width: 600px) {
+  .profile-card {
+    max-width: 500px;
+  }
+  .profile-pic {
+    width: 110px;
+    height: 110px;
+  }
+}
+@media (min-width: 601px) and (max-width: 700px) {
+  .profile-card {
+    max-width: 550px;
+  }
+  .profile-pic {
+    width: 120px;
+    height: 120px;
+  }
+}
+@media (min-width: 701px) and (max-width: 768px) {
+  .profile-card {
+    max-width: 600px;
+  }
+  .profile-pic {
+    width: 130px;
+    height: 130px;
   }
   .profile-actions {
     flex-direction: row;
@@ -219,17 +170,25 @@
   }
 }
 
+/* =============================== */
 /* 💻 Laptops (769px–1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
+/* =============================== */
+@media (min-width: 769px) and (max-width: 900px) {
   .profile-card {
-    max-width: 600px;
+    max-width: 650px;
   }
   .profile-pic {
-    width: 110px;
-    height: 110px;
+    width: 140px;
+    height: 140px;
   }
-  .username {
-    font-size: 1.4rem;
+}
+@media (min-width: 901px) and (max-width: 1024px) {
+  .profile-card {
+    max-width: 700px;
+  }
+  .profile-pic {
+    width: 150px;
+    height: 150px;
   }
   .profile-actions {
     flex-direction: row;
@@ -240,44 +199,61 @@
   }
 }
 
-/* 🖥️ Large desktops (1025px–1440px) */
-@media (min-width: 1025px) and (max-width: 1440px) {
+/* =============================== */
+/* 🖥️ Desktops (1025px–1440px) */
+/* =============================== */
+@media (min-width: 1025px) and (max-width: 1200px) {
   .profile-card {
-    max-width: 700px;
+    max-width: 750px;
   }
   .profile-pic {
-    width: 130px;
-    height: 130px;
+    width: 160px;
+    height: 160px;
+  }
+}
+@media (min-width: 1201px) and (max-width: 1440px) {
+  .profile-card {
+    max-width: 850px;
+  }
+  .profile-pic {
+    width: 170px;
+    height: 170px;
   }
   .username {
-    font-size: 1.6rem;
-  }
-  .profile-actions {
-    flex-direction: row;
-    justify-content: space-around;
-  }
-  .profile-actions button {
-    flex: 1 1 22%;
+    font-size: 1.7rem;
   }
 }
 
-/* 🖥️ Ultra-wide screens (1441px+) */
-@media (min-width: 1441px) {
+/* =============================== */
+/* 🖥️ Ultra-wide (1441px+) */
+/* =============================== */
+@media (min-width: 1441px) and (max-width: 1600px) {
   .profile-card {
-    max-width: 800px;
+    max-width: 900px;
   }
   .profile-pic {
-    width: 150px;
-    height: 150px;
+    width: 180px;
+    height: 180px;
+  }
+}
+@media (min-width: 1601px) and (max-width: 1920px) {
+  .profile-card {
+    max-width: 1000px;
+  }
+  .profile-pic {
+    width: 200px;
+    height: 200px;
+  }
+}
+@media (min-width: 1921px) {
+  .profile-card {
+    max-width: 1100px;
+  }
+  .profile-pic {
+    width: 220px;
+    height: 220px;
   }
   .username {
-    font-size: 1.8rem;
-  }
-  .profile-actions {
-    flex-direction: row;
-    justify-content: space-evenly;
-  }
-  .profile-actions button {
-    flex: 1 1 20%;
+    font-size: 2rem;
   }
 }
