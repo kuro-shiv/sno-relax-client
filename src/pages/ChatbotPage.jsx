@@ -1,7 +1,7 @@
-// src/pages/ChatbotPage.js
+// src/pages/ChatbotPage.jsx
 import React from "react";
-import Chatbot from "../components/Chatbot";
 import { useNavigate } from "react-router-dom";
+import Chatbot from "../components/Chatbot";
 import "../styles/Chatbot.css";
 
 export default function ChatbotPage() {
@@ -10,6 +10,7 @@ export default function ChatbotPage() {
   return (
     <div className="chatbot-page">
       <div className="chat-container">
+        {/* Header */}
         <header className="chat-header">
           <button className="back-btn" onClick={() => navigate("/dashboard")}>
             ⬅
@@ -18,6 +19,7 @@ export default function ChatbotPage() {
           <div className="spacer" />
         </header>
 
+        {/* Chatbot Component */}
         <Chatbot />
       </div>
     </div>
