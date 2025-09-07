@@ -1,17 +1,18 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../styles/Profile.css";
 
 export default function Profile() {
   const [user, setUser] = useState({
     id: "SR1234",
-    name: "John Doe",
+    name: "Anonymous User",
     email: "not-found@gmail.com",
     phone: "N/A",
     dob: "1998-07-12",
-    avatar: "https://i.imgur.com/KR0NKdM.png",
+    avatar: "https://i.imgur.com/KR0NKdM.png", // default anime avatar
     history: "Emergency Contact: None. Medical Info: None.",
     mood: { happy: 70, calm: 80, stress: 40 },
   });
+
   const [isEditing, setIsEditing] = useState(false);
   const [previewAvatar, setPreviewAvatar] = useState(user.avatar);
 
@@ -43,20 +44,12 @@ export default function Profile() {
     setIsEditing(false);
   };
 
-  const handleAction = (action) => {
-    alert(`You clicked: ${action}`);
-  };
-
   return (
     <div className="profile-container">
       <div className="profile-card">
         {/* Avatar & Info */}
         <div className="profile-header">
-          <img
-            src={previewAvatar}
-            alt="Profile Avatar"
-            className="profile-pic"
-          />
+          <img src={previewAvatar} alt="Avatar" className="profile-pic" />
           {isEditing && (
             <label className="upload-btn">
               Upload Avatar
@@ -64,12 +57,12 @@ export default function Profile() {
             </label>
           )}
           <h2 className="username">{user.name}</h2>
-          <p className="user-role">Anonymous ID: {user.id}</p>
+          <p className="user-id">ID: {user.id}</p>
         </div>
 
         {/* Mood Tracker */}
         <div className="profile-mood">
-          <h3>Mood Summary</h3>
+          <h3>Mood Tracker</h3>
           {Object.keys(user.mood).map((m) => (
             <div key={m} className="mood-bar">
               <span>{m.charAt(0).toUpperCase() + m.slice(1)}</span>
@@ -82,33 +75,35 @@ export default function Profile() {
 
         {/* Quick Actions */}
         <div className="profile-actions">
-          {["AI Chatbot", "Guided Exercises", "View Reports", "Logout"].map(
-            (action) => (
-              <button key={action} onClick={() => handleAction(action)}>
-                {action}
-              </button>
-            )
-          )}
+          <button>AI Chatbot</button>
+          <button>Guided Exercises</button>
+          <button>View Reports</button>
+          <button className="logout">Logout</button>
         </div>
 
-        {/* Edit Profile */}
+        {/* Edit Section */}
         {isEditing && (
           <div className="edit-section">
-            <label>Name:</label>
+            <label>Name</label>
             <input name="name" value={user.name} onChange={handleChange} />
-            <label>Email:</label>
+
+            <label>Email</label>
             <input name="email" value={user.email} onChange={handleChange} />
-            <label>Phone:</label>
+
+            <label>Phone</label>
             <input name="phone" value={user.phone} onChange={handleChange} />
-            <label>Date of Birth:</label>
+
+            <label>Date of Birth</label>
             <input type="date" name="dob" value={user.dob} onChange={handleChange} />
-            <label>Emergency / Medical Info:</label>
+
+            <label>Emergency / Medical Info</label>
             <textarea
               name="history"
               value={user.history}
               onChange={handleChange}
               rows="3"
             />
+
             <button className="save-btn" onClick={handleSave}>
               Save
             </button>
