@@ -9,12 +9,14 @@ import {
   Calendar,
   FileText,
   UserCircle,
+  Upload,
 } from "lucide-react";
 import "../styles/Profile.css";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
+  const [previewAvatar, setPreviewAvatar] = useState(null);
   const navigate = useNavigate();
 
   // Load user info from localStorage
@@ -33,6 +35,7 @@ export default function Profile() {
       history:
         localStorage.getItem("sno_history") || "No major illnesses reported.",
     });
+    setPreviewAvatar(localStorage.getItem("sno_avatar") || null);
   }, []);
 
   if (!user) {
@@ -44,10 +47,25 @@ export default function Profile() {
     );
   }
 
+  // Handle form input changes
   const handleChange = (e) => {
     setUser({ ...user, [e.target.name]: e.target.value });
   };
 
+  // Handle avatar image upload
+  const handleAvatarChange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviewAvatar(reader.result);
+      setUser({ ...user, avatar: reader.result });
+    };
+    reader.readAsDataURL(file);
+  };
+
+  // Save profile to localStorage
   const handleSave = () => {
     Object.keys(user).forEach((key) =>
       localStorage.setItem(`sno_${key}`, user[key])
@@ -75,20 +93,34 @@ export default function Profile() {
 
       {/* Profile Card */}
       <div className="profile-card bg-gray-800 rounded-2xl shadow-lg p-6 w-full max-w-4xl flex flex-col md:flex-row gap-6">
-        {/* Avatar */}
-        {user.avatar ? (
-          <img
-            src={user.avatar}
-            alt="Profile"
-            className="avatar w-32 h-32 rounded-full border-4 border-gray-700 shadow-md mx-auto md:mx-0"
-          />
-        ) : (
-          <div className="avatar w-32 h-32 flex items-center justify-center rounded-full border-4 border-gray-700 bg-gray-700 text-gray-400 shadow-md mx-auto md:mx-0">
-            <UserCircle className="w-16 h-16" />
-          </div>
-        )}
+        {/* Avatar & Upload */}
+        <div className="avatar-section flex flex-col items-center gap-2">
+          {previewAvatar ? (
+            <img
+              src={previewAvatar}
+              alt="Profile"
+              className="avatar w-32 h-32 rounded-full border-4 border-gray-700 shadow-md object-cover"
+            />
+          ) : (
+            <div className="avatar w-32 h-32 flex items-center justify-center rounded-full border-4 border-gray-700 bg-gray-700 text-gray-400 shadow-md">
+              <UserCircle className="w-16 h-16" />
+            </div>
+          )}
 
-        {/* User Info */}
+          {isEditing && (
+            <label className="upload-btn flex items-center gap-2 px-3 py-1 bg-gray-700 hover:bg-gray-600 rounded-lg cursor-pointer text-sm mt-2">
+              <Upload className="w-4 h-4" /> Upload
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarChange}
+                className="hidden"
+              />
+            </label>
+          )}
+        </div>
+
+        {/* Info */}
         <div className="info flex-1 space-y-3 text-gray-200">
           {isEditing ? (
             <>

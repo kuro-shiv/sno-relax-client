@@ -9,6 +9,11 @@
   color: #fff;
 }
 
+.top-bar {
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
 .top-bar .btn {
   font-size: 0.9rem;
   display: flex;
@@ -29,6 +34,7 @@
 .avatar {
   width: 8rem;
   height: 8rem;
+  object-fit: cover;
 }
 
 .input {
@@ -53,7 +59,6 @@
 @media (max-width: 480px) {
   .top-bar {
     flex-direction: column;
-    gap: 0.5rem;
   }
   .profile-card {
     padding: 1rem;
