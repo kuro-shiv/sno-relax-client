@@ -1,7 +1,8 @@
 import React from "react";
 import TherapistNotes from "../components/TherapistNotes";
 import { useNavigate } from "react-router-dom";
-import styles from "./therapistNotes.css"; // ✅ single CSS module
+import styles from "../styles/therapistNotes.css";
+// ✅ single CSS module
 
 export default function TherapistNotesPage() {
   const navigate = useNavigate();
