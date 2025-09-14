@@ -62,7 +62,7 @@ Below are some screenshots of the SnoRelax frontend:
 ![Mood Tracker](./screenshot/mood-tracker.png)
 
 ### Community Page
-![Community Page](./screenshot/community.png)
+![Community Page](./screenshots/community.jpg)
 
 ### Chatbot
 ![Chatbot](./screenshot/chatbot.png)
