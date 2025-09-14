@@ -55,7 +55,7 @@ export default function CommunityPage() {
           <div className="bell" onClick={() => setView("requests")}>
             🔔
             <span className="badge">2</span>
-          </div>../
+          </div>
         </div>
       </header>
 
