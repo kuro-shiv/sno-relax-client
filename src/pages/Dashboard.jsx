@@ -25,6 +25,9 @@ export default function Dashboard() {
   useEffect(() => {
     setFirstName(localStorage.getItem("sno_firstName") || "Guest");
     setCity(localStorage.getItem("sno_city") || "Unknown");
+
+    // Force sidebar open on desktop
+    if (window.innerWidth >= 1024) setSidebarOpen(true);
   }, []);
 
   const handleLogout = () => {
@@ -73,7 +76,7 @@ export default function Dashboard() {
         {/* Topbar */}
         <div className="topbar">
           <button
-            className="hamburger"
+            className={`hamburger ${sidebarOpen ? "active" : ""}`}
             onClick={() => setSidebarOpen(!sidebarOpen)}
           >
             <Menu size={24} />
@@ -120,15 +123,6 @@ export default function Dashboard() {
                 "_blank"
               )
             }
-            role="button"
-            tabIndex={0}
-            onKeyPress={(e) => {
-              if (e.key === "Enter")
-                window.open(
-                  "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
-                  "_blank"
-                );
-            }}
           >
             <HeartPulse size={28} />
             <h3>HealthVault</h3>

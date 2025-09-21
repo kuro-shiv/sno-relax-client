@@ -14,10 +14,9 @@ export default function Login() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const API_BASE =
-    process.env.NODE_ENV === "production"
-      ? "https://sno-relax-server-hostside.onrender.com"
-      : "http://localhost:5000";
+    process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
+  // Get geolocation & city
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -48,45 +47,67 @@ export default function Login() {
     }
   }, []);
 
+  // Handle form submit
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage("");
+
+    if (!firstName || !lastName || !email || !phone) {
+      setErrorMessage("Please fill all required fields.");
+      return;
+    }
+
+    const payload = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      city,
+      latitude: latitude ?? 0,
+      longitude: longitude ?? 0,
+    };
 
     try {
       const res = await fetch(`${API_BASE}/api/auth/create-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          phone,
-          city,
-          latitude,
-          longitude,
-        }),
+        body: JSON.stringify(payload),
       });
 
-      if (!res.ok) {
-        throw new Error("Network error");
-      }
-
       const data = await res.json();
+      console.log("Server response:", data);
 
-      if (data.userId) {
+      // Auto-login if user exists
+      if (data.error === "User already exists" && data.userId) {
         localStorage.setItem("sno_userId", data.userId);
         localStorage.setItem("sno_firstName", firstName);
         localStorage.setItem("sno_lastName", lastName);
         localStorage.setItem("sno_email", email);
         localStorage.setItem("sno_phone", phone);
         localStorage.setItem("sno_city", city);
-        localStorage.setItem("sno_lat", latitude);
-        localStorage.setItem("sno_lon", longitude);
+        localStorage.setItem("sno_lat", latitude ?? 0);
+        localStorage.setItem("sno_lon", longitude ?? 0);
 
         navigate("/dashboard");
-      } else {
-        setErrorMessage(data.error || "Login failed, try again.");
+        return;
       }
+
+      // New user created
+      if (!res.ok) {
+        setErrorMessage(data.error || "Login failed. Please check your input.");
+        return;
+      }
+
+      localStorage.setItem("sno_userId", data.userId);
+      localStorage.setItem("sno_firstName", firstName);
+      localStorage.setItem("sno_lastName", lastName);
+      localStorage.setItem("sno_email", email);
+      localStorage.setItem("sno_phone", phone);
+      localStorage.setItem("sno_city", city);
+      localStorage.setItem("sno_lat", latitude ?? 0);
+      localStorage.setItem("sno_lon", longitude ?? 0);
+
+      navigate("/dashboard");
     } catch (err) {
       console.error("Error logging in:", err);
       setErrorMessage("Something went wrong. Please try again calmly.");

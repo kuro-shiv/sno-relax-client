@@ -1,4 +1,3 @@
-// src/components/Chatbot.jsx
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chatbot.css";
 
@@ -12,17 +11,37 @@ export default function Chatbot() {
 
   const API_BASE =
     process.env.NODE_ENV === "production"
-      ? "https://sno-relax-server-hostside.onrender.com"
+      ? "https://your-backend.onrender.com"
       : "http://localhost:5000";
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
-  const handleSend = async () => {
-    if (!input.trim()) return;
+  // ---------------- Voice Recognition ----------------
+  const handleVoice = () => {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert("Voice recognition not supported!");
 
-    const newMessages = [...messages, { sender: "user", text: input }];
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 1;
+
+    recognition.start();
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      handleSend(transcript);
+    };
+  };
+
+  // ---------------- Send Message ----------------
+  const handleSend = async (msg = input) => {
+    if (!msg.trim()) return;
+
+    const newMessages = [...messages, { sender: "user", text: msg }];
     setMessages(newMessages);
     setInput("");
     setLoading(true);
@@ -31,12 +50,17 @@ export default function Chatbot() {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ message: msg, voice: true }),
       });
       const data = await res.json();
 
       if (data.text) {
         setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
+
+        // Play voice
+        const utter = new SpeechSynthesisUtterance(data.text);
+        utter.rate = 1;
+        speechSynthesis.speak(utter);
       }
     } catch {
       setMessages((prev) => [
@@ -50,36 +74,31 @@ export default function Chatbot() {
 
   return (
     <>
-      {/* Scrollable chat window */}
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
-            <div className="bubble fade-in">{msg.text}</div>
+            <div className="bubble">{msg.text}</div>
           </div>
         ))}
-
-        {/* Typing indicator */}
         {loading && (
           <div className="message bot">
             <div className="bubble typing-indicator">
-              <span></span>
-              <span></span>
-              <span></span>
+              <span></span><span></span><span></span>
             </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input bar */}
       <div className="chat-input">
+        <button onClick={handleVoice}>🎤</button>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
         />
-        <button onClick={handleSend}>➤</button>
+        <button onClick={() => handleSend()}>➤</button>
       </div>
     </>
   );
