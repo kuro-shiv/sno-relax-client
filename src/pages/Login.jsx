@@ -14,7 +14,8 @@ export default function Login() {
   const [errorMessage, setErrorMessage] = useState("");
 
   const API_BASE =
-    process.env.REACT_APP_API_BASE || "http://localhost:5000";
+    process.env.REACT_APP_API_BASE ||
+    "http://localhost:5000"; // Make sure this is set in Vercel env
 
   // Get geolocation & city
   useEffect(() => {
@@ -77,28 +78,14 @@ export default function Login() {
       const data = await res.json();
       console.log("Server response:", data);
 
-      // Auto-login if user exists
-      if (data.error === "User already exists" && data.userId) {
-        localStorage.setItem("sno_userId", data.userId);
-        localStorage.setItem("sno_firstName", firstName);
-        localStorage.setItem("sno_lastName", lastName);
-        localStorage.setItem("sno_email", email);
-        localStorage.setItem("sno_phone", phone);
-        localStorage.setItem("sno_city", city);
-        localStorage.setItem("sno_lat", latitude ?? 0);
-        localStorage.setItem("sno_lon", longitude ?? 0);
-
-        navigate("/dashboard");
+      if (!res.ok && data.error !== "User already exists") {
+        setErrorMessage(data.error || "Login failed.");
         return;
       }
 
-      // New user created
-      if (!res.ok) {
-        setErrorMessage(data.error || "Login failed. Please check your input.");
-        return;
-      }
-
-      localStorage.setItem("sno_userId", data.userId);
+      // Store user data in localStorage
+      const userId = data.userId || data.user?.userId;
+      localStorage.setItem("sno_userId", userId);
       localStorage.setItem("sno_firstName", firstName);
       localStorage.setItem("sno_lastName", lastName);
       localStorage.setItem("sno_email", email);
@@ -110,7 +97,7 @@ export default function Login() {
       navigate("/dashboard");
     } catch (err) {
       console.error("Error logging in:", err);
-      setErrorMessage("Something went wrong. Please try again calmly.");
+      setErrorMessage("Something went wrong. Please try again.");
     }
   };
 
