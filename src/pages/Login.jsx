@@ -11,6 +11,7 @@ export default function Login() {
   const [city, setCity] = useState("Detecting...");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const API_BASE =
     process.env.NODE_ENV === "production"
@@ -34,21 +35,22 @@ export default function Login() {
               data.address?.city ||
                 data.address?.town ||
                 data.address?.village ||
-                "NAN"
+                "Unknown"
             );
           } catch {
-            setCity("NAN");
+            setCity("Unknown");
           }
         },
-        () => setCity("NAN")
+        () => setCity("Unknown")
       );
     } else {
-      setCity("NAN");
+      setCity("Unknown");
     }
   }, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
+    setErrorMessage("");
 
     try {
       const res = await fetch(`${API_BASE}/api/auth/create-user`, {
@@ -65,6 +67,10 @@ export default function Login() {
         }),
       });
 
+      if (!res.ok) {
+        throw new Error("Network error");
+      }
+
       const data = await res.json();
 
       if (data.userId) {
@@ -79,11 +85,11 @@ export default function Login() {
 
         navigate("/dashboard");
       } else {
-        alert(data.error || "Login failed, try again.");
+        setErrorMessage(data.error || "Login failed, try again.");
       }
     } catch (err) {
       console.error("Error logging in:", err);
-      alert("Something went wrong.");
+      setErrorMessage("Something went wrong. Please try again calmly.");
     }
   };
 
@@ -92,6 +98,7 @@ export default function Login() {
       <div className="login-box">
         <h1 className="site-title">🌙 SnoRelax</h1>
         <p className="city-info">📍 Your City: {city}</p>
+        <p className="subtitle">Take a deep breath, let’s get you started 🌱</p>
 
         <form onSubmit={handleLogin}>
           <input
@@ -124,6 +131,8 @@ export default function Login() {
           />
           <button type="submit">Login</button>
         </form>
+
+        {errorMessage && <p className="error-message">⚠️ {errorMessage}</p>}
       </div>
     </div>
   );
