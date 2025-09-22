@@ -13,28 +13,25 @@ export default function Login() {
   const [longitude, setLongitude] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
+  const API_BASE =
+    process.env.REACT_APP_API_BASE || "https://sno-relax-server-hostside.onrender.com";
 
-  // Get geolocation (no API)
+  // Get geolocation
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (pos) => {
-          setLatitude(pos.coords.latitude);
-          setLongitude(pos.coords.longitude);
-          setCity("NAN");
+          const { latitude, longitude } = pos.coords;
+          setLatitude(latitude);
+          setLongitude(longitude);
+
+          // Optional: reverse geocode using Google or fallback
+          setCity("Unknown"); // for privacy, or use Google Maps API
         },
-        () => {
-          setLatitude(0);
-          setLongitude(0);
-          setCity("NAN");
-        },
-        { timeout: 5000 }
+        () => setCity("Unknown")
       );
     } else {
-      setLatitude(0);
-      setLongitude(0);
-      setCity("NAN");
+      setCity("Unknown");
     }
   }, []);
 
@@ -47,7 +44,15 @@ export default function Login() {
       return;
     }
 
-    const payload = { firstName, lastName, email, phone, city, latitude, longitude };
+    const payload = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      city,
+      latitude: latitude ?? 0,
+      longitude: longitude ?? 0,
+    };
 
     try {
       const res = await fetch(`${API_BASE}/api/auth/create-user`, {
@@ -55,14 +60,16 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
       });
-      const data = await res.json();
 
+      const data = await res.json();
       if (!res.ok && data.error !== "User already exists") {
         setErrorMessage(data.error || "Login failed.");
         return;
       }
 
-      localStorage.setItem("sno_userId", data.userId || data.user?.userId);
+      // Save locally
+      const userId = data.userId || data.user?.userId;
+      localStorage.setItem("sno_userId", userId);
       localStorage.setItem("sno_firstName", firstName);
       localStorage.setItem("sno_lastName", lastName);
       localStorage.setItem("sno_email", email);
@@ -72,7 +79,8 @@ export default function Login() {
       localStorage.setItem("sno_lon", longitude ?? 0);
 
       navigate("/dashboard");
-    } catch {
+    } catch (err) {
+      console.error("Error logging in:", err);
       setErrorMessage("Something went wrong. Please try again.");
     }
   };
@@ -80,15 +88,18 @@ export default function Login() {
   return (
     <div className="login-container">
       <div className="login-box">
-        <h1>🌙 SnoRelax</h1>
-        <p>📍 Your City: {city}</p>
+        <h1 className="site-title">🌙 SnoRelax</h1>
+        <p className="city-info">📍 Your City: {city}</p>
+        <p className="subtitle">Take a deep breath, let’s get you started 🌱</p>
+
         <form onSubmit={handleLogin}>
-          <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} required />
-          <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required />
-          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-          <input type="tel" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} required />
+          <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
+          <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
+          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
+          <input type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
           <button type="submit">Login</button>
         </form>
+
         {errorMessage && <p className="error-message">⚠️ {errorMessage}</p>}
       </div>
     </div>
