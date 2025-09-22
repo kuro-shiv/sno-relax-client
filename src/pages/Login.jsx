@@ -13,28 +13,41 @@ export default function Login() {
   const [longitude, setLongitude] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
 
-  const API_BASE =
-    process.env.REACT_APP_API_BASE || "https://sno-relax-server-hostside.onrender.com";
+  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-  // Get geolocation
+  // Get geolocation (phone/browser location) and fallback to NaN
   useEffect(() => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
-        (pos) => {
+        async (pos) => {
           const { latitude, longitude } = pos.coords;
           setLatitude(latitude);
           setLongitude(longitude);
 
-          // Optional: reverse geocode using Google or fallback
-          setCity("Unknown"); // for privacy, or use Google Maps API
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await res.json();
+
+            setCity(
+              data.address?.city ||
+                data.address?.town ||
+                data.address?.village ||
+                "NaN"
+            );
+          } catch {
+            setCity("NaN");
+          }
         },
-        () => setCity("Unknown")
+        () => setCity("NaN") // If user denies permission or error occurs
       );
     } else {
-      setCity("Unknown");
+      setCity("NaN"); // Browser doesn't support geolocation
     }
   }, []);
 
+  // Handle login / form submit
   const handleLogin = async (e) => {
     e.preventDefault();
     setErrorMessage("");
@@ -62,12 +75,14 @@ export default function Login() {
       });
 
       const data = await res.json();
+      console.log("Server response:", data);
+
       if (!res.ok && data.error !== "User already exists") {
         setErrorMessage(data.error || "Login failed.");
         return;
       }
 
-      // Save locally
+      // Store user data locally
       const userId = data.userId || data.user?.userId;
       localStorage.setItem("sno_userId", userId);
       localStorage.setItem("sno_firstName", firstName);
@@ -93,10 +108,34 @@ export default function Login() {
         <p className="subtitle">Take a deep breath, let’s get you started 🌱</p>
 
         <form onSubmit={handleLogin}>
-          <input type="text" placeholder="First Name" value={firstName} onChange={(e) => setFirstName(e.target.value)} required />
-          <input type="text" placeholder="Last Name" value={lastName} onChange={(e) => setLastName(e.target.value)} required />
-          <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-          <input type="tel" placeholder="Phone" value={phone} onChange={(e) => setPhone(e.target.value)} required />
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="tel"
+            placeholder="Phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
           <button type="submit">Login</button>
         </form>
 

@@ -1,58 +1,143 @@
-navigator.geolocation.getCurrentPosition(async (pos) => {
-  const { latitude, longitude } = pos.coords;
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import "../styles/Login.css";
 
-  // Reverse geocode to get city dynamically (optional)
-  let city = "Unknown";
-  try {
-    const res = await fetch(
-      `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-    );
-    const data = await res.json();
-    city =
-      data.address?.city || data.address?.town || data.address?.village || "Unknown";
-  } catch {
-    city = "Unknown";
-  }
+export default function Login() {
+  const navigate = useNavigate();
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [city, setCity] = useState("Detecting...");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const payload = {
-    firstName,
-    lastName,
-    email,
-    phone,
-    city,
-    latitude,
-    longitude,
-  };
+  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-  try {
-    const response = await fetch(
-      `${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/create-user`,
-      {
+  // Get geolocation & city fallback
+  useEffect(() => {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setLatitude(latitude);
+          setLongitude(longitude);
+
+          let detectedCity = "NaN";
+          try {
+            const res = await fetch(
+              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
+            );
+            const data = await res.json();
+            detectedCity =
+              data.address?.city ||
+              data.address?.town ||
+              data.address?.village ||
+              "NaN";
+          } catch {
+            detectedCity = "NaN";
+          }
+          setCity(detectedCity);
+        },
+        () => setCity("NaN") // user denies permission
+      );
+    } else {
+      setCity("NaN");
+    }
+  }, []);
+
+  const handleLogin = async (e) => {
+    e.preventDefault();
+    setErrorMessage("");
+
+    if (!firstName || !lastName || !email || !phone) {
+      setErrorMessage("Please fill all required fields.");
+      return;
+    }
+
+    const payload = {
+      firstName: firstName.trim(),
+      lastName: lastName.trim(),
+      email: email.trim(),
+      phone: phone.trim(),
+      city,
+      latitude: latitude ?? 0,
+      longitude: longitude ?? 0,
+    };
+
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/create-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),
+      });
+
+      const data = await res.json();
+      console.log("User created or already exists:", data);
+
+      if (res.ok && (data.userId || data.user?.userId)) {
+        const userId = data.userId || data.user?.userId;
+        localStorage.setItem("sno_userId", userId);
+        localStorage.setItem("sno_firstName", firstName);
+        localStorage.setItem("sno_lastName", lastName);
+        localStorage.setItem("sno_email", email);
+        localStorage.setItem("sno_phone", phone);
+        localStorage.setItem("sno_city", city);
+        localStorage.setItem("sno_lat", latitude ?? 0);
+        localStorage.setItem("sno_lon", longitude ?? 0);
+
+        navigate("/dashboard");
+      } else {
+        setErrorMessage(data.error || "Failed to create user");
       }
-    );
-
-    const data = await response.json();
-    console.log("User created or already exists:", data);
-
-    if (data.userId) {
-      // Store user info locally and navigate
-      localStorage.setItem("sno_userId", data.userId);
-      localStorage.setItem("sno_firstName", firstName);
-      localStorage.setItem("sno_lastName", lastName);
-      localStorage.setItem("sno_email", email);
-      localStorage.setItem("sno_phone", phone);
-      localStorage.setItem("sno_city", city);
-      localStorage.setItem("sno_lat", latitude);
-      localStorage.setItem("sno_lon", longitude);
-
-      window.location.href = "/dashboard"; // or use React Router navigate
-    } else {
-      alert(data.error || "Failed to create user");
+    } catch (err) {
+      console.error("Error generating ID:", err);
+      setErrorMessage("Something went wrong. Please try again.");
     }
-  } catch (err) {
-    console.error("Error generating ID:", err);
-  }
-});
+  };
+
+  return (
+    <div className="login-container">
+      <div className="login-box">
+        <h1 className="site-title">🌙 SnoRelax</h1>
+        <p className="city-info">📍 Your City: {city}</p>
+        <p className="subtitle">Take a deep breath, let’s get you started 🌱</p>
+
+        <form onSubmit={handleLogin}>
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="tel"
+            placeholder="Phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+          <button type="submit">Login</button>
+        </form>
+
+        {errorMessage && <p className="error-message">⚠️ {errorMessage}</p>}
+      </div>
+    </div>
+  );
+}
