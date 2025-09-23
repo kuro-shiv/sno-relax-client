@@ -101,10 +101,10 @@ export default function Layout() {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow-1 p-3 bg-light min-vh-100">
+      <main className="flex-grow-1 p-2 p-sm-3 p-lg-4 bg-light min-vh-100">
         {/* Topbar */}
         <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-          <div className="d-flex align-items-center gap-2">
+          <div className="d-flex align-items-center gap-2 flex-grow-1">
             {/* Hamburger only visible on mobile */}
             <button
               className="btn btn-outline-dark d-lg-none"
@@ -113,10 +113,12 @@ export default function Layout() {
               <Menu size={24} />
             </button>
             <div>
-              <h1 className="fw-bold mb-1">
+              <h1 className="fw-bold mb-1" style={{ fontSize: "clamp(1rem, 4vw, 1.5rem)" }}>
                 Welcome, <span className="text-primary">{firstName}</span>
               </h1>
-              <p className="text-muted mb-0">📍 {city}</p>
+              <p className="text-muted mb-0" style={{ fontSize: "clamp(0.8rem, 2.5vw, 1rem)" }}>
+                📍 {city}
+              </p>
             </div>
           </div>
         </div>
@@ -165,7 +167,7 @@ export default function Layout() {
               action: () => navigate("/community"),
             },
           ].map((widget, i) => (
-            <div className="col-12 col-sm-6 col-lg-4" key={i}>
+            <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3" key={i}>
               <div
                 className="card h-100 shadow-sm p-3 cursor-pointer"
                 onClick={widget.action}
@@ -178,7 +180,7 @@ export default function Layout() {
           ))}
         </div>
 
-        {/* Nested content */}
+        {/* Nested routes */}
         <Outlet />
       </main>
     </div>

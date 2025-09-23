@@ -16,6 +16,16 @@
   position: absolute;
 }
 
+.sidebar.mobile-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100%;
+  background: #1e293b;
+  width: 260px;
+  z-index: 999;
+}
+
 .sidebar .logo {
   font-size: 1.5rem;
   font-weight: bold;
@@ -27,22 +37,26 @@
   outline-offset: 2px;
 }
 
-/* Cards hover effect */
+/* Card hover */
 .card.cursor-pointer:hover {
   transform: translateY(-4px);
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.12);
   transition: all 0.2s;
 }
 
-/* Mobile adjustments */
-@media (max-width: 991px) {
-  .sidebar {
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 100%;
+/* Topbar adjustments for very small screens */
+@media (max-width: 575px) {
+  main h1 {
+    font-size: 1.2rem !important;
   }
-  .main-content {
-    padding: 1rem;
+  main p {
+    font-size: 0.8rem !important;
+  }
+}
+
+/* Cards responsive */
+@media (max-width: 767px) {
+  .row > [class*='col-'] {
+    margin-bottom: 1rem;
   }
 }
