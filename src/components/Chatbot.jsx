@@ -26,22 +26,16 @@ export default function Chatbot() {
 
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
-    recognition.interimResults = true; // show partial results
+    recognition.interimResults = false;
     recognition.maxAlternatives = 1;
-    recognition.start();
     setListening(true);
 
-    recognition.onresult = (event) => {
-      const transcript = Array.from(event.results)
-        .map((r) => r[0].transcript)
-        .join("");
-      setInput(transcript);
+    recognition.start();
 
-      // If final result, send message
-      if (event.results[0].isFinal) {
-        handleSend(transcript);
-        setListening(false);
-      }
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setInput(transcript);
+      handleSend(transcript);
     };
 
     recognition.onend = () => setListening(false);
@@ -67,7 +61,7 @@ export default function Chatbot() {
       if (data.text) {
         setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
 
-        // Play voice
+        // Voice playback
         const utter = new SpeechSynthesisUtterance(data.text);
         utter.rate = 1;
         speechSynthesis.speak(utter);
@@ -104,8 +98,8 @@ export default function Chatbot() {
 
       <div className="chat-input">
         <button
-          onClick={handleVoice}
           className={`mic-btn ${listening ? "listening" : ""}`}
+          onClick={handleVoice}
         >
           🎤
         </button>
