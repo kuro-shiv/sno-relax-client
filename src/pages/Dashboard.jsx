@@ -49,48 +49,35 @@ export default function Layout() {
           <div>
             <h2 className="logo text-center mb-4">🌙 SnoRelax</h2>
             <nav className="nav flex-column gap-2">
-              <button
-                className="btn btn-dark text-start w-100"
-                onClick={() => navigate("/profile")}
-              >
-                <User size={18} /> Profile
-              </button>
-              <button
-                className="btn btn-dark text-start w-100"
-                onClick={() => navigate("/chatbot")}
-              >
-                <Activity size={18} /> Recent Activity
-              </button>
-              <button
-                className="btn btn-dark text-start w-100"
-                onClick={() => navigate("/mood-tracker")}
-              >
-                <BookOpen size={18} /> Mood Tracker
-              </button>
-              <button
-                className="btn btn-dark text-start w-100"
-                onClick={() => navigate("/therapist-notes")}
-              >
-                <Handshake size={18} /> Therapist Notes
-              </button>
-              <button
-                className="btn btn-dark text-start w-100"
-                onClick={() => navigate("/community")}
-              >
-                <Users size={18} /> Community
-              </button>
-              <button
-                className="btn btn-dark text-start w-100"
-                onClick={() => alert("Help coming soon")}
-              >
-                <HelpCircle size={18} /> Help
-              </button>
-              <button
-                className="btn btn-dark text-start w-100"
-                onClick={() => alert("Settings coming soon")}
-              >
-                <Settings size={18} /> Settings
-              </button>
+              {[
+                { name: "Profile", icon: <User size={18} />, path: "/profile" },
+                {
+                  name: "Recent Activity",
+                  icon: <Activity size={18} />,
+                  path: "/chatbot",
+                },
+                {
+                  name: "Mood Tracker",
+                  icon: <BookOpen size={18} />,
+                  path: "/mood-tracker",
+                },
+                {
+                  name: "Therapist Notes",
+                  icon: <Handshake size={18} />,
+                  path: "/therapist-notes",
+                },
+                { name: "Community", icon: <Users size={18} />, path: "/community" },
+                { name: "Help", icon: <HelpCircle size={18} />, action: () => alert("Help coming soon") },
+                { name: "Settings", icon: <Settings size={18} />, action: () => alert("Settings coming soon") },
+              ].map((item, i) => (
+                <button
+                  key={i}
+                  className="btn btn-dark text-start w-100"
+                  onClick={() => (item.path ? navigate(item.path) : item.action())}
+                >
+                  {item.icon} {item.name}
+                </button>
+              ))}
             </nav>
           </div>
           <div className="text-center mb-2">
