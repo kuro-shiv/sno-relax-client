@@ -11,7 +11,7 @@ export default function Chatbot() {
 
   const API_BASE =
     process.env.NODE_ENV === "production"
-      ? "https://your-backend.onrender.com"
+      ? "https://sno-relax-server.onrender.com/"
       : "http://localhost:5000";
 
   useEffect(() => {
