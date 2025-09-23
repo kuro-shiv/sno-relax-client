@@ -7,11 +7,12 @@ export default function Chatbot() {
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
+  const [listening, setListening] = useState(false);
   const messagesEndRef = useRef(null);
 
   const API_BASE =
     process.env.NODE_ENV === "production"
-      ? "https://sno-relax-server.onrender.com/"
+      ? "https://your-backend.onrender.com"
       : "http://localhost:5000";
 
   useEffect(() => {
@@ -25,16 +26,25 @@ export default function Chatbot() {
 
     const recognition = new SpeechRecognition();
     recognition.lang = "en-US";
-    recognition.interimResults = false;
+    recognition.interimResults = true; // show partial results
     recognition.maxAlternatives = 1;
-
     recognition.start();
+    setListening(true);
 
     recognition.onresult = (event) => {
-      const transcript = event.results[0][0].transcript;
+      const transcript = Array.from(event.results)
+        .map((r) => r[0].transcript)
+        .join("");
       setInput(transcript);
-      handleSend(transcript);
+
+      // If final result, send message
+      if (event.results[0].isFinal) {
+        handleSend(transcript);
+        setListening(false);
+      }
     };
+
+    recognition.onend = () => setListening(false);
   };
 
   // ---------------- Send Message ----------------
@@ -50,7 +60,7 @@ export default function Chatbot() {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg, voice: true }),
+        body: JSON.stringify({ message: msg }),
       });
       const data = await res.json();
 
@@ -80,6 +90,7 @@ export default function Chatbot() {
             <div className="bubble">{msg.text}</div>
           </div>
         ))}
+
         {loading && (
           <div className="message bot">
             <div className="bubble typing-indicator">
@@ -87,11 +98,17 @@ export default function Chatbot() {
             </div>
           </div>
         )}
+
         <div ref={messagesEndRef} />
       </div>
 
       <div className="chat-input">
-        <button onClick={handleVoice}>🎤</button>
+        <button
+          onClick={handleVoice}
+          className={`mic-btn ${listening ? "listening" : ""}`}
+        >
+          🎤
+        </button>
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
