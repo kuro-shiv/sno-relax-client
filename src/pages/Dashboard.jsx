@@ -41,6 +41,49 @@ export default function Layout() {
     navigate("/");
   };
 
+  const widgets = [
+    {
+      icon: <Bot size={32} className="text-primary mb-2" />,
+      title: "AI Chatbot",
+      desc: "Talk with SnoRelax bot for stress relief.",
+      action: () => navigate("/chatbot"),
+    },
+    {
+      icon: <BookOpen size={32} className="text-success mb-2" />,
+      title: "Mood Tracker",
+      desc: "Log your daily mood & monitor changes.",
+      action: () => navigate("/mood-tracker"),
+    },
+    {
+      icon: <Handshake size={32} className="text-warning mb-2" />,
+      title: "Therapist Guide",
+      desc: "View and manage therapist’s notes.",
+      action: () => navigate("/therapist-notes"),
+    },
+    {
+      icon: <Hospital size={32} className="text-danger mb-2" />,
+      title: "Hospital Reports",
+      desc: "Store prescriptions & medical history.",
+      action: () => {},
+    },
+    {
+      icon: <HeartPulse size={32} className="text-danger mb-2" />,
+      title: "HealthVault",
+      desc: "Guideline to stay fit.",
+      action: () =>
+        window.open(
+          "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
+          "_blank"
+        ),
+    },
+    {
+      icon: <Users size={32} className="text-info mb-2" />,
+      title: "Community",
+      desc: "Join groups & connect with others.",
+      action: () => navigate("/community"),
+    },
+  ];
+
   return (
     <div className="d-flex dashboard-container">
       {/* Sidebar */}
@@ -113,10 +156,16 @@ export default function Layout() {
               <Menu size={24} />
             </button>
             <div>
-              <h1 className="fw-bold mb-1" style={{ fontSize: "clamp(1rem, 4vw, 1.5rem)" }}>
+              <h1
+                className="fw-bold mb-1"
+                style={{ fontSize: "clamp(1rem, 4vw, 1.5rem)" }}
+              >
                 Welcome, <span className="text-primary">{firstName}</span>
               </h1>
-              <p className="text-muted mb-0" style={{ fontSize: "clamp(0.8rem, 2.5vw, 1rem)" }}>
+              <p
+                className="text-muted mb-0"
+                style={{ fontSize: "clamp(0.75rem, 2.5vw, 1rem)" }}
+              >
                 📍 {city}
               </p>
             </div>
@@ -125,49 +174,11 @@ export default function Layout() {
 
         {/* Widgets */}
         <div className="row g-3">
-          {[
-            {
-              icon: <Bot size={32} className="text-primary mb-2" />,
-              title: "AI Chatbot",
-              desc: "Talk with SnoRelax bot for stress relief.",
-              action: () => navigate("/chatbot"),
-            },
-            {
-              icon: <BookOpen size={32} className="text-success mb-2" />,
-              title: "Mood Tracker",
-              desc: "Log your daily mood & monitor changes.",
-              action: () => navigate("/mood-tracker"),
-            },
-            {
-              icon: <Handshake size={32} className="text-warning mb-2" />,
-              title: "Therapist Guide",
-              desc: "View and manage therapist’s notes.",
-              action: () => navigate("/therapist-notes"),
-            },
-            {
-              icon: <Hospital size={32} className="text-danger mb-2" />,
-              title: "Hospital Reports",
-              desc: "Store prescriptions & medical history.",
-              action: () => {},
-            },
-            {
-              icon: <HeartPulse size={32} className="text-danger mb-2" />,
-              title: "HealthVault",
-              desc: "Guideline to stay fit.",
-              action: () =>
-                window.open(
-                  "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
-                  "_blank"
-                ),
-            },
-            {
-              icon: <Users size={32} className="text-info mb-2" />,
-              title: "Community",
-              desc: "Join groups & connect with others.",
-              action: () => navigate("/community"),
-            },
-          ].map((widget, i) => (
-            <div className="col-12 col-sm-6 col-md-6 col-lg-4 col-xl-3" key={i}>
+          {widgets.map((widget, i) => (
+            <div
+              className="col-12 col-sm-6 col-md-4 col-lg-4 col-xl-3 col-xxl-2"
+              key={i}
+            >
               <div
                 className="card h-100 shadow-sm p-3 cursor-pointer"
                 onClick={widget.action}
@@ -180,7 +191,6 @@ export default function Layout() {
           ))}
         </div>
 
-        {/* Nested routes */}
         <Outlet />
       </main>
     </div>

@@ -5,7 +5,7 @@
 
 /* Sidebar */
 .sidebar {
-  width: 260px;
+  width: clamp(200px, 20vw, 260px);
   min-height: 100vh;
   transition: transform 0.3s ease-in-out;
   z-index: 200;
@@ -13,7 +13,6 @@
 
 .sidebar.closed {
   transform: translateX(-100%);
-  position: absolute;
 }
 
 .sidebar.mobile-sidebar {
@@ -21,9 +20,8 @@
   top: 0;
   left: 0;
   height: 100%;
-  background: #1e293b;
-  width: 260px;
   z-index: 999;
+  background: #1e293b;
 }
 
 .sidebar .logo {
@@ -44,19 +42,29 @@
   transition: all 0.2s;
 }
 
-/* Topbar adjustments for very small screens */
-@media (max-width: 575px) {
-  main h1 {
-    font-size: 1.2rem !important;
-  }
-  main p {
-    font-size: 0.8rem !important;
-  }
+/* Topbar adjustments */
+.topbar h1 {
+  font-size: clamp(1rem, 4vw, 1.5rem);
 }
 
-/* Cards responsive */
-@media (max-width: 767px) {
+.topbar p {
+  font-size: clamp(0.75rem, 2.5vw, 1rem);
+}
+
+/* Card padding + border-radius responsive */
+.card {
+  padding: clamp(0.5rem, 2vw, 1.5rem);
+  border-radius: clamp(0.5rem, 2vw, 1rem);
+}
+
+/* Main content padding */
+.main-content {
+  padding: clamp(0.5rem, 3vw, 2rem);
+}
+
+/* Mobile adjustments for smallest phones */
+@media (max-width: 375px) {
   .row > [class*='col-'] {
-    margin-bottom: 1rem;
+    margin-bottom: 0.75rem;
   }
 }
