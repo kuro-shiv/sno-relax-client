@@ -8,43 +8,48 @@ export default function Login() {
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("Detecting...");
+  const [city, setCity] = useState("");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-
   const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-  // Get geolocation & detect city
   useEffect(() => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (pos) => {
-          const { latitude, longitude } = pos.coords;
-          setLatitude(latitude);
-          setLongitude(longitude);
-
-          let detectedCity = "NaN";
-          try {
-            const res = await fetch(
-              `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`
-            );
-            const data = await res.json();
-            detectedCity =
-              data.address?.city ||
-              data.address?.town ||
-              data.address?.village ||
-              "NaN";
-          } catch {
-            detectedCity = "NaN";
+    const fetchCityFromCoords = async (lat, lon) => {
+      try {
+        const res = await fetch(
+          `${API_BASE}/api/location`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ latitude: lat, longitude: lon }),
           }
-          setCity(detectedCity);
-        },
-        () => setCity("NaN")
-      );
-    } else {
-      setCity("NaN");
-    }
+        );
+        const data = await res.json();
+        return data.city || "NaN";
+      } catch {
+        return "NaN";
+      }
+    };
+
+    const getLocation = () => {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (pos) => {
+            const { latitude, longitude } = pos.coords;
+            setLatitude(latitude);
+            setLongitude(longitude);
+            const detectedCity = await fetchCityFromCoords(latitude, longitude);
+            setCity(detectedCity);
+          },
+          () => setErrorMessage("Please allow location to continue.") // Force user
+        );
+      } else {
+        setErrorMessage("Geolocation not supported by your browser.");
+      }
+    };
+
+    getLocation();
   }, []);
 
   const handleLogin = async (e) => {
@@ -56,31 +61,36 @@ export default function Login() {
       return;
     }
 
+    if (!city || city === "") {
+      setErrorMessage("Waiting for location. Please allow location access.");
+      return;
+    }
+
     try {
-      // 🔑 Fetch a generated userId from your backend
-      const res = await fetch(`${API_BASE}/api/generate-id`);
+      const res = await fetch(`${API_BASE}/api/auth/create-user`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ firstName, lastName, email, phone, city, latitude, longitude }),
+      });
       const data = await res.json();
 
-      if (!res.ok || !data.userId) {
-        setErrorMessage("Failed to generate user ID.");
+      if (!res.ok) {
+        setErrorMessage(data.error || "Registration failed");
         return;
       }
 
-      const userId = data.userId;
-
-      // Save all details in localStorage
-      localStorage.setItem("sno_userId", userId);
+      localStorage.setItem("sno_userId", data.userId);
       localStorage.setItem("sno_firstName", firstName.trim());
       localStorage.setItem("sno_lastName", lastName.trim());
       localStorage.setItem("sno_email", email.trim());
       localStorage.setItem("sno_phone", phone.trim());
       localStorage.setItem("sno_city", city);
-      localStorage.setItem("sno_lat", latitude ?? 0);
-      localStorage.setItem("sno_lon", longitude ?? 0);
+      localStorage.setItem("sno_lat", latitude);
+      localStorage.setItem("sno_lon", longitude);
 
       navigate("/dashboard");
     } catch (err) {
-      console.error("Error generating ID:", err);
+      console.error(err);
       setErrorMessage("Something went wrong. Please try again.");
     }
   };
@@ -89,39 +99,15 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box">
         <h1 className="site-title">🌙 SnoRelax</h1>
-        <p className="city-info">📍 Your City: {city}</p>
+        <p className="city-info">📍 Your City: {city || "Detecting..."}</p>
         <p className="subtitle">Take a deep breath, let’s get you started 🌱</p>
 
         <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="tel"
-            placeholder="Phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
-          <button type="submit">Login</button>
+          <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} required />
+          <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required />
+          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+          <input type="tel" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} required />
+          <button type="submit" disabled={!city || !latitude || !longitude}>Login</button>
         </form>
 
         {errorMessage && <p className="error-message">⚠️ {errorMessage}</p>}
