@@ -14,20 +14,17 @@ import {
   Menu,
   LogOut,
 } from "lucide-react";
+import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Dashboard.css";
 
 export default function Dashboard() {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [city, setCity] = useState("");
-  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     setFirstName(localStorage.getItem("sno_firstName") || "Guest");
     setCity(localStorage.getItem("sno_city") || "Unknown");
-
-    // Force sidebar open on desktop
-    if (window.innerWidth >= 1024) setSidebarOpen(true);
   }, []);
 
   const handleLogout = () => {
@@ -36,106 +33,139 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="dashboard-container">
+    <div className="d-flex">
       {/* Sidebar */}
-      <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
-        <h2 className="logo">🌙 SnoRelax</h2>
-        <nav>
-          <button onClick={() => navigate("/profile")}>
-            <User size={18} /> Profile
-          </button>
-          <button onClick={() => navigate("/chatbot")}>
-            <Activity size={18} /> Recent Activity
-          </button>
-          <button onClick={() => navigate("/mood-tracker")}>
-            <BookOpen size={18} /> Mood Tracker
-          </button>
-          <button onClick={() => navigate("/therapist-notes")}>
-            <Handshake size={18} /> Therapist Notes
-          </button>
-          <button onClick={() => navigate("/community")}>
-            <Users size={18} /> Community
-          </button>
-          <button onClick={() => alert("Help section coming soon!")}>
-            <HelpCircle size={18} /> Help
-          </button>
-          <button onClick={() => alert("Settings coming soon!")}>
-            <Settings size={18} /> Settings
-          </button>
-        </nav>
-
-        <div className="sidebar-footer">
-          <button onClick={handleLogout}>
+      <div
+        className="d-flex flex-column flex-shrink-0 p-3 bg-dark text-light"
+        style={{ width: "250px", minHeight: "100vh" }}
+      >
+        <h2 className="text-primary text-center mb-4">🌙 SnoRelax</h2>
+        <ul className="nav nav-pills flex-column mb-auto">
+          <li>
+            <button className="btn btn-dark text-start w-100" onClick={() => navigate("/profile")}>
+              <User size={18} /> Profile
+            </button>
+          </li>
+          <li>
+            <button className="btn btn-dark text-start w-100" onClick={() => navigate("/chatbot")}>
+              <Activity size={18} /> Recent Activity
+            </button>
+          </li>
+          <li>
+            <button className="btn btn-dark text-start w-100" onClick={() => navigate("/mood-tracker")}>
+              <BookOpen size={18} /> Mood Tracker
+            </button>
+          </li>
+          <li>
+            <button className="btn btn-dark text-start w-100" onClick={() => navigate("/therapist-notes")}>
+              <Handshake size={18} /> Therapist Notes
+            </button>
+          </li>
+          <li>
+            <button className="btn btn-dark text-start w-100" onClick={() => navigate("/community")}>
+              <Users size={18} /> Community
+            </button>
+          </li>
+          <li>
+            <button className="btn btn-dark text-start w-100" onClick={() => alert("Help section coming soon!")}>
+              <HelpCircle size={18} /> Help
+            </button>
+          </li>
+          <li>
+            <button className="btn btn-dark text-start w-100" onClick={() => alert("Settings coming soon!")}>
+              <Settings size={18} /> Settings
+            </button>
+          </li>
+        </ul>
+        <hr />
+        <div>
+          <button className="btn btn-danger w-100" onClick={handleLogout}>
             <LogOut size={18} /> Logout
           </button>
         </div>
-      </aside>
+      </div>
 
-      {/* Main content */}
-      <main className="main-content">
+      {/* Main Content */}
+      <div className="flex-grow-1 p-4 bg-light">
         {/* Topbar */}
-        <div className="topbar">
-          <button
-            className={`hamburger ${sidebarOpen ? "active" : ""}`}
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <Menu size={24} />
-          </button>
-          <div>
-            <h1>
-              Welcome, <span className="highlight">{firstName}</span>
-            </h1>
-            <p className="city">📍 {city}</p>
-          </div>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1>
+            Welcome, <span className="text-primary">{firstName}</span>
+          </h1>
+          <p className="text-muted">📍 {city}</p>
         </div>
 
         {/* Widgets */}
-        <div className="widgets">
-          <div className="widget" onClick={() => navigate("/chatbot")}>
-            <Bot size={28} />
-            <h3>AI Chatbot</h3>
-            <p>Talk with SnoRelax bot for stress relief.</p>
+        <div className="row g-4">
+          <div className="col-md-4">
+            <div className="card h-100 shadow-sm" onClick={() => navigate("/chatbot")}>
+              <div className="card-body text-center">
+                <Bot size={32} className="mb-2 text-primary" />
+                <h5 className="card-title">AI Chatbot</h5>
+                <p className="card-text">Talk with SnoRelax bot for stress relief.</p>
+              </div>
+            </div>
           </div>
 
-          <div className="widget" onClick={() => navigate("/mood-tracker")}>
-            <BookOpen size={28} />
-            <h3>Mood Tracker</h3>
-            <p>Log your daily mood & monitor changes.</p>
+          <div className="col-md-4">
+            <div className="card h-100 shadow-sm" onClick={() => navigate("/mood-tracker")}>
+              <div className="card-body text-center">
+                <BookOpen size={32} className="mb-2 text-success" />
+                <h5 className="card-title">Mood Tracker</h5>
+                <p className="card-text">Log your daily mood & monitor changes.</p>
+              </div>
+            </div>
           </div>
 
-          <div className="widget" onClick={() => navigate("/therapist-notes")}>
-            <Handshake size={28} />
-            <h3>Therapist Guide</h3>
-            <p>View and manage your therapist’s notes.</p>
+          <div className="col-md-4">
+            <div className="card h-100 shadow-sm" onClick={() => navigate("/therapist-notes")}>
+              <div className="card-body text-center">
+                <Handshake size={32} className="mb-2 text-warning" />
+                <h5 className="card-title">Therapist Guide</h5>
+                <p className="card-text">View and manage your therapist’s notes.</p>
+              </div>
+            </div>
           </div>
 
-          <div className="widget">
-            <Hospital size={28} />
-            <h3>Hospital Reports</h3>
-            <p>Store prescriptions & medical history.</p>
+          <div className="col-md-4">
+            <div className="card h-100 shadow-sm">
+              <div className="card-body text-center">
+                <Hospital size={32} className="mb-2 text-danger" />
+                <h5 className="card-title">Hospital Reports</h5>
+                <p className="card-text">Store prescriptions & medical history.</p>
+              </div>
+            </div>
           </div>
 
-          <div
-            className="widget cursor-pointer"
-            onClick={() =>
-              window.open(
-                "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
-                "_blank"
-              )
-            }
-          >
-            <HeartPulse size={28} />
-            <h3>HealthVault</h3>
-            <p>A guideline how to be fit.</p>
+          <div className="col-md-4">
+            <div
+              className="card h-100 shadow-sm cursor-pointer"
+              onClick={() =>
+                window.open(
+                  "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
+                  "_blank"
+                )
+              }
+            >
+              <div className="card-body text-center">
+                <HeartPulse size={32} className="mb-2 text-danger" />
+                <h5 className="card-title">HealthVault</h5>
+                <p className="card-text">A guideline how to be fit.</p>
+              </div>
+            </div>
           </div>
 
-          <div className="widget" onClick={() => navigate("/community")}>
-            <Users size={28} />
-            <h3>Community</h3>
-            <p>Join groups & connect with others.</p>
+          <div className="col-md-4">
+            <div className="card h-100 shadow-sm" onClick={() => navigate("/community")}>
+              <div className="card-body text-center">
+                <Users size={32} className="mb-2 text-info" />
+                <h5 className="card-title">Community</h5>
+                <p className="card-text">Join groups & connect with others.</p>
+              </div>
+            </div>
           </div>
         </div>
-      </main>
+      </div>
     </div>
   );
 }
