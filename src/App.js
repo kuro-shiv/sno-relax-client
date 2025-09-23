@@ -1,3 +1,4 @@
+// App.js
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
@@ -13,9 +14,10 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
+        {/* Public Route */}
         <Route path="/" element={<Login />} />
 
-        {/* Protected Routes */}
+        {/* Protected Routes (Dashboard + Pages) */}
         <Route
           element={
             <ProtectedRoute>
@@ -31,7 +33,7 @@ function App() {
           <Route path="/community" element={<CommunityPage />} />
         </Route>
 
-        {/* Redirect any unknown route */}
+        {/* Fallback for unknown routes */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
