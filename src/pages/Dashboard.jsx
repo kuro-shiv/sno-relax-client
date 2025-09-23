@@ -13,6 +13,7 @@ import {
   Bot,
   Menu,
   LogOut,
+  X,
 } from "lucide-react";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../styles/Dashboard.css";
@@ -27,7 +28,10 @@ export default function Layout() {
     setFirstName(localStorage.getItem("sno_firstName") || "Guest");
     setCity(localStorage.getItem("sno_city") || "Unknown");
 
-    const handleResize = () => setSidebarOpen(window.innerWidth >= 992);
+    const handleResize = () => {
+      if (window.innerWidth >= 992) setSidebarOpen(true);
+      else setSidebarOpen(false);
+    };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
   }, []);
@@ -43,12 +47,20 @@ export default function Layout() {
       <aside
         className={`sidebar bg-dark text-light ${
           sidebarOpen ? "open" : "closed"
-        }`}
+        } ${window.innerWidth < 992 ? "mobile-sidebar" : ""}`}
       >
         <div className="d-flex flex-column justify-content-between h-100">
           <div>
-            <h2 className="logo text-center mb-4">🌙 SnoRelax</h2>
-            <nav className="nav flex-column gap-2">
+            <div className="d-flex justify-content-between align-items-center mb-3 p-2 d-lg-none">
+              <h2 className="logo text-light">🌙 SnoRelax</h2>
+              <button
+                className="btn btn-outline-light"
+                onClick={() => setSidebarOpen(false)}
+              >
+                <X size={24} />
+              </button>
+            </div>
+            <nav className="nav flex-column gap-2 p-2">
               {[
                 { name: "Profile", icon: <User size={18} />, path: "/profile" },
                 {
@@ -92,17 +104,20 @@ export default function Layout() {
       <main className="flex-grow-1 p-3 bg-light min-vh-100">
         {/* Topbar */}
         <div className="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
-          <button
-            className="btn btn-outline-dark d-lg-none"
-            onClick={() => setSidebarOpen(!sidebarOpen)}
-          >
-            <Menu size={24} />
-          </button>
-          <div>
-            <h1 className="fw-bold mb-1">
-              Welcome, <span className="text-primary">{firstName}</span>
-            </h1>
-            <p className="text-muted mb-0">📍 {city}</p>
+          <div className="d-flex align-items-center gap-2">
+            {/* Hamburger only visible on mobile */}
+            <button
+              className="btn btn-outline-dark d-lg-none"
+              onClick={() => setSidebarOpen(true)}
+            >
+              <Menu size={24} />
+            </button>
+            <div>
+              <h1 className="fw-bold mb-1">
+                Welcome, <span className="text-primary">{firstName}</span>
+              </h1>
+              <p className="text-muted mb-0">📍 {city}</p>
+            </div>
           </div>
         </div>
 
@@ -157,15 +172,13 @@ export default function Layout() {
               >
                 <div className="text-center">{widget.icon}</div>
                 <h5 className="card-title text-center mt-2">{widget.title}</h5>
-                <p className="card-text text-center text-muted">
-                  {widget.desc}
-                </p>
+                <p className="card-text text-center text-muted">{widget.desc}</p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Nested routes content */}
+        {/* Nested content */}
         <Outlet />
       </main>
     </div>
