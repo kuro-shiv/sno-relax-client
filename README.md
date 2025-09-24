@@ -1,5 +1,6 @@
 # SnoRelax Frontend
 
+
 This is the frontend for **SnoRelax**, a mental wellness and community platform.  
 Built with React, it provides a user-friendly interface for all core features.
 
