@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
-export default function Login() {
+export default function Login({ onLogin }) {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -17,32 +17,30 @@ export default function Login() {
   useEffect(() => {
     const fetchCityFromCoords = async (lat, lon) => {
       try {
-        const res = await fetch(
-          `${API_BASE}/api/location`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ latitude: lat, longitude: lon }),
-          }
-        );
+        const res = await fetch(`${API_BASE}/api/location`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ latitude: lat, longitude: lon }),
+        });
         const data = await res.json();
-        return data.city || "NaN";
+        return data.city || "Unknown";
       } catch {
-        return "NaN";
+        return "Unknown";
       }
     };
 
     const getLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            const { latitude, longitude } = pos.coords;
+          async (position) => {
+            const { latitude, longitude } = position.coords;
             setLatitude(latitude);
             setLongitude(longitude);
+
             const detectedCity = await fetchCityFromCoords(latitude, longitude);
             setCity(detectedCity);
           },
-          () => setErrorMessage("Please allow location to continue.") // Force user
+          () => setErrorMessage("Please allow location to continue.")
         );
       } else {
         setErrorMessage("Geolocation not supported by your browser.");
@@ -61,7 +59,7 @@ export default function Login() {
       return;
     }
 
-    if (!city || city === "") {
+    if (!city || !latitude || !longitude) {
       setErrorMessage("Waiting for location. Please allow location access.");
       return;
     }
@@ -72,6 +70,7 @@ export default function Login() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firstName, lastName, email, phone, city, latitude, longitude }),
       });
+
       const data = await res.json();
 
       if (!res.ok) {
@@ -79,6 +78,7 @@ export default function Login() {
         return;
       }
 
+      // Save user info in localStorage
       localStorage.setItem("sno_userId", data.userId);
       localStorage.setItem("sno_firstName", firstName.trim());
       localStorage.setItem("sno_lastName", lastName.trim());
@@ -88,7 +88,12 @@ export default function Login() {
       localStorage.setItem("sno_lat", latitude);
       localStorage.setItem("sno_lon", longitude);
 
-      navigate("/dashboard");
+      // Mark user as logged in
+      const token = data.token || "logged-in";
+      localStorage.setItem("authToken", token);
+      if (onLogin) onLogin(token);
+
+      navigate("/"); // Go to dashboard
     } catch (err) {
       console.error(err);
       setErrorMessage("Something went wrong. Please try again.");
