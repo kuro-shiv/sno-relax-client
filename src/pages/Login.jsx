@@ -17,14 +17,11 @@ export default function Login() {
   useEffect(() => {
     const fetchCityFromCoords = async (lat, lon) => {
       try {
-        const res = await fetch(
-          `${API_BASE}/api/location`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ latitude: lat, longitude: lon }),
-          }
-        );
+        const res = await fetch(`${API_BASE}/api/location`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ latitude: lat, longitude: lon }),
+        });
         const data = await res.json();
         return data.city || "NaN";
       } catch {
@@ -42,7 +39,7 @@ export default function Login() {
             const detectedCity = await fetchCityFromCoords(latitude, longitude);
             setCity(detectedCity);
           },
-          () => setErrorMessage("Please allow location to continue.") // Force user
+          () => setErrorMessage("Please allow location to continue.")
         );
       } else {
         setErrorMessage("Geolocation not supported by your browser.");
@@ -70,7 +67,15 @@ export default function Login() {
       const res = await fetch(`${API_BASE}/api/auth/create-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ firstName, lastName, email, phone, city, latitude, longitude }),
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          email,
+          phone,
+          city,
+          latitude,
+          longitude,
+        }),
       });
       const data = await res.json();
 
@@ -79,6 +84,7 @@ export default function Login() {
         return;
       }
 
+      // ✅ Save user info
       localStorage.setItem("sno_userId", data.userId);
       localStorage.setItem("sno_firstName", firstName.trim());
       localStorage.setItem("sno_lastName", lastName.trim());
@@ -87,6 +93,15 @@ export default function Login() {
       localStorage.setItem("sno_city", city);
       localStorage.setItem("sno_lat", latitude);
       localStorage.setItem("sno_lon", longitude);
+
+      // ✅ Mark as logged in (persistent)
+      if (data.token) {
+        // if backend sends JWT/session token
+        localStorage.setItem("authToken", data.token);
+      } else {
+        // fallback simple flag
+        localStorage.setItem("authToken", "logged-in");
+      }
 
       navigate("/dashboard");
     } catch (err) {
@@ -103,14 +118,42 @@ export default function Login() {
         <p className="subtitle">Take a deep breath, let’s get you started 🌱</p>
 
         <form onSubmit={handleLogin}>
-          <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} required />
-          <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required />
-          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-          <input type="tel" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} required />
-          <button type="submit" disabled={!city || !latitude || !longitude}>Login</button>
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="tel"
+            placeholder="Phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={!city || !latitude || !longitude}>
+            Login
+          </button>
         </form>
 
-        {errorMessage && <p className="error-message">⚠️ {errorMessage}</p>}
+        {errorMessage && (
+          <p className="error-message">⚠️ {errorMessage}</p>
+        )}
       </div>
     </div>
   );
