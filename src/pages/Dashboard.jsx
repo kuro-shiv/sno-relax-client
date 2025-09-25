@@ -104,10 +104,14 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/mood-tracker")}><BookOpen size={28} /><h3>Mood Tracker</h3><p>Log your daily mood & monitor changes.</p></div>
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/therapist-notes")}><Handshake size={28} /><h3>Therapist Guide</h3><p>View and manage your therapist’s notes.</p></div>
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`}><Hospital size={28} /><h3>Hospital Reports</h3><p>Store prescriptions & medical history.</p></div>
-          <div className="widget cursor-pointer" onClick={() => {
-            if (!isLoggedIn) navigate("/login");
-            else window.open("https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html", "_blank");
-          }}><HeartPulse size={28} /><h3>HealthVault</h3><p>A guideline how to be fit.</p></div>
+
+          {/* HealthVault always active */}
+          <div className="widget cursor-pointer" onClick={() => window.open("https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html", "_blank")}>
+            <HeartPulse size={28} />
+            <h3>HealthVault</h3>
+            <p>A guideline how to be fit.</p>
+          </div>
+
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/community")}><Users size={28} /><h3>Community</h3><p>Join groups & connect with others.</p></div>
         </div>
       </main>
