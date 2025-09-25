@@ -12,18 +12,20 @@ export default function Login({ onLogin }) {
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
   useEffect(() => {
     const fetchCityFromCoords = async (lat, lon) => {
       try {
-        const res = await fetch(`${API_BASE}/api/location`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ latitude: lat, longitude: lon }),
-        });
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}`
+        );
         const data = await res.json();
-        return data.city || "Unknown";
+        return (
+          data.address.city ||
+          data.address.town ||
+          data.address.village ||
+          "Unknown"
+        );
       } catch {
         return "Unknown";
       }
@@ -32,8 +34,8 @@ export default function Login({ onLogin }) {
     const getLocation = () => {
       if (navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const { latitude, longitude } = position.coords;
+          async (pos) => {
+            const { latitude, longitude } = pos.coords;
             setLatitude(latitude);
             setLongitude(longitude);
 
@@ -65,12 +67,11 @@ export default function Login({ onLogin }) {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/auth/create-user`, {
+      const res = await fetch(`${process.env.REACT_APP_API_BASE || "http://localhost:5000"}/api/auth/create-user`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ firstName, lastName, email, phone, city, latitude, longitude }),
       });
-
       const data = await res.json();
 
       if (!res.ok) {
@@ -78,7 +79,7 @@ export default function Login({ onLogin }) {
         return;
       }
 
-      // Save user info in localStorage
+      // Save user info
       localStorage.setItem("sno_userId", data.userId);
       localStorage.setItem("sno_firstName", firstName.trim());
       localStorage.setItem("sno_lastName", lastName.trim());
@@ -88,12 +89,12 @@ export default function Login({ onLogin }) {
       localStorage.setItem("sno_lat", latitude);
       localStorage.setItem("sno_lon", longitude);
 
-      // Mark user as logged in
+      // Mark as logged in
       const token = data.token || "logged-in";
       localStorage.setItem("authToken", token);
       if (onLogin) onLogin(token);
 
-      navigate("/"); // Go to dashboard
+      navigate("/dashboard");
     } catch (err) {
       console.error(err);
       setErrorMessage("Something went wrong. Please try again.");
@@ -108,11 +109,37 @@ export default function Login({ onLogin }) {
         <p className="subtitle">Take a deep breath, let’s get you started 🌱</p>
 
         <form onSubmit={handleLogin}>
-          <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} required />
-          <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required />
-          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
-          <input type="tel" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} required />
-          <button type="submit" disabled={!city || !latitude || !longitude}>Login</button>
+          <input
+            type="text"
+            placeholder="First Name"
+            value={firstName}
+            onChange={(e) => setFirstName(e.target.value)}
+            required
+          />
+          <input
+            type="text"
+            placeholder="Last Name"
+            value={lastName}
+            onChange={(e) => setLastName(e.target.value)}
+            required
+          />
+          <input
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+          />
+          <input
+            type="tel"
+            placeholder="Phone"
+            value={phone}
+            onChange={(e) => setPhone(e.target.value)}
+            required
+          />
+          <button type="submit" disabled={!city || !latitude || !longitude}>
+            Login
+          </button>
         </form>
 
         {errorMessage && <p className="error-message">⚠️ {errorMessage}</p>}
