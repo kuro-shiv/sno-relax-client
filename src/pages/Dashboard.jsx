@@ -12,14 +12,14 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
   const [city, setCity] = useState("Unknown");
   const [sidebarOpen, setSidebarOpen] = useState(true);
 
+  // ✅ Update firstName and city whenever login state changes
   useEffect(() => {
     setFirstName(localStorage.getItem("sno_firstName") || "User");
     setCity(localStorage.getItem("sno_city") || "Unknown");
-  }, []);
+  }, [isLoggedIn]);
 
   const requireLogin = (path) => {
-    const token = localStorage.getItem("authToken");
-    if (!token) navigate("/login");
+    if (!isLoggedIn) navigate("/login");
     else navigate(path);
   };
 
@@ -37,7 +37,11 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
           <button onClick={() => alert("Settings coming soon!")}><Settings size={18} /> Settings</button>
         </nav>
         <div className="sidebar-footer">
-          <button onClick={onLogout}><LogOut size={18} /> Logout</button>
+          {isLoggedIn ? (
+            <button onClick={onLogout}><LogOut size={18} /> Logout</button>
+          ) : (
+            <button onClick={() => navigate("/login")}><User size={18} /> Login</button>
+          )}
         </div>
       </aside>
 
@@ -56,8 +60,7 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/therapist-notes")}><Handshake size={28} /><h3>Therapist Guide</h3><p>View and manage your therapist’s notes.</p></div>
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`}><Hospital size={28} /><h3>Hospital Reports</h3><p>Store prescriptions & medical history.</p></div>
           <div className="widget cursor-pointer" onClick={() => {
-            const token = localStorage.getItem("authToken");
-            if (!token) navigate("/login");
+            if (!isLoggedIn) navigate("/login");
             else window.open("https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html", "_blank");
           }}><HeartPulse size={28} /><h3>HealthVault</h3><p>A guideline how to be fit.</p></div>
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/community")}><Users size={28} /><h3>Community</h3><p>Join groups & connect with others.</p></div>
