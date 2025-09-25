@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
-export default function Login({ onLogin }) {
+export default function Login() {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -17,15 +17,18 @@ export default function Login({ onLogin }) {
   useEffect(() => {
     const fetchCityFromCoords = async (lat, lon) => {
       try {
-        const res = await fetch(`${API_BASE}/api/location`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ latitude: lat, longitude: lon }),
-        });
+        const res = await fetch(
+          `${API_BASE}/api/location`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ latitude: lat, longitude: lon }),
+          }
+        );
         const data = await res.json();
-        return data.city || "Unknown";
+        return data.city || "NaN";
       } catch {
-        return "Unknown";
+        return "NaN";
       }
     };
 
@@ -39,7 +42,7 @@ export default function Login({ onLogin }) {
             const detectedCity = await fetchCityFromCoords(latitude, longitude);
             setCity(detectedCity);
           },
-          () => setErrorMessage("Please allow location to continue.")
+          () => setErrorMessage("Please allow location to continue.") // Force user
         );
       } else {
         setErrorMessage("Geolocation not supported by your browser.");
@@ -57,7 +60,8 @@ export default function Login({ onLogin }) {
       setErrorMessage("Please fill all required fields.");
       return;
     }
-    if (!city || !latitude || !longitude) {
+
+    if (!city || city === "") {
       setErrorMessage("Waiting for location. Please allow location access.");
       return;
     }
@@ -75,7 +79,6 @@ export default function Login({ onLogin }) {
         return;
       }
 
-      // Save user info
       localStorage.setItem("sno_userId", data.userId);
       localStorage.setItem("sno_firstName", firstName.trim());
       localStorage.setItem("sno_lastName", lastName.trim());
@@ -85,12 +88,7 @@ export default function Login({ onLogin }) {
       localStorage.setItem("sno_lat", latitude);
       localStorage.setItem("sno_lon", longitude);
 
-      // Mark as logged in
-      const token = data.token || "logged-in";
-      localStorage.setItem("authToken", token);
-      onLogin(token); // ✅ update App.js state
-
-      navigate("/"); // go to Dashboard
+      navigate("/dashboard");
     } catch (err) {
       console.error(err);
       setErrorMessage("Something went wrong. Please try again.");
