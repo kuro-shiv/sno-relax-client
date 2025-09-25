@@ -11,19 +11,19 @@ import CommunityPage from "./pages/CommunityPage";
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  // ✅ keep login state persistent
+  // ✅ Check login state on app load
   useEffect(() => {
     const token = localStorage.getItem("authToken");
     if (token) setIsLoggedIn(true);
   }, []);
 
-  // ✅ save login
+  // ✅ Handle login
   const handleLogin = (token) => {
     localStorage.setItem("authToken", token);
     setIsLoggedIn(true);
   };
 
-  // ✅ logout (optional)
+  // ✅ Handle logout
   const handleLogout = () => {
     localStorage.removeItem("authToken");
     setIsLoggedIn(false);
@@ -32,13 +32,16 @@ function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* ✅ default page is Dashboard */}
-        <Route path="/" element={<Dashboard isLoggedIn={isLoggedIn} />} />
+        {/* Default page is Dashboard */}
+        <Route
+          path="/"
+          element={<Dashboard isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
+        />
 
-        {/* ✅ login page */}
+        {/* Login page */}
         <Route path="/login" element={<Login onLogin={handleLogin} />} />
 
-        {/* ✅ protected routes */}
+        {/* Protected routes */}
         <Route
           path="/chatbot"
           element={isLoggedIn ? <ChatbotPage /> : <Navigate to="/login" />}
@@ -60,7 +63,7 @@ function App() {
           element={isLoggedIn ? <CommunityPage /> : <Navigate to="/login" />}
         />
 
-        {/* ✅ fallback redirect */}
+        {/* Fallback redirect */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

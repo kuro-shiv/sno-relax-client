@@ -2,45 +2,41 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "../styles/Login.css";
 
-export default function Login() {
+export default function Login({ onLogin }) {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [city, setCity] = useState("");
+  const [city, setCity] = useState("Detecting...");
   const [latitude, setLatitude] = useState(null);
   const [longitude, setLongitude] = useState(null);
   const [errorMessage, setErrorMessage] = useState("");
-  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
+  // ✅ Get user location and convert to city
   useEffect(() => {
-    const fetchCityFromCoords = async (lat, lon) => {
+    const getCityFromCoords = async (lat, lon) => {
       try {
-        const res = await fetch(`${API_BASE}/api/location`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ latitude: lat, longitude: lon }),
-        });
+        const res = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`
+        );
         const data = await res.json();
-        return data.city || "NaN";
+        return data.address.city || data.address.town || data.address.village || "Unknown";
       } catch {
-        return "NaN";
+        return "Unknown";
       }
     };
 
     const getLocation = () => {
       if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(
-          async (pos) => {
-            const { latitude, longitude } = pos.coords;
-            setLatitude(latitude);
-            setLongitude(longitude);
-            const detectedCity = await fetchCityFromCoords(latitude, longitude);
-            setCity(detectedCity);
-          },
-          () => setErrorMessage("Please allow location to continue.")
-        );
+        navigator.geolocation.getCurrentPosition(async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setLatitude(latitude);
+          setLongitude(longitude);
+
+          const detectedCity = await getCityFromCoords(latitude, longitude);
+          setCity(detectedCity);
+        }, () => setErrorMessage("Please allow location to continue."));
       } else {
         setErrorMessage("Geolocation not supported by your browser.");
       }
@@ -49,7 +45,7 @@ export default function Login() {
     getLocation();
   }, []);
 
-  const handleLogin = async (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
     setErrorMessage("");
 
@@ -58,34 +54,16 @@ export default function Login() {
       return;
     }
 
-    if (!city || city === "") {
+    if (!city || city === "Detecting...") {
       setErrorMessage("Waiting for location. Please allow location access.");
       return;
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/auth/create-user`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          email,
-          phone,
-          city,
-          latitude,
-          longitude,
-        }),
-      });
-      const data = await res.json();
+      // Replace this with your backend API call
+      const fakeApiResponse = { userId: "12345", token: "logged-in" };
 
-      if (!res.ok) {
-        setErrorMessage(data.error || "Registration failed");
-        return;
-      }
-
-      // ✅ Save user info
-      localStorage.setItem("sno_userId", data.userId);
+      localStorage.setItem("sno_userId", fakeApiResponse.userId);
       localStorage.setItem("sno_firstName", firstName.trim());
       localStorage.setItem("sno_lastName", lastName.trim());
       localStorage.setItem("sno_email", email.trim());
@@ -93,17 +71,10 @@ export default function Login() {
       localStorage.setItem("sno_city", city);
       localStorage.setItem("sno_lat", latitude);
       localStorage.setItem("sno_lon", longitude);
+      localStorage.setItem("authToken", fakeApiResponse.token);
 
-      // ✅ Mark as logged in (persistent)
-      if (data.token) {
-        // if backend sends JWT/session token
-        localStorage.setItem("authToken", data.token);
-      } else {
-        // fallback simple flag
-        localStorage.setItem("authToken", "logged-in");
-      }
-
-      navigate("/dashboard");
+      onLogin(fakeApiResponse.token);
+      navigate("/");
     } catch (err) {
       console.error(err);
       setErrorMessage("Something went wrong. Please try again.");
@@ -114,46 +85,18 @@ export default function Login() {
     <div className="login-container">
       <div className="login-box">
         <h1 className="site-title">🌙 SnoRelax</h1>
-        <p className="city-info">📍 Your City: {city || "Detecting..."}</p>
+        <p className="city-info">📍 Your City: {city}</p>
         <p className="subtitle">Take a deep breath, let’s get you started 🌱</p>
 
-        <form onSubmit={handleLogin}>
-          <input
-            type="text"
-            placeholder="First Name"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
-            required
-          />
-          <input
-            type="text"
-            placeholder="Last Name"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
-            required
-          />
-          <input
-            type="email"
-            placeholder="Email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            required
-          />
-          <input
-            type="tel"
-            placeholder="Phone"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
-            required
-          />
-          <button type="submit" disabled={!city || !latitude || !longitude}>
-            Login
-          </button>
+        <form onSubmit={handleLoginSubmit}>
+          <input type="text" placeholder="First Name" value={firstName} onChange={e => setFirstName(e.target.value)} required />
+          <input type="text" placeholder="Last Name" value={lastName} onChange={e => setLastName(e.target.value)} required />
+          <input type="email" placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required />
+          <input type="tel" placeholder="Phone" value={phone} onChange={e => setPhone(e.target.value)} required />
+          <button type="submit" disabled={!latitude || !longitude}>Login</button>
         </form>
 
-        {errorMessage && (
-          <p className="error-message">⚠️ {errorMessage}</p>
-        )}
+        {errorMessage && <p className="error-message">⚠️ {errorMessage}</p>}
       </div>
     </div>
   );
