@@ -10,12 +10,55 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("User");
   const [city, setCity] = useState("Unknown");
+  const [latitude, setLatitude] = useState(null);
+  const [longitude, setLongitude] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
+  const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-  // ✅ Update firstName and city whenever login state changes
+  // Fetch city from coordinates
+  const fetchCityFromCoords = async (lat, lon) => {
+    try {
+      const res = await fetch(`${API_BASE}/api/location`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ latitude: lat, longitude: lon }),
+      });
+      const data = await res.json();
+      return data.city || "Unknown";
+    } catch {
+      return "Unknown";
+    }
+  };
+
+  // Update user info and city
   useEffect(() => {
     setFirstName(localStorage.getItem("sno_firstName") || "User");
-    setCity(localStorage.getItem("sno_city") || "Unknown");
+    
+    const storedCity = localStorage.getItem("sno_city");
+    const storedLat = localStorage.getItem("sno_lat");
+    const storedLon = localStorage.getItem("sno_lon");
+
+    if (storedCity && storedLat && storedLon) {
+      setCity(storedCity);
+      setLatitude(parseFloat(storedLat));
+      setLongitude(parseFloat(storedLon));
+    } else if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        async (pos) => {
+          const { latitude, longitude } = pos.coords;
+          setLatitude(latitude);
+          setLongitude(longitude);
+          const detectedCity = await fetchCityFromCoords(latitude, longitude);
+          setCity(detectedCity);
+          localStorage.setItem("sno_city", detectedCity);
+          localStorage.setItem("sno_lat", latitude);
+          localStorage.setItem("sno_lon", longitude);
+        },
+        () => setCity("Unknown")
+      );
+    } else {
+      setCity("Unknown");
+    }
   }, [isLoggedIn]);
 
   const requireLogin = (path) => {
@@ -37,17 +80,19 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
           <button onClick={() => alert("Settings coming soon!")}><Settings size={18} /> Settings</button>
         </nav>
         <div className="sidebar-footer">
-          {isLoggedIn ? (
-            <button onClick={onLogout}><LogOut size={18} /> Logout</button>
-          ) : (
-            <button onClick={() => navigate("/login")}><User size={18} /> Login</button>
-          )}
+          {isLoggedIn && <button onClick={onLogout}><LogOut size={18} /> Logout</button>}
         </div>
       </aside>
 
       <main className="main-content">
         <div className="topbar">
-          <button className={`hamburger ${sidebarOpen ? "active" : ""}`} onClick={() => setSidebarOpen(!sidebarOpen)}><Menu size={24} /></button>
+          <button
+            className={`hamburger ${sidebarOpen ? "active" : ""}`}
+            onClick={() => setSidebarOpen(!sidebarOpen)}
+            style={{ boxShadow: "none" }}
+          >
+            <Menu size={24} />
+          </button>
           <div>
             <h1>{isLoggedIn ? `Welcome, ${firstName}` : "Welcome, User"}</h1>
             <p className="city">📍 {city}</p>

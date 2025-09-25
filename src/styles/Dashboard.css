@@ -114,7 +114,7 @@
   transition: transform 0.3s;
   z-index: 150;
   padding: 0.3rem;
-  box-shadow: none;
+  box-shadow: none; /* removed shadow */
 }
 
 .hamburger.active {
@@ -165,7 +165,13 @@
   color: #cbd5e1;
 }
 
-/* Responsive adjustments for phones */
+/* Disabled widget (not logged in) */
+.widget.disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .widgets {
     grid-template-columns: 1fr;
