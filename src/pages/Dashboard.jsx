@@ -16,7 +16,7 @@ import {
 } from "lucide-react";
 import "../styles/Dashboard.css";
 
-export default function Dashboard() {
+export default function Dashboard({ isLoggedIn }) {
   const navigate = useNavigate();
   const [firstName, setFirstName] = useState("");
   const [city, setCity] = useState("");
@@ -38,7 +38,16 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/");
+    navigate("/login");
+  };
+
+  // helper: block clicks if not logged in
+  const requireLogin = (path) => {
+    if (!isLoggedIn) {
+      navigate("/login");
+    } else {
+      navigate(path);
+    }
   };
 
   return (
@@ -47,19 +56,19 @@ export default function Dashboard() {
       <aside className={`sidebar ${sidebarOpen ? "open" : "closed"}`}>
         <h2 className="logo">🌙 SnoRelax</h2>
         <nav>
-          <button onClick={() => navigate("/profile")}>
+          <button onClick={() => requireLogin("/profile")}>
             <User size={18} /> Profile
           </button>
-          <button onClick={() => navigate("/chatbot")}>
+          <button onClick={() => requireLogin("/chatbot")}>
             <Activity size={18} /> Recent Activity
           </button>
-          <button onClick={() => navigate("/mood-tracker")}>
+          <button onClick={() => requireLogin("/mood-tracker")}>
             <BookOpen size={18} /> Mood Tracker
           </button>
-          <button onClick={() => navigate("/therapist-notes")}>
+          <button onClick={() => requireLogin("/therapist-notes")}>
             <Handshake size={18} /> Therapist Notes
           </button>
-          <button onClick={() => navigate("/community")}>
+          <button onClick={() => requireLogin("/community")}>
             <Users size={18} /> Community
           </button>
           <button onClick={() => alert("Help section coming soon!")}>
@@ -96,45 +105,48 @@ export default function Dashboard() {
 
         {/* Widgets */}
         <div className="widgets">
-          <div className="widget" onClick={() => navigate("/chatbot")}>
+          <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/chatbot")}>
             <Bot size={28} />
             <h3>AI Chatbot</h3>
             <p>Talk with SnoRelax bot for stress relief.</p>
           </div>
 
-          <div className="widget" onClick={() => navigate("/mood-tracker")}>
+          <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/mood-tracker")}>
             <BookOpen size={28} />
             <h3>Mood Tracker</h3>
             <p>Log your daily mood & monitor changes.</p>
           </div>
 
-          <div className="widget" onClick={() => navigate("/therapist-notes")}>
+          <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/therapist-notes")}>
             <Handshake size={28} />
             <h3>Therapist Guide</h3>
             <p>View and manage your therapist’s notes.</p>
           </div>
 
-          <div className="widget">
+          <div className={`widget ${!isLoggedIn ? "disabled" : ""}`}>
             <Hospital size={28} />
             <h3>Hospital Reports</h3>
             <p>Store prescriptions & medical history.</p>
           </div>
 
+          {/* ✅ HealthVault: always clickable, but requires login */}
           <div
             className="widget cursor-pointer"
-            onClick={() =>
-              window.open(
-                "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
-                "_blank"
-              )
-            }
+            onClick={() => {
+              if (!isLoggedIn) navigate("/login");
+              else
+                window.open(
+                  "https://kuro-shiv.github.io/Web_Devlopment/HV/health-vault.html",
+                  "_blank"
+                );
+            }}
           >
             <HeartPulse size={28} />
             <h3>HealthVault</h3>
             <p>A guideline how to be fit.</p>
           </div>
 
-          <div className="widget" onClick={() => navigate("/community")}>
+          <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/community")}>
             <Users size={28} />
             <h3>Community</h3>
             <p>Join groups & connect with others.</p>
