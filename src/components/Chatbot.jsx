@@ -1,9 +1,10 @@
+// src/components/Chatbot.jsx
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chatbot.css";
 
-export default function Chatbot() {
+export default function Chatbot({ lang }) {
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hello! I'm SnoBot 🌱. How are you feeling today?" },
+    { sender: "bot", text: "Hello! I'm SnoBot 🌱. How are you feeling today?" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -12,7 +13,7 @@ export default function Chatbot() {
 
   const API_BASE =
     process.env.NODE_ENV === "production"
-      ? "https://sno-relax-server.onrender.com/"
+      ? "https://sno-relax-server.onrender.com"
       : "http://localhost:5000";
 
   useEffect(() => {
@@ -54,22 +55,20 @@ export default function Chatbot() {
       const res = await fetch(`${API_BASE}/api/chat`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: msg }),
+        body: JSON.stringify({ message: msg, lang })
       });
       const data = await res.json();
 
       if (data.text) {
-        setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
-
-        // Voice playback
+        setMessages(prev => [...prev, { sender: "bot", text: data.text }]);
         const utter = new SpeechSynthesisUtterance(data.text);
-        utter.rate = 1;
+        utter.lang = lang === "auto" ? "en-US" : lang; // Set voice lang
         speechSynthesis.speak(utter);
       }
     } catch {
-      setMessages((prev) => [
+      setMessages(prev => [
         ...prev,
-        { sender: "bot", text: "⚠️ Sorry, I couldn’t connect to the server." },
+        { sender: "bot", text: "⚠️ Sorry, I couldn’t connect to the server." }
       ]);
     } finally {
       setLoading(false);
