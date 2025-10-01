@@ -4,7 +4,7 @@ import "../styles/Chatbot.css";
 
 export default function Chatbot({ lang }) {
   const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hello! I'm SnoBot 🌱. How are you feeling today?" }
+    { sender: "bot", text: "Hello! I'm SnoBot your friend 🌱. How are you feeling today?" }
   ]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
@@ -80,17 +80,31 @@ export default function Chatbot({ lang }) {
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
-            <div className="bubble">{msg.text}</div>
+            <div
+              className="bubble"
+              ref={i === messages.length - 1 ? lastMessageRef : null}
+            >
+              {msg.text}
+            </div>
           </div>
         ))}
 
+
         {loading && (
           <div className="message bot">
-            <div className="bubble typing-indicator">
+            <div
+              className="bubble typing-indicator"
+              style={{
+                width: lastMessageRef.current
+                  ? `${lastMessageRef.current.offsetWidth - 10}px`
+                  : "60px"
+              }}
+            >
               <span></span><span></span><span></span>
             </div>
           </div>
         )}
+
 
         <div ref={messagesEndRef} />
       </div>

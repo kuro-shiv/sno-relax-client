@@ -54,6 +54,8 @@
   background: #fff;
   border-radius: 20px;
   padding: 8px 12px;
+   max-width: 70%;  /* slightly smaller than regular bubble (75%) */
+  min-width: 50px; /* minimum width so dots aren’t too small */
 }
 .typing-indicator span {
   display: block;
