@@ -49,6 +49,24 @@ export default function Chatbot({ lang }) {
   const handleSend = async (msg = input, isMic = false) => {
     if (!msg.trim()) return;
 
+    const lowerMsg = msg.toLowerCase();
+
+    // -------- Repeat logic --------
+    if (lowerMsg.includes("repeat") || lowerMsg.includes("say it again")) {
+      const lastBot = [...messages].reverse().find(m => m.sender === "bot");
+      if (lastBot) {
+        const voices = speechSynthesis.getVoices();
+        const indianFemale = voices.find(
+          v => v.lang.startsWith("en-IN") && v.name.toLowerCase().includes("female")
+        );
+        const utter = new SpeechSynthesisUtterance(lastBot.text);
+        if (indianFemale) utter.voice = indianFemale;
+        utter.lang = "en-IN";
+        speechSynthesis.speak(utter);
+      }
+      return; // don’t send to backend
+    }
+
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
     setInput("");
     setLoading(true);
@@ -64,13 +82,12 @@ export default function Chatbot({ lang }) {
       if (data.text) {
         setMessages(prev => [...prev, { sender: "bot", text: data.text }]);
 
-        // ---------------- TTS ----------------
+        // -------- Mic-triggered TTS --------
         if (isMic) {
           const voices = speechSynthesis.getVoices();
           const indianFemale = voices.find(
             v => v.lang.startsWith("en-IN") && v.name.toLowerCase().includes("female")
           );
-
           const utter = new SpeechSynthesisUtterance(data.text);
           if (indianFemale) utter.voice = indianFemale;
           utter.lang = "en-IN";
@@ -92,26 +109,7 @@ export default function Chatbot({ lang }) {
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
-            <div className="bubble">
-              {msg.text}
-              {msg.sender === "bot" && (
-                <button
-                  className="replay-btn"
-                  onClick={() => {
-                    const voices = speechSynthesis.getVoices();
-                    const indianFemale = voices.find(
-                      v => v.lang.startsWith("en-IN") && v.name.toLowerCase().includes("female")
-                    );
-                    const utter = new SpeechSynthesisUtterance(msg.text);
-                    if (indianFemale) utter.voice = indianFemale;
-                    utter.lang = "en-IN";
-                    speechSynthesis.speak(utter);
-                  }}
-                >
-                  🔊
-                </button>
-              )}
-            </div>
+            <div className="bubble">{msg.text}</div>
           </div>
         ))}
 
