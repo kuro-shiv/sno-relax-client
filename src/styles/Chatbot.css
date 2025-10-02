@@ -21,8 +21,8 @@
   background: #e5ddd5;
   scroll-behavior: smooth;
 
-  /* Height adjustment so last chat visible above input */
-  max-height: calc(100vh - 60px - 16px); /* 60px input + 16px buffer */
+  /* Ensure last message visible above input + typing bubble */
+  max-height: calc(100vh - 60px - 20px); /* 60px input + 20px buffer */
 }
 
 /* Messages */
@@ -79,30 +79,34 @@
   gap: 0.5rem;
   height: 60px;
   box-shadow: 0 -1px 5px rgba(0,0,0,0.2);
+  box-sizing: border-box;
 }
+
 .chat-input input {
   flex: 1;
+  min-width: 0;
   padding: 12px 16px;
   border-radius: 30px;
   border: 1px solid #ccc;
   outline: none;
   font-size: 1rem;
 }
+
 .chat-input input::placeholder { color: #999; }
+
 .chat-input button {
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex: 0 0 auto;
+  width: 50px;
+  height: 50px;
   border: none;
   border-radius: 50%;
   background: #34b7f1;
   color: #fff;
-  width: 50px;
-  height: 50px;
   cursor: pointer;
-  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.chat-input button:hover { background: #0b93f6; }
 
 /* Mic button */
 .mic-btn {

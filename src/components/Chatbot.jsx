@@ -1,3 +1,4 @@
+// src/components/Chatbot.jsx
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chatbot.css";
 
@@ -19,8 +20,6 @@ export default function Chatbot({ lang }) {
   useEffect(() => {
     if (!messagesEndRef.current) return;
     const chatWindow = messagesEndRef.current.parentNode;
-
-    // Scroll to slightly above the bottom (buffer)
     chatWindow.scrollTop = chatWindow.scrollHeight - chatWindow.clientHeight - 20;
   }, [messages, loading]);
 
@@ -40,14 +39,14 @@ export default function Chatbot({ lang }) {
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       setInput(transcript);
-      handleSend(transcript);
+      handleSend(transcript, true); // true = mic triggered
     };
 
     recognition.onend = () => setListening(false);
   };
 
   // ---------------- Send Message ----------------
-  const handleSend = async (msg = input) => {
+  const handleSend = async (msg = input, isMic = false) => {
     if (!msg.trim()) return;
 
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
@@ -64,9 +63,19 @@ export default function Chatbot({ lang }) {
 
       if (data.text) {
         setMessages(prev => [...prev, { sender: "bot", text: data.text }]);
-        const utter = new SpeechSynthesisUtterance(data.text);
-        utter.lang = lang === "auto" ? "en-US" : lang;
-        speechSynthesis.speak(utter);
+
+        // ---------------- TTS ----------------
+        if (isMic) {
+          const voices = speechSynthesis.getVoices();
+          const indianFemale = voices.find(
+            v => v.lang.startsWith("en-IN") && v.name.toLowerCase().includes("female")
+          );
+
+          const utter = new SpeechSynthesisUtterance(data.text);
+          if (indianFemale) utter.voice = indianFemale;
+          utter.lang = "en-IN";
+          speechSynthesis.speak(utter);
+        }
       }
     } catch {
       setMessages(prev => [
@@ -83,7 +92,26 @@ export default function Chatbot({ lang }) {
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
-            <div className="bubble">{msg.text}</div>
+            <div className="bubble">
+              {msg.text}
+              {msg.sender === "bot" && (
+                <button
+                  className="replay-btn"
+                  onClick={() => {
+                    const voices = speechSynthesis.getVoices();
+                    const indianFemale = voices.find(
+                      v => v.lang.startsWith("en-IN") && v.name.toLowerCase().includes("female")
+                    );
+                    const utter = new SpeechSynthesisUtterance(msg.text);
+                    if (indianFemale) utter.voice = indianFemale;
+                    utter.lang = "en-IN";
+                    speechSynthesis.speak(utter);
+                  }}
+                >
+                  🔊
+                </button>
+              )}
+            </div>
           </div>
         ))}
 
