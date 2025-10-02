@@ -15,9 +15,13 @@ export default function Chatbot({ lang }) {
       ? "https://sno-relax-server.onrender.com"
       : "http://localhost:5000";
 
-  // ---------------- Auto-scroll to latest message ----------------
+  // ---------------- Auto-scroll ----------------
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    if (!messagesEndRef.current) return;
+    const chatWindow = messagesEndRef.current.parentNode;
+
+    // Scroll to slightly above the bottom (buffer)
+    chatWindow.scrollTop = chatWindow.scrollHeight - chatWindow.clientHeight - 20;
   }, [messages, loading]);
 
   // ---------------- Voice Recognition ----------------
