@@ -1,4 +1,3 @@
-// src/components/Chatbot.jsx
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chatbot.css";
 
@@ -16,8 +15,9 @@ export default function Chatbot({ lang }) {
       ? "https://sno-relax-server.onrender.com"
       : "http://localhost:5000";
 
+  // ---------------- Auto-scroll to latest message ----------------
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
   }, [messages, loading]);
 
   // ---------------- Voice Recognition ----------------
@@ -46,8 +46,7 @@ export default function Chatbot({ lang }) {
   const handleSend = async (msg = input) => {
     if (!msg.trim()) return;
 
-    const newMessages = [...messages, { sender: "user", text: msg }];
-    setMessages(newMessages);
+    setMessages(prev => [...prev, { sender: "user", text: msg }]);
     setInput("");
     setLoading(true);
 
@@ -62,7 +61,7 @@ export default function Chatbot({ lang }) {
       if (data.text) {
         setMessages(prev => [...prev, { sender: "bot", text: data.text }]);
         const utter = new SpeechSynthesisUtterance(data.text);
-        utter.lang = lang === "auto" ? "en-US" : lang; // Set voice lang
+        utter.lang = lang === "auto" ? "en-US" : lang;
         speechSynthesis.speak(utter);
       }
     } catch {
@@ -76,35 +75,21 @@ export default function Chatbot({ lang }) {
   };
 
   return (
-    <>
+    <div className="chat-fullscreen">
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>
-            <div
-              className="bubble"
-              ref={i === messages.length - 1 ? lastMessageRef : null}
-            >
-              {msg.text}
-            </div>
+            <div className="bubble">{msg.text}</div>
           </div>
         ))}
 
-
         {loading && (
           <div className="message bot">
-            <div
-              className="bubble typing-indicator"
-              style={{
-                width: lastMessageRef.current
-                  ? `${lastMessageRef.current.offsetWidth - 10}px`
-                  : "60px"
-              }}
-            >
+            <div className="typing-indicator">
               <span></span><span></span><span></span>
             </div>
           </div>
         )}
-
 
         <div ref={messagesEndRef} />
       </div>
@@ -124,6 +109,6 @@ export default function Chatbot({ lang }) {
         />
         <button onClick={() => handleSend()}>➤</button>
       </div>
-    </>
+    </div>
   );
 }

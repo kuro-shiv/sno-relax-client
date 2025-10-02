@@ -10,15 +10,6 @@
   overflow: hidden;
 }
 
-/* Language selector */
-.chat-lang-selector {
-  padding: 0.5rem 1rem;
-  background: #e5ddd5;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-}
-
 /* Chat window */
 .chat-window {
   flex: 1;
@@ -29,6 +20,9 @@
   gap: 8px;
   background: #e5ddd5;
   scroll-behavior: smooth;
+
+  /* Height adjustment so last chat visible above input */
+  max-height: calc(100vh - 60px - 16px); /* 60px input + 16px buffer */
 }
 
 /* Messages */
@@ -54,8 +48,8 @@
   background: #fff;
   border-radius: 20px;
   padding: 8px 12px;
-   max-width: 70%;  /* slightly smaller than regular bubble (75%) */
-  min-width: 50px; /* minimum width so dots aren’t too small */
+  max-width: 70%;
+  min-width: 50px;
 }
 .typing-indicator span {
   display: block;
@@ -110,6 +104,7 @@
 }
 .chat-input button:hover { background: #0b93f6; }
 
+/* Mic button */
 .mic-btn {
   font-size: 1.5rem;
   background: #3b82f6;
