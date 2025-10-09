@@ -66,7 +66,7 @@ Below are some screenshots of the SnoRelax frontend:
 ![Community Page](./screenshots/community.jpg)
 
 ### Chatbot
-![Chatbot](./screenshot/chatbot.png)
+![Chatbot](./screenshots/chatbot.jpg)
 
 ---
 

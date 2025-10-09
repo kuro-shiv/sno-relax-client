@@ -53,20 +53,16 @@ export default function Chatbot({ lang }) {
 
     // -------- Repeat logic --------
     if (lowerMsg.includes("repeat") || lowerMsg.includes("say it again")) {
-      const lastBot = [...messages].reverse().find(m => m.sender === "bot");
+      const lastBot = [...messages].reverse().find(m => m.sender === "bot" && m.audio);
       if (lastBot) {
-        const voices = speechSynthesis.getVoices();
-        const indianFemale = voices.find(
-          v => v.lang.startsWith("en-IN") && v.name.toLowerCase().includes("female")
-        );
         const utter = new SpeechSynthesisUtterance(lastBot.text);
-        if (indianFemale) utter.voice = indianFemale;
-        utter.lang = "en-IN";
+        utter.lang = lastBot.lang || "en-IN";
         speechSynthesis.speak(utter);
       }
-      return; // don’t send to backend
+      return;
     }
 
+    // -------- Normal message --------
     setMessages(prev => [...prev, { sender: "user", text: msg }]);
     setInput("");
     setLoading(true);
@@ -80,17 +76,20 @@ export default function Chatbot({ lang }) {
       const data = await res.json();
 
       if (data.text) {
-        setMessages(prev => [...prev, { sender: "bot", text: data.text }]);
+        setMessages(prev => [
+          ...prev,
+          {
+            sender: "bot",
+            text: data.text,
+            audio: isMic,  // mark if TTS should play
+            lang: lang     // store user language
+          }
+        ]);
 
-        // -------- Mic-triggered TTS --------
+        // -------- Play TTS only for mic messages --------
         if (isMic) {
-          const voices = speechSynthesis.getVoices();
-          const indianFemale = voices.find(
-            v => v.lang.startsWith("en-IN") && v.name.toLowerCase().includes("female")
-          );
           const utter = new SpeechSynthesisUtterance(data.text);
-          if (indianFemale) utter.voice = indianFemale;
-          utter.lang = "en-IN";
+          utter.lang = lang === "auto" ? "en-IN" : lang;
           speechSynthesis.speak(utter);
         }
       }
