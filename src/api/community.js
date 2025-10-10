@@ -1,100 +1,62 @@
-const API_BASE = "https://sno-relax-server-hostside.onrender.com"; // ✅ your Render backend
+import axios from "axios";
 
-// Get all groups
-export async function fetchGroups() {
-  const res = await fetch(`${API_BASE}/api/community/groups`);
-  return res.json();
-}
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:5000/api/community";
 
-// Create group
-export async function createGroup(data) {
-  const res = await fetch(`${API_BASE}/api/community/create`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
-}
+// -------------------- Groups --------------------
 
-// Join group
-export async function joinGroup(groupId, userId) {
-  const res = await fetch(`${API_BASE}/api/community/join/${groupId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId }),
-  });
-  return res.json();
-}
+// Fetch all community groups
+export const fetchGroups = async () => {
+  try {
+    const res = await axios.get(`${API_URL}/groups`);
+    return { ok: true, groups: res.data };
+  } catch (err) {
+    console.error("Error fetching groups:", err);
+    return { ok: false, groups: [] };
+  }
+};
 
-// Leave group
-export async function leaveGroup(groupId, userId) {
-  const res = await fetch(`${API_BASE}/api/community/leave/${groupId}`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ userId }),
-  });
-  return res.json();
-}
+// Join a group
+export const joinGroup = async (groupId, userId) => {
+  try {
+    await axios.post(`${API_URL}/join`, { groupId, userId });
+    return { ok: true };
+  } catch (err) {
+    console.error("Error joining group:", err);
+    return { ok: false };
+  }
+};
 
-// Send message
-export async function sendMessage(groupId, data) {
-  const res = await fetch(`${API_BASE}/api/community/${groupId}/message`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(data),
-  });
-  return res.json();
-}
+// Leave a group
+export const leaveGroup = async (groupId, userId) => {
+  try {
+    await axios.post(`${API_URL}/leave`, { groupId, userId });
+    return { ok: true };
+  } catch (err) {
+    console.error("Error leaving group:", err);
+    return { ok: false };
+  }
+};
 
-// Get messages
-export async function fetchMessages(groupId) {
-  const res = await fetch(`${API_BASE}/api/community/${groupId}/messages`);
-  return res.json();
-}
+// -------------------- Messages --------------------
 
-// Chatbot interaction
-export async function chatWithBot(input) {
-  const res = await fetch("http://localhost:5000/api/chat", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message: input }),
-  });
-  return res.json();
-}
+// Fetch messages of a group
+export const fetchMessages = async (groupId) => {
+  try {
+    const res = await axios.get(`${API_URL}/messages/${groupId}`);
+    return { ok: true, messages: res.data };
+  } catch (err) {
+    console.error("Error fetching messages:", err);
+    return { ok: false, messages: [] };
+  }
+};
 
-function Chatbot() {
-  // ...existing code...
-
-  const API_BASE =
-    process.env.NODE_ENV === "production"
-      ? "https://sno-relax-server-hostside.onrender.com"
-      : "http://localhost:5000";
-
-  const handleSend = async () => {
-    if (!input.trim()) return;
-
-    const newMessages = [...messages, { sender: "user", text: input }];
-    setMessages(newMessages);
-
-    try {
-      const res = await fetch(`${API_BASE}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: input }),
-      });
-      const data = await res.json();
-
-      if (data.text) {
-        setMessages((prev) => [...prev, { sender: "bot", text: data.text }]);
-      }
-    } catch (err) {
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "⚠️ Sorry, I couldn’t connect to the server." },
-      ]);
-    }
-
-    setInput("");
-  };
-  // ...existing code...
-}
+// Send a message to a group
+export const sendMessage = async (groupId, messageData) => {
+  try {
+    await axios.post(`${API_URL}/messages/${groupId}`, messageData);
+    return { ok: true };
+  } catch (err) {
+    console.error("Error sending message:", err);
+    return { ok: false };
+  }
+};

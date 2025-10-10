@@ -1,157 +1,50 @@
-import React, { useState, useEffect, useRef } from "react";
-import "../styles/CommunityPage.css";
+import React, { useState, useEffect } from "react";
+import GroupList from "../components/GroupList";
+import GroupChat from "../components/GroupChat";
+import { fetchGroups, joinGroup, leaveGroup, fetchMessages, sendMessage } from "../api/community";
 
 export default function CommunityPage() {
-  const [view, setView] = useState("menu"); // menu | group | personal | requests
-  const [selectedChat, setSelectedChat] = useState(null);
+  const [groups, setGroups] = useState([]);
+  const [selectedGroup, setSelectedGroup] = useState(null);
+  const [userId, setUserId] = useState(localStorage.getItem("sno_userId") || "Guest123");
 
-  const [messages, setMessages] = useState([
-    { id: 1, sender: "Alice", text: "Welcome to SnoRelax 🌙", self: false },
-  ]);
-  const [newMessage, setNewMessage] = useState("");
-
-  const userId = localStorage.getItem("sno_userId") || "Guest123";
-  const chatEndRef = useRef(null);
-
-  // Auto-scroll chat
   useEffect(() => {
-    if (chatEndRef.current) {
-      chatEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+    loadGroups();
+  }, []);
 
-  // Send message
-  const handleSend = () => {
-    if (!newMessage.trim()) return;
-    const msg = {
-      id: Date.now(),
-      sender: userId,
-      text: newMessage,
-      self: true,
-    };
-    setMessages((prev) => [...prev, msg]);
-    setNewMessage("");
-  };
+  async function loadGroups() {
+    const res = await fetchGroups();
+    if (res.ok) setGroups(res.groups);
+  }
+
+  async function handleJoin(groupId) {
+    await joinGroup(groupId, userId);
+    loadGroups();
+  }
+
+  async function handleLeave(groupId) {
+    await leaveGroup(groupId, userId);
+    loadGroups();
+    if (selectedGroup?.id === groupId) setSelectedGroup(null);
+  }
 
   return (
-    <div className="community-container">
-      {/* Header */}
-      <header className="community-header">
-        <div className="left-controls">
-          {view !== "menu" && (
-            <button className="back-btn" onClick={() => setView("menu")}>
-              ⬅
-            </button>
-          )}
-          <h2>
-            {view === "menu" && "🌍 Community"}
-            {view === "group" && "👥 Group Chat"}
-            {view === "personal" && `💬 Chat with ${selectedChat || "Friend"}`}
-            {view === "requests" && "🔔 Requests"}
-          </h2>
-        </div>
-        <div className="header-right">
-          <span className="user-id">ID: {userId}</span>
-          <div className="bell" onClick={() => setView("requests")}>
-            🔔
-            <span className="badge">2</span>
-          </div>
-        </div>
-      </header>
+    <div style={{ display: "flex", height: "100vh" }}>
+      {/* Group List */}
+      <div style={{ width: "250px", background: "#1a1a1a", padding: "16px", overflowY: "auto" }}>
+        <GroupList
+          groups={groups}
+          userId={userId}
+          onSelectGroup={setSelectedGroup}
+          onJoin={handleJoin}
+          onLeave={handleLeave}
+        />
+      </div>
 
-      {/* Main Content */}
-      <main className="community-main">
-        {view === "menu" && (
-          <div className="menu-options">
-            <h3>Communities</h3>
-            <button onClick={() => setView("group")}>👥 SnoRelax Global</button>
-            <button onClick={() => setView("group")}>💚 Wellness Circle</button>
-            <button onClick={() => setView("group")}>🎶 Chill & Vibes</button>
-
-            <h3>Chats</h3>
-            <button onClick={() => setView("personal")}>💬 Personal Chat</button>
-
-            <h3>Host Tools</h3>
-            <button onClick={() => alert("Community creation flow here")}>
-              ➕ Create Community
-            </button>
-          </div>
-        )}
-
-        {view === "group" && (
-          <div className="chat-area">
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`chat-bubble ${msg.self ? "self" : "other"}`}
-              >
-                {!msg.self && <span className="sender">{msg.sender}</span>}
-                <p>{msg.text}</p>
-              </div>
-            ))}
-            <div ref={chatEndRef} />
-          </div>
-        )}
-
-        {view === "personal" && (
-          <div className="chat-area">
-            <p className="system-msg">
-              ⚡ You can only chat after sending/accepting a request.
-            </p>
-            {messages.map((msg) => (
-              <div
-                key={msg.id}
-                className={`chat-bubble ${msg.self ? "self" : "other"}`}
-              >
-                {!msg.self && <span className="sender">{msg.sender}</span>}
-                <p>{msg.text}</p>
-              </div>
-            ))}
-            <div ref={chatEndRef} />
-          </div>
-        )}
-
-        {view === "requests" && (
-          <div className="requests">
-            <div className="request-card">
-              <span>John wants to connect 💬</span>
-              <button
-                onClick={() => {
-                  setSelectedChat("John");
-                  setView("personal");
-                }}
-              >
-                Accept
-              </button>
-            </div>
-            <div className="request-card">
-              <span>Emily sent a request 💌</span>
-              <button
-                onClick={() => {
-                  setSelectedChat("Emily");
-                  setView("personal");
-                }}
-              >
-                Accept
-              </button>
-            </div>
-          </div>
-        )}
-      </main>
-
-      {/* Input bar (only visible in chats) */}
-      {(view === "group" || view === "personal") && (
-        <footer className="chat-input">
-          <input
-            type="text"
-            placeholder="Type a message..."
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && handleSend()}
-          />
-          <button onClick={handleSend}>Send</button>
-        </footer>
-      )}
+      {/* Group Chat */}
+      <div style={{ flex: 1, padding: "16px" }}>
+        <GroupChat group={selectedGroup} userId={userId} />
+      </div>
     </div>
   );
 }

@@ -9,7 +9,7 @@ export default function GroupChat({ group, userId }) {
   useEffect(() => {
     if (group) {
       loadMessages();
-      const interval = setInterval(loadMessages, 5000); // poll every 5s
+      const interval = setInterval(loadMessages, 5000); // poll messages
       return () => clearInterval(interval);
     }
   }, [group]);
@@ -31,56 +31,39 @@ export default function GroupChat({ group, userId }) {
     loadMessages();
   }
 
-  if (!group) {
-    return (
-      <div className="flex items-center justify-center flex-1 bg-gray-900 rounded-lg">
-        <p className="text-gray-400">👥 Select a group to start chatting</p>
-      </div>
-    );
-  }
+  if (!group) return <p style={{ color: "#888" }}>Select a group to start chatting</p>;
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 rounded-lg shadow-lg">
-      {/* Header */}
-      <div className="p-3 border-b border-gray-800">
-        <h2 className="text-lg font-bold text-blue-400">{group.name}</h2>
-      </div>
-
-      {/* Messages */}
-      <div className="flex-1 overflow-y-auto p-3 space-y-2">
+    <div style={{ display: "flex", flexDirection: "column", height: "100%" }}>
+      <div style={{ flex: 1, overflowY: "auto", marginBottom: "12px" }}>
         {messages.map((m) => (
           <div
             key={m.id}
-            className={`p-2 rounded max-w-lg ${
-              m.userId === userId
-                ? "ml-auto bg-blue-600 text-white"
-                : "mr-auto bg-gray-700 text-gray-100"
-            }`}
+            style={{
+              background: m.userId === userId ? "#34d399" : "#262626",
+              color: m.userId === userId ? "#000" : "#fff",
+              alignSelf: m.userId === userId ? "flex-end" : "flex-start",
+              padding: "8px 12px",
+              borderRadius: "12px",
+              margin: "4px 0",
+              maxWidth: "70%",
+            }}
           >
-            <span className="block text-xs text-gray-300">
-              {m.userId === userId ? "You" : m.userId}
-            </span>
-            <span>{m.text}</span>
+            <small style={{ opacity: 0.7 }}>{m.userId === userId ? "You" : m.userId}</small>
+            <p>{m.text}</p>
           </div>
         ))}
         <div ref={messagesEndRef} />
       </div>
 
-      {/* Input */}
-      <form
-        onSubmit={handleSend}
-        className="p-3 border-t border-gray-800 flex"
-      >
+      <form onSubmit={handleSend} style={{ display: "flex", gap: "8px" }}>
         <input
           value={text}
           onChange={(e) => setText(e.target.value)}
-          className="flex-1 p-2 rounded bg-gray-700 text-white"
           placeholder="Type a message..."
+          style={{ flex: 1, padding: "10px", borderRadius: "20px", background: "#262626", color: "#fff", border: "none" }}
         />
-        <button
-          type="submit"
-          className="ml-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600"
-        >
+        <button type="submit" style={{ padding: "10px 16px", background: "#34d399", color: "#000", fontWeight: "bold", borderRadius: "20px" }}>
           Send
         </button>
       </form>
