@@ -1,50 +1,64 @@
-import React, { useState, useEffect } from "react";
-import GroupList from "../components/GroupList";
+// src/pages/CommunityPage.jsx
+import React, { useState } from "react";
+import Sidebar from "../components/Sidebar";
 import GroupChat from "../components/GroupChat";
-import { fetchGroups, joinGroup, leaveGroup, fetchMessages, sendMessage } from "../api/community";
+import PersonalChat from "../components/PersonalChat";
+import ThemeToggle from "../components/ThemeToggle";
 
 export default function CommunityPage() {
-  const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
-  const [userId, setUserId] = useState(localStorage.getItem("sno_userId") || "Guest123");
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [view, setView] = useState("group"); // group | personal
 
-  useEffect(() => {
-    loadGroups();
-  }, []);
+  // Theme state stored in localStorage
+  const [theme, setTheme] = useState(
+    localStorage.getItem("sno-theme") || "light"
+  );
 
-  async function loadGroups() {
-    const res = await fetchGroups();
-    if (res.ok) setGroups(res.groups);
-  }
-
-  async function handleJoin(groupId) {
-    await joinGroup(groupId, userId);
-    loadGroups();
-  }
-
-  async function handleLeave(groupId) {
-    await leaveGroup(groupId, userId);
-    loadGroups();
-    if (selectedGroup?.id === groupId) setSelectedGroup(null);
-  }
+  const handleThemeToggle = () => {
+    const newTheme = theme === "light" ? "dark" : "light";
+    setTheme(newTheme);
+    localStorage.setItem("sno-theme", newTheme);
+  };
 
   return (
-    <div style={{ display: "flex", height: "100vh" }}>
-      {/* Group List */}
-      <div style={{ width: "250px", background: "#1a1a1a", padding: "16px", overflowY: "auto" }}>
-        <GroupList
-          groups={groups}
-          userId={userId}
-          onSelectGroup={setSelectedGroup}
-          onJoin={handleJoin}
-          onLeave={handleLeave}
-        />
-      </div>
+    <div className={`community-page ${theme}`}>
+      <Sidebar
+        onSelectGroup={(group) => {
+          setSelectedGroup(group);
+          setView("group");
+        }}
+        onSelectUser={(user) => {
+          setSelectedUser(user);
+          setView("personal");
+        }}
+      />
 
-      {/* Group Chat */}
-      <div style={{ flex: 1, padding: "16px" }}>
-        <GroupChat group={selectedGroup} userId={userId} />
-      </div>
+      <main className="chat-area">
+        <div className="chat-header">
+          <h2>
+            {view === "group"
+              ? selectedGroup?.name || "Select a Group"
+              : selectedUser?.name || "Select a Friend"}
+          </h2>
+          <ThemeToggle theme={theme} toggle={handleThemeToggle} />
+        </div>
+
+        <div className="chat-content">
+          {view === "group" && selectedGroup && (
+            <GroupChat group={selectedGroup} />
+          )}
+          {view === "personal" && selectedUser && (
+            <PersonalChat user={selectedUser} />
+          )}
+          {!selectedGroup && view === "group" && (
+            <p className="placeholder">Select a group to start chatting</p>
+          )}
+          {!selectedUser && view === "personal" && (
+            <p className="placeholder">Select a friend to start chatting</p>
+          )}
+        </div>
+      </main>
     </div>
   );
 }
