@@ -35,7 +35,7 @@ export async function getMoods(userId) {
   const res = await fetch(
     `${
       process.env.NODE_ENV === "production"
-        ? "https://sno-relax-server-hostside.onrender.com"
+        ? "https://sno-relax-server.onrender.com"
         : "http://localhost:5000"
     }/api/moods?userId=${userId}`
   );
