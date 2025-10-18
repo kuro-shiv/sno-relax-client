@@ -1,6 +1,9 @@
 // write code for thisimport React from 'react';
 import PropTypes from 'prop-types';
 
+const UserList = () => {
+
+
 const UserList = ({ users }) => {
     return (
         <div>
@@ -25,3 +28,6 @@ UserList.propTypes = {
         })
     ).isRequired,
 };
+};
+
+export default UserList;
