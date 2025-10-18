@@ -1,7 +1,7 @@
 // src/api.js
 const API_BASE =
   process.env.NODE_ENV === "production"
-    ? "https://sno-relax-server-hostside.onrender.com"
+    ? "https://sno-relax-server.onrender.com"
     : "http://localhost:5000";
 
 export async function createUser(data) {
