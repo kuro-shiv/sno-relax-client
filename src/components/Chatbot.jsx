@@ -1,7 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chatbot.css";
 
-export default function Chatbot({ lang = "auto", userId = "test123" }) {
+// ✅ Get userId safely from localStorage
+const storedUserId = localStorage.getItem("sno_userId") || "guest";
+
+export default function Chatbot({ lang = "auto", userId = storedUserId }) {
   const [messages, setMessages] = useState([
     { sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" },
   ]);
@@ -17,10 +20,9 @@ export default function Chatbot({ lang = "auto", userId = "test123" }) {
 
   // ---------------- Auto-scroll ----------------
   useEffect(() => {
-    if (!messagesEndRef.current) return;
-    const chatWindow = messagesEndRef.current.parentNode;
-    chatWindow.scrollTop =
-      chatWindow.scrollHeight - chatWindow.clientHeight - 20;
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
   }, [messages, loading]);
 
   // ---------------- Voice Recognition ----------------
@@ -40,7 +42,12 @@ export default function Chatbot({ lang = "auto", userId = "test123" }) {
     recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
       const translatedToEnglish = await translateToEnglish(transcript);
-      handleSend(translatedToEnglish, true, transcript); // mic=true, store original text
+      handleSend(translatedToEnglish, true, transcript); // mic=true
+    };
+
+    recognition.onerror = (err) => {
+      console.error("Voice recognition error:", err);
+      setListening(false);
     };
 
     recognition.onend = () => setListening(false);
@@ -83,7 +90,6 @@ export default function Chatbot({ lang = "auto", userId = "test123" }) {
   const handleSend = async (msg = input, isMic = false, originalSpeech = null) => {
     if (!msg.trim()) return;
 
-    // Show user message instantly
     setMessages((prev) => [
       ...prev,
       { sender: "user", text: originalSpeech || msg },
@@ -97,7 +103,7 @@ export default function Chatbot({ lang = "auto", userId = "test123" }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
-          message: msg, // English text for backend
+          message: msg, // English text
           lang,
         }),
       });
@@ -105,7 +111,6 @@ export default function Chatbot({ lang = "auto", userId = "test123" }) {
       const data = await res.json();
 
       if (data.text) {
-        // Translate bot reply to user language
         const translatedResponse = await translateFromEnglish(data.text);
 
         setMessages((prev) => [
@@ -113,10 +118,11 @@ export default function Chatbot({ lang = "auto", userId = "test123" }) {
           { sender: "bot", text: translatedResponse },
         ]);
 
-        // ✅ Speak response only if user used mic
+        // ✅ Speak response only if mic used
         if (isMic) {
           const utter = new SpeechSynthesisUtterance(translatedResponse);
           utter.lang = lang === "auto" ? "en-IN" : lang;
+          speechSynthesis.cancel(); // stop any ongoing speech
           speechSynthesis.speak(utter);
         }
       } else {
