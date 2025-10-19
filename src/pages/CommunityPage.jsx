@@ -4,6 +4,8 @@ import Sidebar from "../components/Sidebar";
 import GroupChat from "../components/GroupChat";
 import PersonalChat from "../components/PersonalChat";
 import ThemeToggle from "../components/ThemeToggle";
+import UserList from "../components/UserList";
+
 
 export default function CommunityPage() {
   const [selectedGroup, setSelectedGroup] = useState(null);
