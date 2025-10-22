@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chatbot.css";
 
-// ✅ Get userId safely from localStorage
 const storedUserId = localStorage.getItem("sno_userId") || "guest";
 
 export default function Chatbot({ lang = "auto", userId = storedUserId }) {
-  const [messages, setMessages] = useState([
-    { sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" },
-  ]);
+  const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
@@ -24,6 +21,31 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, loading]);
+
+  // ---------------- Fetch previous chats ----------------
+  useEffect(() => {
+    const fetchHistory = async () => {
+      setLoading(true);
+      try {
+        const res = await fetch(`${API_BASE}/api/chat/history?userId=${userId}`);
+        const data = await res.json(); // expect [{ userMessage, botReply }]
+        if (data && Array.isArray(data)) {
+          const formatted = data.flatMap(chat => [
+            { sender: "user", text: chat.userMessage },
+            { sender: "bot", text: chat.botReply }
+          ]);
+          setMessages(formatted.length ? formatted : [{ sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" }]);
+        }
+      } catch (err) {
+        console.error("Error fetching chat history:", err);
+        setMessages([{ sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" }]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHistory();
+  }, [userId, API_BASE]);
 
   // ---------------- Voice Recognition ----------------
   const handleVoice = () => {
@@ -42,7 +64,7 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
     recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
       const translatedToEnglish = await translateToEnglish(transcript);
-      handleSend(translatedToEnglish, true, transcript); // mic=true
+      handleSend(translatedToEnglish, true, transcript);
     };
 
     recognition.onerror = (err) => {
@@ -103,7 +125,7 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           userId,
-          message: msg, // English text
+          message: msg,
           lang,
         }),
       });
@@ -118,11 +140,10 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
           { sender: "bot", text: translatedResponse },
         ]);
 
-        // ✅ Speak response only if mic used
         if (isMic) {
           const utter = new SpeechSynthesisUtterance(translatedResponse);
           utter.lang = lang === "auto" ? "en-IN" : lang;
-          speechSynthesis.cancel(); // stop any ongoing speech
+          speechSynthesis.cancel();
           speechSynthesis.speak(utter);
         }
       } else {
