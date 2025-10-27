@@ -1,66 +1,65 @@
 // src/pages/CommunityPage.jsx
-import React, { useState } from "react";
-import Sidebar from "../components/Sidebar";
-import GroupChat from "../components/GroupChat";
-import PersonalChat from "../components/PersonalChat";
+import React, { useEffect, useState } from "react";
+import TopicList from "../components/community/TopicList";
+import TopicDetail from "../components/community/TopicDetail";
+import SnoBotWidget from "../components/community/SnoBotWidget";
+import ChallengeList from "../components/community/ChallengeList";
+import MyProgress from "../components/community/MyProgress";
 import ThemeToggle from "../components/ThemeToggle";
-import UserList from "../components/UserList";
-
 
 export default function CommunityPage() {
-  const [selectedGroup, setSelectedGroup] = useState(null);
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [view, setView] = useState("group"); // group | personal
+  const [theme, setTheme] = useState(localStorage.getItem("sno-theme") || "light");
+  const [selectedTopic, setSelectedTopic] = useState(null);
+  const [userId, setUserId] = useState(null);
 
-  // Theme state stored in localStorage
-  const [theme, setTheme] = useState(
-    localStorage.getItem("sno-theme") || "light"
-  );
+  useEffect(() => {
+    // Minimal auth shim: try to get user id from localStorage; fallback to generated id
+    let uid = localStorage.getItem("sno_user_id");
+    if (!uid) {
+      uid = `u_${Math.random().toString(36).slice(2, 9)}`;
+      localStorage.setItem("sno_user_id", uid);
+    }
+    setUserId(uid);
+  }, []);
 
-  const handleThemeToggle = () => {
-    const newTheme = theme === "light" ? "dark" : "light";
-    setTheme(newTheme);
-    localStorage.setItem("sno-theme", newTheme);
+  const toggleTheme = () => {
+    const next = theme === "light" ? "dark" : "light";
+    setTheme(next);
+    localStorage.setItem("sno-theme", next);
   };
 
   return (
-    <div className={`community-page ${theme}`}>
-      <Sidebar
-        onSelectGroup={(group) => {
-          setSelectedGroup(group);
-          setView("group");
-        }}
-        onSelectUser={(user) => {
-          setSelectedUser(user);
-          setView("personal");
-        }}
-      />
-
-      <main className="chat-area">
-        <div className="chat-header">
-          <h2>
-            {view === "group"
-              ? selectedGroup?.name || "Select a Group"
-              : selectedUser?.name || "Select a Friend"}
-          </h2>
-          <ThemeToggle theme={theme} toggle={handleThemeToggle} />
+    <div className={`community-page ${theme}`} style={{ display: "flex", gap: 16 }}>
+      <aside style={{ width: 300, padding: 16, borderRight: "1px solid #eee" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h3>Community Topics</h3>
+          <ThemeToggle theme={theme} toggle={toggleTheme} />
         </div>
+        <TopicList onSelect={setSelectedTopic} selected={selectedTopic} />
+        <hr />
+        <ChallengeList userId={userId} />
+      </aside>
 
-        <div className="chat-content">
-          {view === "group" && selectedGroup && (
-            <GroupChat group={selectedGroup} />
-          )}
-          {view === "personal" && selectedUser && (
-            <PersonalChat user={selectedUser} />
-          )}
-          {!selectedGroup && view === "group" && (
-            <p className="placeholder">Select a group to start chatting</p>
-          )}
-          {!selectedUser && view === "personal" && (
-            <p className="placeholder">Select a friend to start chatting</p>
-          )}
-        </div>
+      <main style={{ flex: 1, padding: 16 }}>
+        {selectedTopic ? (
+          <TopicDetail topic={selectedTopic} userId={userId} />
+        ) : (
+          <div>
+            <h2>Welcome to the SnoRelax Community</h2>
+            <p>
+              This space focuses on private reflections, guided prompts, and
+              gentle challenges — not social feeds. Choose a topic on the left
+              to begin a private reflection or try a short challenge.
+            </p>
+          </div>
+        )}
       </main>
+
+      <aside style={{ width: 320, padding: 16, borderLeft: "1px solid #eee" }}>
+        <SnoBotWidget userId={userId} onSave={() => {}} />
+        <hr />
+        <MyProgress userId={userId} />
+      </aside>
     </div>
   );
 }
