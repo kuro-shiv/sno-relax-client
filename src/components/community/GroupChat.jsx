@@ -31,6 +31,9 @@ export default function GroupChat({ group, userId }) {
     socket.on("receiveGroupMessage", (m) => {
       if (String(m.groupId) === String(group._id)) setMessages((s) => [...s, m]);
     });
+    socket.on("messageDeleted", ({ messageId }) => {
+      setMessages((s) => s.filter((m) => String(m._id || m.id) !== String(messageId)));
+    });
     socket.on("typing", (payload) => {
       if (payload.groupId === group._id) setTyping(payload.typing);
     });

@@ -1,10 +1,17 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
+import { io } from "socket.io-client";
 
 const API = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
 export default function NoticeBoard() {
   const [announcements, setAnnouncements] = useState([]);
+
+  useEffect(() => {
+    const socket = io(process.env.REACT_APP_API_BASE || "http://localhost:5000");
+    socket.on("announcementCreated", (a) => setAnnouncements((prev) => [a, ...prev]));
+    return () => socket.disconnect();
+  }, []);
 
   useEffect(() => {
     const load = async () => {
