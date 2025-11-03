@@ -1,4 +1,3 @@
-// src/components/MoodTracker.js
 import React, { useState, useEffect } from "react";
 import {
   LineChart,
@@ -11,72 +10,131 @@ import {
 } from "recharts";
 import "../styles/MoodTracker.css";
 
-const API_BASE = process.env.REACT_APP_API_BASE || "http://localhost:5000";
-
 const MoodTracker = () => {
   const [data, setData] = useState([]);
-  const userId = localStorage.getItem("sno_userId");
+  const [note, setNote] = useState("");
+  const [feedback, setFeedback] = useState("");
 
-  // Fetch moods
+  // 🧠 Load saved data
   useEffect(() => {
-    if (!userId) return;
+    const saved = JSON.parse(localStorage.getItem("moods") || "[]");
+    setData(saved);
+  }, []);
 
-    fetch(`${API_BASE}/moodtracker/${userId}`)
-      .then((res) => res.json())
-      .then((res) => {
-        if (res.ok) {
-          const chartData = res.moods.map((m) => ({
-            day: new Date(m.date).toLocaleDateString("en-US", { weekday: "short" }),
-            mood: m.mood,
-          }));
-          setData(chartData);
-        }
-      })
-      .catch(console.error);
-  }, [userId]);
-
-  // Add mood
-  const handleAddMood = async (mood) => {
-    if (!userId) return;
-
-    const res = await fetch(`${API_BASE}/moodtracker/${userId}`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ mood }),
-    });
-    const json = await res.json();
-    if (json.ok) {
-      const entry = {
-        day: new Date(json.entry.date).toLocaleDateString("en-US", { weekday: "short" }),
-        mood: json.entry.mood,
-      };
-      setData((prev) => [...prev, entry]);
-    }
+  // 💾 Save mood
+  const handleAddMood = (mood) => {
+    const entry = {
+      date: new Date().toISOString(),
+      mood,
+      note,
+    };
+    const updated = [...data, entry];
+    setData(updated);
+    localStorage.setItem("moods", JSON.stringify(updated));
+    setNote("");
   };
+
+  // 📊 Prepare last 7 entries
+  const last7 = data.slice(-7).map((m) => ({
+    day: new Date(m.date).toLocaleDateString("en-US", { weekday: "short" }),
+    mood: m.mood,
+  }));
+
+  // 📈 Weekly summary
+  const avg =
+    last7.length > 0
+      ? (last7.reduce((sum, m) => sum + m.mood, 0) / last7.length).toFixed(1)
+      : 0;
+
+  const bestDay = last7.reduce(
+    (a, b) => (b.mood > (a?.mood || 0) ? b : a),
+    null
+  );
+  const worstDay = last7.reduce(
+    (a, b) => (b.mood < (a?.mood || 6) ? b : a),
+    null
+  );
+
+  // 🧭 Feedback trend
+  useEffect(() => {
+    if (last7.length < 3) {
+      setFeedback("Keep tracking to see your weekly insights!");
+      return;
+    }
+
+    const firstHalf = last7.slice(0, 3).reduce((s, m) => s + m.mood, 0) / 3;
+    const lastHalf =
+      last7.slice(-3).reduce((s, m) => s + m.mood, 0) / 3;
+
+    if (lastHalf > firstHalf + 0.5)
+      setFeedback("🌈 You’ve been positive lately — keep it up!");
+    else if (lastHalf < firstHalf - 0.5)
+      setFeedback("💤 Looks like a tough week — take time to rest.");
+    else setFeedback("⚖️ Your mood’s been stable this week!");
+  }, [data]);
 
   return (
     <div className="mood-tracker">
-      <h2>Track Your Mood</h2>
+      <h2>🧭 Track Your Mood</h2>
 
-      {/* Mood buttons */}
-      <div className="mood-buttons">
-        <button onClick={() => handleAddMood(1)}>😔</button>
-        <button onClick={() => handleAddMood(2)}>😕</button>
-        <button onClick={() => handleAddMood(3)}>😐</button>
-        <button onClick={() => handleAddMood(4)}>😊</button>
-        <button onClick={() => handleAddMood(5)}>🤩</button>
+      {/* Input */}
+      <div className="mood-input">
+        <div className="emoji-row">
+          {[1, 2, 3, 4, 5].map((n, i) => (
+            <button key={i} onClick={() => handleAddMood(n)}>
+              {["😞", "😕", "😐", "😊", "🤩"][i]}
+            </button>
+          ))}
+        </div>
+
+        <input
+          type="text"
+          value={note}
+          onChange={(e) => setNote(e.target.value)}
+          placeholder="Add a short note (e.g. Work, Sleep, Family)..."
+        />
       </div>
 
       {/* Chart */}
-      <ResponsiveContainer width="100%" height={300}>
-        <LineChart data={data}>
-          <CartesianGrid strokeDasharray="3 3" stroke="#334155" />
-          <XAxis dataKey="day" stroke="#cbd5e1" />
-          <YAxis domain={[0, 5]} stroke="#cbd5e1" />
-          <Tooltip />
-          <Line type="monotone" dataKey="mood" stroke="#3b82f6" strokeWidth={3} />
-        </LineChart>
-      </ResponsiveContainer>
+      <div className="chart-section">
+        <h3>📊 Mood Trends (Last 7 Entries)</h3>
+        {last7.length === 0 ? (
+          <p style={{ color: "#888" }}>No data yet — record your first mood!</p>
+        ) : (
+          <ResponsiveContainer width="100%" height={250}>
+            <LineChart data={last7}>
+              <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
+              <XAxis dataKey="day" />
+              <YAxis domain={[0, 5]} />
+              <Tooltip />
+              <Line
+                type="monotone"
+                dataKey="mood"
+                stroke="#3b82f6"
+                strokeWidth={3}
+                dot={{ r: 4 }}
+              />
+            </LineChart>
+          </ResponsiveContainer>
+        )}
+      </div>
+
+      {/* Summary */}
+      {last7.length > 0 && (
+        <div className="summary-card">
+          <h3>📅 Weekly Summary</h3>
+          <p>
+            <strong>Average Mood:</strong> {avg} / 5
+          </p>
+          <p>
+            <strong>Best Day:</strong> {bestDay?.day} ({bestDay?.mood}/5)
+          </p>
+          <p>
+            <strong>Toughest Day:</strong> {worstDay?.day} ({worstDay?.mood}/5)
+          </p>
+          <div className="feedback">{feedback}</div>
+        </div>
+      )}
     </div>
   );
 };
