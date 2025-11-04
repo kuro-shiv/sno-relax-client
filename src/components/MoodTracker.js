@@ -1,142 +1,121 @@
-import React, { useState, useEffect } from "react";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-} from "recharts";
-import "../styles/MoodTracker.css";
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-const MoodTracker = () => {
-  const [data, setData] = useState([]);
+export default function MoodTrackerPage() {
+  const [mood, setMood] = useState(null);
   const [note, setNote] = useState("");
-  const [feedback, setFeedback] = useState("");
+  const [moodHistory, setMoodHistory] = useState([]);
+  const userId = "123"; // 🔧 Replace with actual logged-in user ID
 
-  // 🧠 Load saved data
+  // ✅ Fetch user moods
   useEffect(() => {
-    const saved = JSON.parse(localStorage.getItem("moods") || "[]");
-    setData(saved);
+    fetchMoods();
   }, []);
 
-  // 💾 Save mood
-  const handleAddMood = (mood) => {
-    const entry = {
-      date: new Date().toISOString(),
-      mood,
-      note,
-    };
-    const updated = [...data, entry];
-    setData(updated);
-    localStorage.setItem("moods", JSON.stringify(updated));
-    setNote("");
+  const fetchMoods = async () => {
+    try {
+      const res = await axios.get(`http://localhost:5000/api/moodtracker/${userId}`);
+      setMoodHistory(res.data.moods || []);
+    } catch (err) {
+      console.error("Failed to load moods", err);
+    }
   };
 
-  // 📊 Prepare last 7 entries
-  const last7 = data.slice(-7).map((m) => ({
-    day: new Date(m.date).toLocaleDateString("en-US", { weekday: "short" }),
-    mood: m.mood,
-  }));
+  const handleMoodSubmit = async () => {
+    if (!mood) return alert("Please select your mood");
 
-  // 📈 Weekly summary
-  const avg =
-    last7.length > 0
-      ? (last7.reduce((sum, m) => sum + m.mood, 0) / last7.length).toFixed(1)
-      : 0;
-
-  const bestDay = last7.reduce(
-    (a, b) => (b.mood > (a?.mood || 0) ? b : a),
-    null
-  );
-  const worstDay = last7.reduce(
-    (a, b) => (b.mood < (a?.mood || 6) ? b : a),
-    null
-  );
-
-  // 🧭 Feedback trend
-  useEffect(() => {
-    if (last7.length < 3) {
-      setFeedback("Keep tracking to see your weekly insights!");
-      return;
+    try {
+      await axios.post(`http://localhost:5000/api/moodtracker/${userId}`, {
+        mood,
+        note,
+      });
+      setMood(null);
+      setNote("");
+      fetchMoods();
+    } catch (err) {
+      console.error("Error saving mood", err);
     }
-
-    const firstHalf = last7.slice(0, 3).reduce((s, m) => s + m.mood, 0) / 3;
-    const lastHalf =
-      last7.slice(-3).reduce((s, m) => s + m.mood, 0) / 3;
-
-    if (lastHalf > firstHalf + 0.5)
-      setFeedback("🌈 You’ve been positive lately — keep it up!");
-    else if (lastHalf < firstHalf - 0.5)
-      setFeedback("💤 Looks like a tough week — take time to rest.");
-    else setFeedback("⚖️ Your mood’s been stable this week!");
-  }, [data]);
+  };
 
   return (
-    <div className="mood-tracker">
-      <h2>🧭 Track Your Mood</h2>
+    <div className="min-h-screen w-full bg-white flex flex-col justify-between items-center text-gray-800 p-4 sm:p-6 md:p-10">
+      
+      {/* Header */}
+      <header className="w-full max-w-3xl text-center mt-6">
+        <h1 className="text-3xl sm:text-4xl font-semibold text-blue-600">
+          Mood Tracker 😊
+        </h1>
+        <p className="text-gray-500 mt-2 text-base sm:text-lg">
+          Track your daily mood and stay mindful
+        </p>
+      </header>
 
-      {/* Input */}
-      <div className="mood-input">
-        <div className="emoji-row">
-          {[1, 2, 3, 4, 5].map((n, i) => (
-            <button key={i} onClick={() => handleAddMood(n)}>
-              {["😞", "😕", "😐", "😊", "🤩"][i]}
+      {/* Mood Selector */}
+      <div className="flex flex-col items-center mt-8 space-y-4">
+        <div className="grid grid-cols-5 gap-4 text-3xl sm:text-4xl">
+          {["😡", "😕", "😐", "🙂", "😄"].map((emoji, index) => (
+            <button
+              key={index}
+              onClick={() => setMood(index + 1)}
+              className={`p-3 sm:p-4 rounded-2xl shadow-md hover:scale-110 transition-transform duration-150 ${
+                mood === index + 1 ? "bg-blue-100 scale-110" : "bg-gray-50"
+              }`}
+            >
+              {emoji}
             </button>
           ))}
         </div>
 
-        <input
-          type="text"
+        <textarea
+          className="w-[90vw] sm:w-[70vw] md:w-[50vw] mt-6 p-3 border border-gray-300 rounded-xl text-base sm:text-lg focus:outline-none focus:ring-2 focus:ring-blue-400"
+          placeholder="Add a note (optional)..."
           value={note}
           onChange={(e) => setNote(e.target.value)}
-          placeholder="Add a short note (e.g. Work, Sleep, Family)..."
-        />
+        ></textarea>
+
+        <button
+          onClick={handleMoodSubmit}
+          className="mt-4 bg-blue-600 text-white px-6 py-3 rounded-xl text-lg font-medium hover:bg-blue-700 transition-all"
+        >
+          Save Mood
+        </button>
       </div>
 
-      {/* Chart */}
-      <div className="chart-section">
-        <h3>📊 Mood Trends (Last 7 Entries)</h3>
-        {last7.length === 0 ? (
-          <p style={{ color: "#888" }}>No data yet — record your first mood!</p>
-        ) : (
-          <ResponsiveContainer width="100%" height={250}>
-            <LineChart data={last7}>
-              <CartesianGrid strokeDasharray="3 3" stroke="#ddd" />
-              <XAxis dataKey="day" />
-              <YAxis domain={[0, 5]} />
-              <Tooltip />
-              <Line
-                type="monotone"
-                dataKey="mood"
-                stroke="#3b82f6"
-                strokeWidth={3}
-                dot={{ r: 4 }}
-              />
-            </LineChart>
-          </ResponsiveContainer>
-        )}
-      </div>
-
-      {/* Summary */}
-      {last7.length > 0 && (
-        <div className="summary-card">
-          <h3>📅 Weekly Summary</h3>
-          <p>
-            <strong>Average Mood:</strong> {avg} / 5
-          </p>
-          <p>
-            <strong>Best Day:</strong> {bestDay?.day} ({bestDay?.mood}/5)
-          </p>
-          <p>
-            <strong>Toughest Day:</strong> {worstDay?.day} ({worstDay?.mood}/5)
-          </p>
-          <div className="feedback">{feedback}</div>
+      {/* History Section */}
+      <section className="w-full max-w-3xl mt-10 mb-8">
+        <h2 className="text-xl sm:text-2xl font-semibold mb-4 text-gray-700">
+          Your Recent Moods
+        </h2>
+        <div className="flex flex-col gap-3 overflow-y-auto max-h-[40vh] sm:max-h-[50vh] px-2">
+          {moodHistory.length === 0 ? (
+            <p className="text-gray-400 text-center">No moods recorded yet.</p>
+          ) : (
+            moodHistory
+              .slice(-10)
+              .reverse()
+              .map((entry) => (
+                <div
+                  key={entry.id || entry._id}
+                  className="w-full p-3 sm:p-4 rounded-xl bg-gray-50 shadow-sm border border-gray-200 flex justify-between items-center"
+                >
+                  <span className="text-2xl">
+                    {["😡", "😕", "😐", "🙂", "😄"][entry.mood - 1]}
+                  </span>
+                  <div className="flex flex-col text-right">
+                    <span className="text-sm sm:text-base text-gray-600">
+                      {new Date(entry.date).toLocaleDateString()}
+                    </span>
+                    {entry.note && (
+                      <span className="text-xs sm:text-sm text-gray-500 italic truncate max-w-[200px]">
+                        {entry.note}
+                      </span>
+                    )}
+                  </div>
+                </div>
+              ))
+          )}
         </div>
-      )}
+      </section>
     </div>
   );
-};
-
-export default MoodTracker;
+}
