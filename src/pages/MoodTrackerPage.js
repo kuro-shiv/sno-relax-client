@@ -7,7 +7,7 @@ const MoodTrackerPage = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="page mood-tracker-page">
+    <div className="mood-tracker-page">
       <header className="mood-header">
         <h1>📊 Mood Tracker</h1>
         <p className="subtitle">
