@@ -1,4 +1,3 @@
-// src/pages/MoodTrackerPage.js
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import MoodTracker from "../components/MoodTracker";
@@ -9,9 +8,15 @@ const MoodTrackerPage = () => {
 
   return (
     <div className="page mood-tracker-page">
-      <h1>📊 Mood Tracker</h1>
-      <p className="subtitle">Track your daily emotions and visualize your mood trends.</p>
+      <header className="mood-header">
+        <h1>📊 Mood Tracker</h1>
+        <p className="subtitle">
+          Track your emotions and visualize your weekly & monthly mood trends.
+        </p>
+      </header>
+
       <MoodTracker />
+
       <button onClick={() => navigate("/dashboard")} className="btn back-btn">
         ⬅ Back to Dashboard
       </button>

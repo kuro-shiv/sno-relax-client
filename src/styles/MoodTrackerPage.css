@@ -1,21 +1,37 @@
 .mood-tracker-page {
-  padding: 2rem;
+  min-height: auto;
+  width: auto;
+  background-color: #0b1e3d;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: flex-start;
+  padding: 1rem 1rem;
+  box-sizing: border-box;
 }
 
-.mood-tracker-page .back-btn {
-  margin-top: 1.5rem;
-  background: #3b82f6;
-  color: #fff;
+.mood-header {
+  text-align: center;
+  margin-bottom: 1rem;
+}
+
+.subtitle {
+  color: #555;
+  margin-top: 0.5rem;
+  font-size: 1rem;
+}
+
+.back-btn {
+  margin-top: 2rem;
+  padding: 0.8rem 1.2rem;
   border: none;
-  padding: 0.8rem 1.5rem;
-  border-radius: 10px;
+  background-color: #3b82f6;
+  color: white;
+  border-radius: 8px;
   cursor: pointer;
-  transition: background 0.3s;
+  transition: background 0.2s;
 }
 
-.mood-tracker-page .back-btn:hover {
-  background: #2563eb;
+.back-btn:hover {
+  background-color: #2563eb;
 }
