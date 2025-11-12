@@ -24,12 +24,12 @@ ChartJS.register(
 );
 
 const moods = [
-  { emoji: "😄Happy ", label: "Happy", value: 5 },
-  { emoji: "🙂   Good", label: "Good", value: 4 },
-  { emoji: "😐 Neutral", label: "Neutral", value: 3 },
-  { emoji: "😴 Tired", label: "Tired", value: 2 },
-  { emoji: "😡 Angry", label: "Angry", value: 1 },
-  { emoji: "😢  Sad", label: "very Sad", value: 0 },
+  { emoji: "😄", label: "Happy", value: 5 },
+  { emoji: "🙂", label: "Good", value: 4 },
+  { emoji: "😐", label: "Neutral", value: 3 },
+  { emoji: "😴", label: "Tired", value: 2 },
+  { emoji: "😡", label: "Angry", value: 1 },
+  { emoji: "😢", label: "Sad", value: 0 },
 ];
 
 export default function MoodTracker() {
@@ -37,11 +37,10 @@ export default function MoodTracker() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ Get userId from localStorage (set during login)
   const userId = localStorage.getItem("userId") || "guest";
   const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-  // ✅ Fetch mood history from backend
+  // ✅ Fetch mood history
   useEffect(() => {
     const fetchMoods = async () => {
       try {
@@ -59,12 +58,12 @@ export default function MoodTracker() {
     fetchMoods();
   }, [userId, apiBase]);
 
-  // ✅ Handle new mood selection
+  // ✅ Add new mood
   const handleMoodClick = async (mood) => {
     setSelectedMood(mood.label);
     try {
       const res = await axios.post(`${apiBase}/api/moods/${userId}`, {
-        mood: mood.label,
+        mood: mood.value,
       });
       if (res.data.ok) {
         setMoodData((prev) => [...prev, res.data.entry]);
@@ -74,7 +73,7 @@ export default function MoodTracker() {
     }
   };
 
-  // ✅ Chart Data
+  // ✅ Prepare chart data
   const chartData = {
     labels: moodData.map((d) =>
       new Date(d.date).toLocaleDateString("en-US", { weekday: "short" })
@@ -82,27 +81,21 @@ export default function MoodTracker() {
     datasets: [
       {
         label: "Mood Level",
-        data: moodData.map((d) => {
-          const mood = moods.find((m) => m.label === d.mood);
-          return mood ? mood.value : 3;
-        }),
+        data: moodData.map((d) => d.mood),
         borderColor: "#3b82f6",
         backgroundColor: "#93c5fd",
         tension: 0.4,
+        fill: true,
       },
     ],
   };
 
-  // ✅ Calculate average moods
+  // ✅ Calculate average mood
   const avgMood = (days) => {
     const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
     const filtered = moodData.filter((d) => new Date(d.date) >= cutoff);
     if (!filtered.length) return "N/A";
-    const avg =
-      filtered.reduce((sum, d) => {
-        const mood = moods.find((m) => m.label === d.mood);
-        return sum + (mood ? mood.value : 3);
-      }, 0) / filtered.length;
+    const avg = filtered.reduce((sum, d) => sum + d.mood, 0) / filtered.length;
     if (avg >= 4.5) return "😄 Excellent";
     if (avg >= 3.5) return "🙂 Good";
     if (avg >= 2.5) return "😐 Neutral";
@@ -140,11 +133,19 @@ export default function MoodTracker() {
                 legend: { display: false },
                 title: {
                   display: true,
-                  text: "Mood Trend (Recent entries)",
+                  text: "Mood Trend (Recent Entries)",
                 },
               },
               scales: {
-                y: { min: 0, max: 5, ticks: { stepSize: 1 } },
+                y: {
+                  min: 0,
+                  max: 5,
+                  ticks: { stepSize: 1 },
+                  title: {
+                    display: true,
+                    text: "Mood Level (0–5)",
+                  },
+                },
               },
             }}
           />
