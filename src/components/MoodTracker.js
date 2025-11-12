@@ -24,11 +24,12 @@ ChartJS.register(
 );
 
 const moods = [
-  { emoji: "😄", label: "Happy", value: 5 },
-  { emoji: "🙂", label: "Good", value: 4 },
-  { emoji: "😐", label: "Neutral", value: 3 },
-  { emoji: "🙁", label: "Sad", value: 2 },
-  { emoji: "😢", label: "Very Sad", value: 1 },
+  { emoji: "😄Happy ", label: "Happy", value: 5 },
+  { emoji: "🙂   Good", label: "Good", value: 4 },
+  { emoji: "😐 Neutral", label: "Neutral", value: 3 },
+  { emoji: "😴 Tired", label: "Tired", value: 2 },
+  { emoji: "😡 Angry", label: "Angry", value: 1 },
+  { emoji: "😢  Sad", label: "very Sad", value: 0 },
 ];
 
 export default function MoodTracker() {
@@ -36,7 +37,7 @@ export default function MoodTracker() {
   const [selectedMood, setSelectedMood] = useState(null);
 
   // 👉 Replace with real user ID once you have authentication
-  const userId = "6740f2a1234abcd5678ef90"; // example dummy userId
+  const userId = "sno_userId"; // example dummy userId
 
   // ✅ Fetch mood history from backend
   useEffect(() => {
