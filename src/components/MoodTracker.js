@@ -35,34 +35,39 @@ const moods = [
 export default function MoodTracker() {
   const [moodData, setMoodData] = useState([]);
   const [selectedMood, setSelectedMood] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // 👉 Replace with real user ID once you have authentication
-  const userId = "sno_userId"; // example dummy userId
+  // ✅ Get userId from localStorage (set during login)
+  const userId = localStorage.getItem("userId") || "guest";
+  const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
   // ✅ Fetch mood history from backend
   useEffect(() => {
     const fetchMoods = async () => {
       try {
-        const res = await axios.get(`/api/moods/${userId}`);
+        setLoading(true);
+        const res = await axios.get(`${apiBase}/api/moods/${userId}`);
         if (res.data.ok) {
           setMoodData(res.data.moods);
         }
       } catch (err) {
         console.error("Failed to fetch moods:", err);
+      } finally {
+        setLoading(false);
       }
     };
     fetchMoods();
-  }, [userId]);
+  }, [userId, apiBase]);
 
   // ✅ Handle new mood selection
   const handleMoodClick = async (mood) => {
     setSelectedMood(mood.label);
     try {
-      const res = await axios.post(`/api/moods/${userId}`, {
+      const res = await axios.post(`${apiBase}/api/moods/${userId}`, {
         mood: mood.label,
       });
       if (res.data.ok) {
-        setMoodData((prev) => [...prev.slice(-9), res.data.entry]);
+        setMoodData((prev) => [...prev, res.data.entry]);
       }
     } catch (err) {
       console.error("Error saving mood:", err);
@@ -122,22 +127,28 @@ export default function MoodTracker() {
       </div>
 
       <div className="chart-container">
-        <Line
-          data={chartData}
-          options={{
-            responsive: true,
-            plugins: {
-              legend: { display: false },
-              title: {
-                display: true,
-                text: "Mood Trend (Recent 9–10 entries)",
+        {loading ? (
+          <p>Loading moods...</p>
+        ) : moodData.length === 0 ? (
+          <p>No mood data yet. Select a mood to get started!</p>
+        ) : (
+          <Line
+            data={chartData}
+            options={{
+              responsive: true,
+              plugins: {
+                legend: { display: false },
+                title: {
+                  display: true,
+                  text: "Mood Trend (Recent entries)",
+                },
               },
-            },
-            scales: {
-              y: { min: 1, max: 5, ticks: { stepSize: 1 } },
-            },
-          }}
-        />
+              scales: {
+                y: { min: 0, max: 5, ticks: { stepSize: 1 } },
+              },
+            }}
+          />
+        )}
       </div>
 
       <div className="summary-section">
