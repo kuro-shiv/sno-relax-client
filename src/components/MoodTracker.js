@@ -23,7 +23,7 @@ ChartJS.register(
   Legend
 );
 
-// ✅ Final mood scale (aligned with your system)
+// ✅ Mood scale (same as backend & design)
 const moods = [
   { emoji: "😄", label: "Happy", value: 5 },
   { emoji: "🙂", label: "Good", value: 4 },
@@ -38,11 +38,11 @@ export default function MoodTracker() {
   const [selectedMood, setSelectedMood] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // ✅ userId from localStorage (auto-set at login)
-  const userId = localStorage.getItem("userId");
+  // ✅ Use same ID as Profile.jsx
+  const userId = localStorage.getItem("sno_userId") || "";
   const apiBase = process.env.REACT_APP_API_BASE || "http://localhost:5000";
 
-  // ✅ Fetch user's mood history
+  // ✅ Fetch moods for this user
   useEffect(() => {
     const fetchMoods = async () => {
       if (!userId) return;
@@ -61,7 +61,7 @@ export default function MoodTracker() {
     fetchMoods();
   }, [userId, apiBase]);
 
-  // ✅ Add new mood (per user)
+  // ✅ Add a new mood entry
   const handleMoodClick = async (mood) => {
     if (!userId) {
       alert("Please log in to track your mood!");
@@ -80,17 +80,16 @@ export default function MoodTracker() {
     }
   };
 
-  // ✅ Determine emoji for numeric value
+  // ✅ Map mood numeric → emoji
   const getEmojiForMood = (value) => {
     const match = moods.find((m) => m.value === value);
     return match ? match.emoji : "❓";
   };
 
-  // ✅ Average mood analyzer (7-day / 30-day)
+  // ✅ Calculate average mood
   const avgMood = (days) => {
     const cutoff = Date.now() - days * 24 * 60 * 60 * 1000;
     const filtered = moodData.filter((d) => new Date(d.date) >= cutoff);
-
     if (!filtered.length) return "N/A";
 
     const avg = filtered.reduce((sum, d) => sum + d.mood, 0) / filtered.length;
@@ -103,7 +102,7 @@ export default function MoodTracker() {
     return "😢 Sad";
   };
 
-  // ✅ Mood color based on last mood average
+  // ✅ Chart color based on average
   const getMoodColor = () => {
     const avg = moodData.length
       ? moodData.reduce((sum, d) => sum + d.mood, 0) / moodData.length
@@ -115,7 +114,7 @@ export default function MoodTracker() {
     return "#ef4444"; // red
   };
 
-  // ✅ Chart Data
+  // ✅ Chart.js config
   const chartData = {
     labels: moodData.map((d) =>
       new Date(d.date).toLocaleDateString("en-US", { weekday: "short" })
@@ -125,7 +124,7 @@ export default function MoodTracker() {
         label: "Mood Level",
         data: moodData.map((d) => d.mood),
         borderColor: getMoodColor(),
-        backgroundColor: `${getMoodColor()}33`, // transparent fill
+        backgroundColor: `${getMoodColor()}33`,
         tension: 0.4,
         fill: true,
         pointRadius: 6,
@@ -136,13 +135,12 @@ export default function MoodTracker() {
 
   return (
     <div className="mood-tracker-container">
-      {/* ✅ Header */}
       <h1 className="mood-tracker-title">📊 Mood Tracker</h1>
       <p className="mood-tracker-subtitle">
         Track your emotions and visualize your weekly & monthly mood trends.
       </p>
 
-      {/* ✅ Emoji Mood Buttons */}
+      {/* ✅ Emoji Buttons */}
       <div className="emoji-row">
         {moods.map((m) => (
           <button
@@ -158,7 +156,7 @@ export default function MoodTracker() {
         ))}
       </div>
 
-      {/* ✅ Chart Section */}
+      {/* ✅ Chart */}
       <div className="chart-container">
         {loading ? (
           <p>Loading moods...</p>
@@ -201,7 +199,7 @@ export default function MoodTracker() {
         )}
       </div>
 
-      {/* ✅ Summary Cards */}
+      {/* ✅ Summary */}
       <div className="summary-section">
         <div className="summary-card">
           <h3>📅 Weekly Average</h3>
