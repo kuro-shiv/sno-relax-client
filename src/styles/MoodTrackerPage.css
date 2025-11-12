@@ -67,3 +67,161 @@
     font-size: 0.95rem;
   }
 }
+
+/* 🌍 Full-screen flexible layout */
+.mood-tracker-page {
+  min-height: 100vh;
+  width: 100vw;
+  background-color: #ffffff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 3rem 2rem;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  transition: all 0.3s ease;
+}
+
+/* 🌟 Header Section */
+.mood-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.mood-header h1 {
+  font-size: clamp(1.8rem, 2.5vw + 1rem, 3rem); /* scales with screen width */
+  font-weight: 700;
+  color: #1e293b;
+  margin-bottom: 0.8rem;
+}
+
+.subtitle {
+  color: #475569;
+  font-size: clamp(0.95rem, 1vw + 0.6rem, 1.2rem);
+  max-width: 700px;
+  margin: 0 auto;
+  line-height: 1.6;
+  text-align: center;
+}
+
+/* 🔙 Back Button */
+.back-btn {
+  margin-top: 1.5rem;
+  padding: 0.9rem 1.8rem;
+  border: none;
+  background-color: #3b82f6;
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  align-self: flex-start;
+}
+
+.back-btn:hover {
+  background-color: #2563eb;
+  transform: scale(1.05);
+}
+
+/* 🖥️ Large screen optimizations */
+@media (min-width: 1440px) {
+  .mood-tracker-page {
+    padding: 4rem 5rem;
+  }
+
+  .mood-header h1 {
+    font-size: 3.2rem;
+  }
+
+  .subtitle {
+    font-size: 1.3rem;
+    max-width: 900px;
+  }
+}
+
+/* 💻 Laptops and medium screens */
+@media (max-width: 1024px) {
+  .mood-tracker-page {
+    padding: 2.5rem 2rem;
+  }
+
+  .mood-header h1 {
+    font-size: 2.4rem;
+  }
+
+  .subtitle {
+    font-size: 1.05rem;
+    max-width: 650px;
+  }
+
+  .back-btn {
+    padding: 0.8rem 1.4rem;
+    font-size: 0.95rem;
+  }
+}
+
+/* 📱 Tablets */
+@media (max-width: 768px) {
+  .mood-tracker-page {
+    padding: 2rem 1rem;
+    align-items: center;
+  }
+
+  .mood-header h1 {
+    font-size: 2rem;
+  }
+
+  .subtitle {
+    font-size: 1rem;
+    max-width: 90%;
+  }
+
+  .back-btn {
+    font-size: 0.9rem;
+    padding: 0.7rem 1.2rem;
+    align-self: center;
+  }
+}
+
+/* 📱 Small Mobile Screens */
+@media (max-width: 480px) {
+  .mood-tracker-page {
+    padding: 1.5rem 1rem;
+  }
+
+  .mood-header h1 {
+    font-size: 1.7rem;
+  }
+
+  .subtitle {
+    font-size: 0.9rem;
+  }
+
+  .back-btn {
+    width: 100%;
+    max-width: 250px;
+    font-size: 0.9rem;
+    padding: 0.7rem 1rem;
+    border-radius: 10px;
+    margin-top: 1.2rem;
+  }
+}
+
+/* 🧭 Ultra-small devices (foldables / small phones) */
+@media (max-width: 360px) {
+  .mood-header h1 {
+    font-size: 1.5rem;
+  }
+
+  .subtitle {
+    font-size: 0.85rem;
+    line-height: 1.4;
+  }
+
+  .back-btn {
+    font-size: 0.8rem;
+    padding: 0.6rem 0.9rem;
+  }
+}

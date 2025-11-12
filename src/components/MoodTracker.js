@@ -25,6 +25,7 @@ ChartJS.register(
 
 // ✅ Mood scale (same as backend & design)
 const moods = [
+  "Choose a mood From the list ",
   { emoji: "😄", label: "Happy", value: 5 },
   { emoji: "🙂", label: "Good", value: 4 },
   { emoji: "😐", label: "Neutral", value: 3 },
