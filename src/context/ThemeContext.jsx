@@ -12,7 +12,11 @@ export const ThemeProvider = ({ children }) => {
   // Available themes (only light and dark)
   const themes = [
     { id: "light", name: "Light", hex: "#f3f4f6" },
-    { id: "dark", name: "Dark", hex: "#0f172a" }
+    { id: "dark", name: "Dark", hex: "#0f172a" },
+    // Therapist specific theme (page-level control) — allows the Therapist Notes
+    // page to adopt a distinct dark appearance while still being selectable
+    // from the Settings screen.
+    { id: "therapist", name: "Therapist", hex: "#0b1220" }
   ];
 
   // Save theme to localStorage whenever it changes
@@ -40,13 +44,50 @@ export const ThemeProvider = ({ children }) => {
     document.documentElement.style.setProperty("--app-primary", baseHex);
     document.documentElement.style.setProperty("--app-gradient", theme === "light" ? `linear-gradient(135deg, #f8fafc 0%, #eef2ff 100%)` : `linear-gradient(135deg, ${baseHex} 0%, ${baseHex}66 100%)`);
 
+  // Defaults for chat "paper" and bubble colors. We prefer white paper
+  // for the message list and input area so the conversation remains readable.
+  document.documentElement.style.setProperty("--chat-paper-bg", "#ffffff");
+  document.documentElement.style.setProperty("--chat-paper-text", "#000000");
+  document.documentElement.style.setProperty("--input-text", "#000000");
+
+  // Default bubble values (can be overridden per-theme)
+  document.documentElement.style.setProperty("--bot-bubble-bg", "#ffffff");
+  document.documentElement.style.setProperty("--bot-text", "#333333");
+  document.documentElement.style.setProperty("--user-bubble-bg", baseHex);
+  document.documentElement.style.setProperty("--user-text", "#ffffff");
+
     // foreground and background
     if (theme === "light") {
       document.documentElement.style.setProperty("--app-foreground", "#0f172a");
       document.documentElement.style.setProperty("--app-background", "#ffffff");
+      // Therapist-specific variables fall back to defaults for light theme
+      document.documentElement.style.setProperty("--therapist-chat-bg", "#ffffff");
+      document.documentElement.style.setProperty("--therapist-text", "#000000");
     } else {
       document.documentElement.style.setProperty("--app-foreground", "#ffffff");
       document.documentElement.style.setProperty("--app-background", "#0b1220");
+      // Defaults for non-light themes (dark). If user chooses the `therapist`
+      // theme we override below to ensure therapist page colors are applied.
+      document.documentElement.style.setProperty("--therapist-chat-bg", "#0b1220");
+      document.documentElement.style.setProperty("--therapist-text", "#000000");
+    }
+
+    // If a therapist-specific theme is selected, set explicit variables
+    // so the Therapist Notes page uses the requested appearance.
+    if (theme === "therapist") {
+      document.documentElement.style.setProperty("--app-foreground", "#ffffff");
+      document.documentElement.style.setProperty("--app-background", "#0b1220");
+      document.documentElement.style.setProperty("--therapist-chat-bg", "#0b1220");
+      // For dark/therapist themes use white text for readability over dark background
+      document.documentElement.style.setProperty("--therapist-text", "#ffffff");
+      // Slightly muted meta color for timestamps and small text
+      document.documentElement.style.setProperty("--therapist-meta", "#d1d5db");
+      // Override bubbles/input for therapist theme so white text works on dark bubbles
+      document.documentElement.style.setProperty("--bot-bubble-bg", "#0b1220");
+      document.documentElement.style.setProperty("--bot-text", "#ffffff");
+      // keep paper white for readability
+      document.documentElement.style.setProperty("--chat-paper-bg", "#ffffff");
+      document.documentElement.style.setProperty("--input-text", "#000000");
     }
   }, [theme]);
   

@@ -13,12 +13,6 @@ export default function TherapistNotesPage() {
       <div className={styles.notesWrapper}>
         <TherapistNotes />
       </div>
-      <button
-        onClick={() => navigate("/dashboard")}
-        className={`${styles.btn} ${styles.backBtn}`}
-      >
-        ⬅ Back to Dashboard
-      </button>
     </div>
   );
 }

@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import API_BASE from '../config/api.config';
+import '../styles/Chatbot.css';
 
 export default function AIGuide() {
   const [guide, setGuide] = useState(null);
@@ -85,8 +86,8 @@ export default function AIGuide() {
       {loading && <p>Generating personalized guide...</p>}
       {guide && (
         <div style={{ marginTop: 12 }}>
-          <div style={{ padding: 12, borderRadius: 8, background: guide.level === 'severe' ? '#fff1f2' : '#f0f9ff' }}>
-            <p style={{ margin: 0 }}>{guide.text || guide.summary}</p>
+          <div style={{ padding: 12, borderRadius: 8, background: guide.level === 'severe' ? '#fff1f2' : '#f0f9ff', color: '#000' }}>
+            <p style={{ margin: 0, color: '#000' }}>{guide.text || guide.summary}</p>
           </div>
 
           {guide.recommendations && guide.recommendations.length > 0 && (
