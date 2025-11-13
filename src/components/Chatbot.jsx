@@ -17,9 +17,7 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
 
   // ---------------- Auto-scroll ----------------
   useEffect(() => {
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
-    }
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
   // ---------------- Fetch previous chats ----------------
@@ -28,17 +26,25 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
       setLoading(true);
       try {
         const res = await fetch(`${API_BASE}/api/chat/history?userId=${userId}`);
-        const data = await res.json(); // expect [{ userMessage, botReply }]
-        if (data && Array.isArray(data)) {
-          const formatted = data.flatMap(chat => [
+        const data = await res.json();
+
+        if (Array.isArray(data)) {
+          const formatted = data.flatMap((chat) => [
             { sender: "user", text: chat.userMessage },
-            { sender: "bot", text: chat.botReply }
+            { sender: "bot", text: chat.botReply },
           ]);
-          setMessages(formatted.length ? formatted : [{ sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" }]);
+
+          setMessages(
+            formatted.length
+              ? formatted
+              : [{ sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" }]
+          );
         }
       } catch (err) {
         console.error("Error fetching chat history:", err);
-        setMessages([{ sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" }]);
+        setMessages([
+          { sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" },
+        ]);
       } finally {
         setLoading(false);
       }
@@ -47,10 +53,38 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
     fetchHistory();
   }, [userId, API_BASE]);
 
+  // ---------------- GOOGLE FREE TRANSLATOR ----------------
+
+  const googleTranslate = async (text, from, to) => {
+    try {
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(
+        text
+      )}`;
+
+      const res = await fetch(url);
+      const data = await res.json();
+
+      let translated = "";
+      data[0].forEach((chunk) => (translated += chunk[0]));
+
+      return translated;
+    } catch (err) {
+      console.error("Google Translate Error:", err);
+      return text;
+    }
+  };
+
+  const translateToEnglish = (text) =>
+    lang === "en" ? text : googleTranslate(text, lang, "en");
+
+  const translateFromEnglish = (text) =>
+    lang === "en" ? text : googleTranslate(text, "en", lang);
+
   // ---------------- Voice Recognition ----------------
   const handleVoice = () => {
     const SpeechRecognition =
       window.SpeechRecognition || window.webkitSpeechRecognition;
+
     if (!SpeechRecognition) return alert("Voice recognition not supported!");
 
     const recognition = new SpeechRecognition();
@@ -63,8 +97,8 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
 
     recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
-      const translatedToEnglish = await translateToEnglish(transcript);
-      handleSend(translatedToEnglish, true, transcript);
+      const english = await translateToEnglish(transcript);
+      handleSend(english, true, transcript);
     };
 
     recognition.onerror = (err) => {
@@ -75,47 +109,16 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
     recognition.onend = () => setListening(false);
   };
 
-  // ---------------- Translation Helpers ----------------
-  const translateToEnglish = async (text) => {
-    if (lang === "en") return text;
-    try {
-      const res = await fetch(`${API_BASE}/api/translate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, from: lang, to: "en" }),
-      });
-      const data = await res.json();
-      return data.translated || text;
-    } catch (err) {
-      console.error("Translation error (to English):", err);
-      return text;
-    }
-  };
-
-  const translateFromEnglish = async (text) => {
-    if (lang === "en") return text;
-    try {
-      const res = await fetch(`${API_BASE}/api/translate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, from: "en", to: lang }),
-      });
-      const data = await res.json();
-      return data.translated || text;
-    } catch (err) {
-      console.error("Translation error (from English):", err);
-      return text;
-    }
-  };
-
   // ---------------- Send Message ----------------
   const handleSend = async (msg = input, isMic = false, originalSpeech = null) => {
     if (!msg.trim()) return;
 
+    // Add user message
     setMessages((prev) => [
       ...prev,
-      { sender: "user", text: originalSpeech || msg },
+      { sender: "user", text: originalSpeech || (lang === "en" ? msg : msg) },
     ]);
+
     setInput("");
     setLoading(true);
 
@@ -133,24 +136,19 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
       const data = await res.json();
 
       if (data.text) {
-        const translatedResponse = await translateFromEnglish(data.text);
+        const finalText = await translateFromEnglish(data.text);
 
-        setMessages((prev) => [
-          ...prev,
-          { sender: "bot", text: translatedResponse },
-        ]);
+        setMessages((prev) => [...prev, { sender: "bot", text: finalText }]);
 
+        // Voice output
         if (isMic) {
-          const utter = new SpeechSynthesisUtterance(translatedResponse);
+          const utter = new SpeechSynthesisUtterance(finalText);
           utter.lang = lang === "auto" ? "en-IN" : lang;
           speechSynthesis.cancel();
           speechSynthesis.speak(utter);
         }
       } else {
-        setMessages((prev) => [
-          ...prev,
-          { sender: "bot", text: "⚠️ No response from server." },
-        ]);
+        setMessages((prev) => [...prev, { sender: "bot", text: "⚠️ No response from server." }]);
       }
     } catch (err) {
       console.error("Chat send error:", err);
@@ -193,12 +191,14 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
         >
           🎤
         </button>
+
         <input
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Type a message..."
           onKeyDown={(e) => e.key === "Enter" && handleSend()}
         />
+
         <button onClick={() => handleSend()}>➤</button>
       </div>
     </div>
