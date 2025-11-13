@@ -7,6 +7,7 @@ import ChatbotPage from "./pages/ChatbotPage";
 import Profile from "./pages/Profile";
 import MoodTrackerPage from "./pages/MoodTrackerPage";
 import TherapistNotesPage from "./pages/TherapistNotesPage";
+import AIGuide from "./pages/AIGuide";
 import CommunityPage from "./pages/CommunityPage";
 import Settings from "./pages/Settings";
 import HelpPage from "./pages/Help";
@@ -62,6 +63,10 @@ function App() {
           <Route
             path="/therapist-notes"
             element={isLoggedIn ? <TherapistNotesPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/ai-guide"
+            element={isLoggedIn ? <AIGuide /> : <Navigate to="/login" />}
           />
           <Route
             path="/community"

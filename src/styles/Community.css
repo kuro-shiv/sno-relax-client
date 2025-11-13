@@ -464,31 +464,32 @@
 }
 
 .violation-content {
-  background: white;
+  background: #000;
+  color: #fff;
   border-radius: 12px;
   padding: 32px;
   max-width: 500px;
   text-align: center;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
   animation: slideUp 0.3s ease;
 }
 
 .violation-content h2 {
   margin: 0 0 16px 0;
   font-size: 24px;
-  color: #e74c3c;
+  color: #fff;
 }
 
 .violation-content p {
   margin: 0 0 24px 0;
   font-size: 14px;
-  color: #666;
+  color: #ddd;
   line-height: 1.6;
 }
 
 .violation-content button {
   padding: 12px 32px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #444 0%, #111 100%);
   color: white;
   border: none;
   border-radius: 20px;

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   User, Activity, BookOpen, Handshake, Users, HelpCircle,
-  Settings, Bot, HeartPulse, Hospital, Menu, LogOut
+  Settings, Bot, HeartPulse, Hospital, Menu, LogOut,
+  Paperclip
 } from "lucide-react";
 import "../styles/Dashboard.css";
 
@@ -74,7 +75,7 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
           <button onClick={() => requireLogin("/profile")}><User size={18} /> Profile</button>
           <button onClick={() => requireLogin("/games")}><Activity size={18} /> Games</button>
           <button onClick={() => requireLogin("/mood-tracker")}><BookOpen size={18} /> Mood Tracker</button>
-          <button onClick={() => requireLogin("/therapist-notes")}><Handshake size={18} /> Therapist Notes</button>
+          <button onClick={() => requireLogin("/therapist-notes")}><Paperclip size={18} /> Therapist Notes</button>
           <button onClick={() => requireLogin("/community")}><Users size={18} /> Community</button>
           <button onClick={() => requireLogin("/settings")}><Settings size={18} /> Settings</button>
           <button onClick={() => requireLogin("/help")}><HelpCircle size={18} /> Help</button>
@@ -107,7 +108,7 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
           <div className="widgets">
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/chatbot")}><Bot size={28} /><h3>AI Chatbot</h3><p>Talk with SnoBot for stress relief and support.</p></div>
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/mood-tracker")}><BookOpen size={28} /><h3>Mood Tracker</h3><p>Log your daily mood & monitor changes.</p></div>
-          <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/therapist-notes")}><Handshake size={28} /><h3>Therapist Guide</h3><p>View and manage your therapist’s notes.</p></div>
+          <div className={`widget ${!isLoggedIn ? "disabled" : ""}`} onClick={() => requireLogin("/ai-guide")}><Handshake size={28} /><h3>AI Therapist Guide</h3><p>AI-guided therapist recommendations and routines.</p></div>
           <div className={`widget ${!isLoggedIn ? "disabled" : ""}`}><Hospital size={28} /><h3>Hospital Reports</h3><p>Store prescriptions & medical history.</p></div>
 
           {/* HealthVault always active */}
