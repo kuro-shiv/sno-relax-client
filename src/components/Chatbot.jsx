@@ -1,5 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chatbot.css";
+import "../styles/Chatbot-responsive.css";
+import "../styles/utilities.css";
 
 // ✅ Use consistent userId key (matches Login & MoodTracker)
 const storedUserId = localStorage.getItem("userId") || "guest";
@@ -9,6 +11,7 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
   const [input, setInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [listening, setListening] = useState(false);
+  const [selectedBot, setSelectedBot] = useState("snobot");
   const messagesEndRef = useRef(null);
 
   // ⭐ FIX: Add path prefix to history route
@@ -92,7 +95,10 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
     if (!SpeechRecognition) return alert("Voice recognition not supported!");
 
     const recognition = new SpeechRecognition();
-    recognition.lang = lang === "auto" ? "en-IN" : lang;
+    // If user requested auto-detection, don't force a lang so browser may use default/automatic detection.
+    if (lang && lang !== "auto") {
+      recognition.lang = lang;
+    }
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
 
@@ -101,7 +107,9 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
 
     recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
-      const english = await translateToEnglish(transcript);
+      // Translate transcript to English (use 'auto' detection if lang === 'auto') before sending to backend
+      const source = lang === "auto" ? "auto" : lang;
+      const english = await googleTranslate(transcript, source, "en");
       handleSend(english, true, transcript);
     };
 
@@ -134,6 +142,7 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
           userId,
           message: msg,
           lang,
+          persona: selectedBot,
         }),
       });
 
@@ -173,6 +182,21 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
   // ---------------- UI ----------------
   return (
     <div className="chat-fullscreen">
+      <nav className="chat-nav" role="tablist" aria-label="Chatbot persona selector">
+        {/* Plain, non-interactive label for SnoBot (text + emoji) */}
+        <div className="bot-static" title="SnoBot" aria-hidden="true">SnoBot 🤖</div>
+
+        <button
+          role="tab"
+          aria-selected={selectedBot === "robot"}
+          className={`bot-tab ${selectedBot === "robot" ? "active" : ""}`}
+          onClick={() => setSelectedBot("robot")}
+          title="Robot"
+        >
+          <span className="emoji" aria-hidden> 🤖</span>
+          <span className="label">Robot</span>
+        </button>
+      </nav>
       <div className="chat-window">
         {messages.map((msg, i) => (
           <div key={i} className={`message ${msg.sender}`}>

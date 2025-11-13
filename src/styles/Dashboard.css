@@ -93,6 +93,7 @@
   margin-bottom: clamp(1rem, 2vw, 1.5rem);
   flex-wrap: wrap;
   gap: clamp(0.5rem, 1vw, 1rem);
+  position: relative;
 }
 
 .topbar h1 {
@@ -141,6 +142,7 @@
     position: fixed;
     top: clamp(0.75rem, 1.5vw, 1rem);
     left: clamp(0.75rem, 1.5vw, 1rem);
+    z-index: 9999;
   }
 }
 
@@ -219,6 +221,11 @@
     font-size: 0.95rem;
   }
 
+  /* ensure hamburger doesn't overlap title */
+  .topbar {
+    padding-left: clamp(3rem, 18vw, 4rem);
+  }
+
   .topbar .city {
     font-size: 0.7rem;
   }
@@ -247,6 +254,11 @@
 
   .topbar h1 {
     font-size: 1rem;
+  }
+
+  /* ensure hamburger doesn't overlap title */
+  .topbar {
+    padding-left: clamp(3rem, 15vw, 4rem);
   }
 
   .topbar .city {
