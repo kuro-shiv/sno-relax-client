@@ -11,6 +11,9 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
   const [listening, setListening] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // ⭐ FIX: Add path prefix to history route
+  // --------  Note: Now that /api/chat/history is mounted before /api/chat,
+  //           requests to /api/chat/history will be properly routed
   const API_BASE =
     process.env.NODE_ENV === "production"
       ? "https://sno-relax-server.onrender.com"
