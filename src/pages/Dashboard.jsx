@@ -76,8 +76,8 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
           <button onClick={() => requireLogin("/mood-tracker")}><BookOpen size={18} /> Mood Tracker</button>
           <button onClick={() => requireLogin("/therapist-notes")}><Handshake size={18} /> Therapist Notes</button>
           <button onClick={() => requireLogin("/community")}><Users size={18} /> Community</button>
+          <button onClick={() => requireLogin("/settings")}><Settings size={18} /> Settings</button>
           <button onClick={() => alert("Help coming soon!")}><HelpCircle size={18} /> Help</button>
-          <button onClick={() => alert("Settings coming soon!")}><Settings size={18} /> Settings</button>
         </nav>
         <div className="sidebar-footer">
           {isLoggedIn && <button onClick={onLogout}><LogOut size={18} /> Logout</button>}

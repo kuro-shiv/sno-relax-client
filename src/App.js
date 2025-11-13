@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { ThemeProvider } from "./context/ThemeContext";
 import Login from "./pages/Login";
 import Dashboard from "./pages/Dashboard";
 import ChatbotPage from "./pages/ChatbotPage";
@@ -7,6 +8,7 @@ import Profile from "./pages/Profile";
 import MoodTrackerPage from "./pages/MoodTrackerPage";
 import TherapistNotesPage from "./pages/TherapistNotesPage";
 import CommunityPage from "./pages/CommunityPage";
+import Settings from "./pages/Settings";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -30,43 +32,49 @@ function App() {
   };
 
   return (
-    <BrowserRouter>
-      <Routes>
-        {/* Default page is Dashboard */}
-        <Route
-          path="/"
-          element={<Dashboard isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
-        />
+    <ThemeProvider>
+      <BrowserRouter>
+        <Routes>
+          {/* Default page is Dashboard */}
+          <Route
+            path="/"
+            element={<Dashboard isLoggedIn={isLoggedIn} onLogout={handleLogout} />}
+          />
 
-        {/* Login page */}
-        <Route path="/login" element={<Login onLogin={handleLogin} />} />
+          {/* Login page */}
+          <Route path="/login" element={<Login onLogin={handleLogin} />} />
 
-        {/* Protected routes */}
-        <Route
-          path="/chatbot"
-          element={isLoggedIn ? <ChatbotPage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/profile"
-          element={isLoggedIn ? <Profile /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/mood-tracker"
-          element={isLoggedIn ? <MoodTrackerPage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/therapist-notes"
-          element={isLoggedIn ? <TherapistNotesPage /> : <Navigate to="/login" />}
-        />
-        <Route
-          path="/community"
-          element={isLoggedIn ? <CommunityPage /> : <Navigate to="/login" />}
-        />
+          {/* Protected routes */}
+          <Route
+            path="/chatbot"
+            element={isLoggedIn ? <ChatbotPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/profile"
+            element={isLoggedIn ? <Profile /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/mood-tracker"
+            element={isLoggedIn ? <MoodTrackerPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/therapist-notes"
+            element={isLoggedIn ? <TherapistNotesPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/community"
+            element={isLoggedIn ? <CommunityPage /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/settings"
+            element={isLoggedIn ? <Settings /> : <Navigate to="/login" />}
+          />
 
-        {/* Fallback redirect */}
-        <Route path="*" element={<Navigate to="/" />} />
-      </Routes>
-    </BrowserRouter>
+          {/* Fallback redirect */}
+          <Route path="*" element={<Navigate to="/" />} />
+        </Routes>
+      </BrowserRouter>
+    </ThemeProvider>
   );
 }
 

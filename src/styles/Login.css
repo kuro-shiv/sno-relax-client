@@ -1,31 +1,6 @@
 /* ============================
-   Calming Psychiatrist Theme - Minimal Version
+   Login Page - Responsive & Theme-Aware
    ============================ */
-
-:root {
-  --primary: #14b8a6;
-  --secondary: #a78bfa;
-  --accent: #facc15;
-  --bg: #0f172a;
-  --bg-alt: #1e293b;
-  --text: #f1f5f9;
-  --muted: #94a3b8;
-}
-
-/* Base Layout */
-body {
-  margin: 0;
-  font-family: "Nunito", sans-serif;
-  background: linear-gradient(160deg, var(--bg) 40%, var(--bg-alt) 100%);
-  color: var(--text);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  padding: 1rem;
-  box-sizing: border-box;
-  position: relative;
-}
 
 /* Centered container */
 .login-container {
@@ -35,118 +10,189 @@ body {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 1rem;
+  padding: clamp(0.5rem, 2vw, 2rem);
   position: relative;
+  min-height: 100vh;
 }
 
 /* Login card */
 .login-box {
-  background: var(--bg-alt);
-  padding: clamp(1.2rem, 4vw, 3rem);
-  border-radius: clamp(14px, 2vw, 28px);
-  box-shadow: 0px 6px 18px rgba(0, 0, 0, 0.35);
+  background: var(--bg-secondary);
+  padding: clamp(1rem, 3vw, 2.5rem);
+  border-radius: clamp(12px, 2vw, 24px);
+  box-shadow: var(--shadow-lg);
   text-align: center;
   width: 100%;
-  max-width: clamp(300px, 90%, 420px);
-  flex: 1;
+  max-width: clamp(280px, 90vw, 450px);
   animation: fadeIn 1.2s ease-in-out;
   backdrop-filter: blur(5px);
-  z-index: 1;
+  border: 1px solid var(--border-color);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* Title & subtitle */
 .site-title {
-  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-size: clamp(1.4rem, 4vw, 2.5rem);
   margin-bottom: 0.5rem;
-  color: var(--primary);
+  color: var(--accent-primary);
+  transition: color 0.3s ease;
 }
 
 .city-info {
   margin-bottom: 1rem;
-  font-size: clamp(0.8rem, 2vw, 1rem);
-  color: var(--muted);
+  font-size: clamp(0.75rem, 2vw, 1rem);
+  color: var(--text-muted);
+  transition: color 0.3s ease;
 }
 
 .subtitle {
-  font-size: clamp(0.85rem, 1.8vw, 1rem);
+  font-size: clamp(0.8rem, 1.8vw, 1rem);
   font-style: italic;
-  color: #cbd5e1;
+  color: var(--text-secondary);
   margin-bottom: 1.25rem;
+  transition: color 0.3s ease;
 }
 
 /* Form */
 form {
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: clamp(1rem, 2vw, 1.4rem);
 }
 
 /* Inputs */
 input {
   width: 100%;
-  padding: clamp(10px, 3vw, 16px);
-  border: none;
-  border-radius: 12px;
-  background: #334155;
-  color: var(--text);
-  font-size: clamp(0.85rem, 2vw, 1rem);
+  padding: clamp(10px, 2.5vw, 14px);
+  border: 1px solid var(--border-color);
+  border-radius: 10px;
+  background: var(--bg-tertiary);
+  color: var(--text-primary);
+  font-size: clamp(0.8rem, 1.8vw, 0.95rem);
   box-sizing: border-box;
-  transition: box-shadow 0.25s, background 0.25s;
+  transition: box-shadow 0.25s, background 0.25s, border-color 0.25s;
+}
+
+input::placeholder {
+  color: var(--text-muted);
 }
 
 input:focus-visible {
   outline: none;
-  box-shadow: 0 0 10px rgba(20, 184, 166, 0.6);
-  background: #3b4b61;
+  box-shadow: 0 0 10px var(--accent-primary);
+  background: var(--bg-secondary);
+  border-color: var(--accent-primary);
 }
 
 /* Button */
-button {
+button[type="submit"] {
   width: 100%;
-  padding: clamp(12px, 3vw, 16px);
-  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  padding: clamp(11px, 2.5vw, 14px);
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
   border: none;
-  border-radius: 12px;
-  font-weight: bold;
-  color: var(--text);
-  font-size: clamp(1rem, 2.5vw, 1.2rem);
+  border-radius: 10px;
+  font-weight: 600;
+  color: white;
+  font-size: clamp(0.9rem, 2vw, 1.1rem);
   cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.3s;
+  transition: transform 0.2s, box-shadow 0.3s, opacity 0.2s;
   transform-origin: center;
 }
 
-button:hover {
+button[type="submit"]:hover:not(:disabled) {
   transform: scale(1.02);
-  box-shadow: 0 0 12px rgba(167, 139, 250, 0.5);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
 }
 
-button:active {
+button[type="submit"]:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+button[type="submit"]:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Error message */
 .error-message {
   margin-top: 1rem;
-  font-size: clamp(0.8rem, 2vw, 0.95rem);
-  color: #f87171;
-  background: rgba(248, 113, 113, 0.1);
-  padding: 0.5rem;
+  font-size: clamp(0.75rem, 1.8vw, 0.9rem);
+  color: var(--error);
+  background: rgba(239, 68, 68, 0.1);
+  padding: clamp(0.5rem, 1vw, 0.75rem);
   border-radius: 8px;
+  border-left: 3px solid var(--error);
+  text-align: left;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Responsive breakpoints */
-@media (max-width: 360px) {
-  .login-box { padding: 1rem; border-radius: 12px; max-width: 95%; }
+/* ============================
+   Responsive Breakpoints
+   ============================ */
+
+/* Extra Small (< 360px) */
+@media (max-width: 359px) {
+  .login-box {
+    padding: 1rem;
+    border-radius: 12px;
+    max-width: 95vw;
+  }
+
+  .site-title {
+    font-size: 1.2rem;
+  }
+
+  form {
+    gap: 0.9rem;
+  }
+
+  input,
+  button[type="submit"] {
+    padding: 10px;
+  }
 }
 
-@media (min-width: 480px) { .login-box { max-width: 420px; } }
-@media (min-width: 768px) { .login-box { max-width: 500px; } }
-@media (min-width: 1024px) { .login-box { max-width: 600px; } }
-@media (min-width: 1440px) { .login-box { max-width: 700px; } }
-@media (min-width: 1920px) { .login-box { max-width: 800px; } }
+/* Small (360px - 480px) */
+@media (min-width: 360px) and (max-width: 480px) {
+  .login-box {
+    max-width: 95vw;
+    padding: 1.2rem;
+  }
+
+  form {
+    gap: 1rem;
+  }
+}
+
+/* Medium (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .login-box {
+    max-width: 85vw;
+  }
+}
+
+/* Large (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .login-box {
+    max-width: 450px;
+  }
+}
+
+/* Extra Large (> 1024px) */
+@media (min-width: 1025px) {
+  .login-box {
+    max-width: 500px;
+  }
+}

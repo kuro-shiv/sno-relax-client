@@ -1,0 +1,269 @@
+/* ============================
+   Settings Page - Responsive & Theme-Aware
+   ============================ */
+
+.settings-container {
+  min-height: 100vh;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  padding: clamp(1rem, 2vw, 2rem);
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Header */
+.settings-header {
+  display: flex;
+  align-items: center;
+  gap: clamp(1rem, 2vw, 2rem);
+  margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+  flex-wrap: wrap;
+}
+
+.back-btn {
+  background: transparent;
+  border: none;
+  color: var(--accent-primary);
+  font-size: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  padding: clamp(0.5rem, 1vw, 0.75rem) clamp(0.75rem, 1.5vw, 1rem);
+  border-radius: 8px;
+  transition: background 0.3s, color 0.3s;
+}
+
+.back-btn:hover {
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+}
+
+.settings-header h1 {
+  font-size: clamp(1.5rem, 3vw, 2.5rem);
+  margin: 0;
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Content */
+.settings-content {
+  max-width: 900px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: clamp(1.5rem, 2.5vw, 2.5rem);
+}
+
+/* Section */
+.settings-section {
+  background: var(--bg-secondary);
+  padding: clamp(1rem, 2vw, 2rem);
+  border-radius: 16px;
+  border: 1px solid var(--border-color);
+  box-shadow: var(--shadow-sm);
+  transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: clamp(0.75rem, 1.5vw, 1rem);
+  margin-bottom: clamp(1rem, 1.5vw, 1.5rem);
+  color: var(--accent-primary);
+}
+
+.section-header h2 {
+  margin: 0;
+  font-size: clamp(1.1rem, 2vw, 1.5rem);
+  color: var(--text-primary);
+  transition: color 0.3s ease;
+}
+
+/* Theme Grid */
+.theme-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(clamp(120px, 25vw, 180px), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.theme-option {
+  background: transparent;
+  border: 2px solid var(--border-color);
+  border-radius: 12px;
+  padding: clamp(1rem, 1.5vw, 1.5rem);
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: clamp(0.75rem, 1vw, 1rem);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-option:hover {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+.theme-option.active {
+  border-color: var(--accent-primary);
+  background: var(--bg-tertiary);
+  box-shadow: 0 0 15px rgba(59, 130, 246, 0.3);
+}
+
+.theme-preview {
+  width: clamp(60px, 12vw, 100px);
+  height: clamp(60px, 12vw, 100px);
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.3s ease;
+}
+
+.theme-option:hover .theme-preview {
+  transform: scale(1.05);
+}
+
+.theme-option p {
+  margin: 0;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  font-weight: 500;
+  color: var(--text-primary);
+  text-align: center;
+}
+
+.checkmark {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  background: var(--accent-primary);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  font-size: 1rem;
+  box-shadow: var(--shadow-md);
+}
+
+/* Settings Item */
+.setting-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: clamp(0.75rem, 1.5vw, 1rem);
+  border-radius: 8px;
+  transition: background 0.3s ease;
+  margin-bottom: 0.75rem;
+}
+
+.setting-item:last-child {
+  margin-bottom: 0;
+}
+
+.setting-item:hover {
+  background: var(--bg-tertiary);
+}
+
+.setting-item label {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  cursor: pointer;
+  width: 100%;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  color: var(--text-primary);
+}
+
+.setting-item input[type="checkbox"] {
+  width: clamp(18px, 4vw, 24px);
+  height: clamp(18px, 4vw, 24px);
+  cursor: pointer;
+  accent-color: var(--accent-primary);
+}
+
+/* About Section */
+.about-text {
+  margin: clamp(0.75rem, 1vw, 1rem) 0;
+  font-size: clamp(0.85rem, 1.5vw, 1rem);
+  color: var(--text-secondary);
+  line-height: 1.6;
+  transition: color 0.3s ease;
+}
+
+.about-text strong {
+  color: var(--text-primary);
+}
+
+/* ============================
+   Responsive Breakpoints
+   ============================ */
+
+/* Extra Small (< 360px) */
+@media (max-width: 359px) {
+  .settings-container {
+    padding: 0.75rem;
+  }
+
+  .settings-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .theme-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-section {
+    padding: 1rem;
+  }
+}
+
+/* Small (360px - 480px) */
+@media (min-width: 360px) and (max-width: 480px) {
+  .settings-container {
+    padding: 1rem;
+  }
+
+  .settings-header {
+    gap: 0.75rem;
+  }
+
+  .theme-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .settings-section {
+    padding: 1.2rem;
+  }
+}
+
+/* Medium (481px - 768px) */
+@media (min-width: 481px) and (max-width: 768px) {
+  .theme-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Large (769px - 1024px) */
+@media (min-width: 769px) and (max-width: 1024px) {
+  .theme-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+/* Extra Large (> 1024px) */
+@media (min-width: 1025px) {
+  .theme-grid {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+}
