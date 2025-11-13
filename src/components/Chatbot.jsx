@@ -21,37 +21,37 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
   }, [messages, loading]);
 
   // ---------------- Fetch previous chats ----------------
-  useEffect(() => {
-    const fetchHistory = async () => {
-      setLoading(true);
-      try {
-        const res = await fetch(`${API_BASE}/api/chat/history?userId=${userId}`);
-        const data = await res.json();
+  // useEffect(() => {
+  //   const fetchHistory = async () => {
+  //     setLoading(true);
+  //     try {
+  //       const res = await fetch(`${API_BASE}/api/chat/history?userId=${userId}`);
+  //       const data = await res.json();
 
-        if (Array.isArray(data)) {
-          const formatted = data.flatMap((chat) => [
-            { sender: "user", text: chat.userMessage },
-            { sender: "bot", text: chat.botReply },
-          ]);
+  //       if (Array.isArray(data)) {
+  //         const formatted = data.flatMap((chat) => [
+  //           { sender: "user", text: chat.userMessage },
+  //           { sender: "bot", text: chat.botReply },
+  //         ]);
 
-          setMessages(
-            formatted.length
-              ? formatted
-              : [{ sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" }]
-          );
-        }
-      } catch (err) {
-        console.error("Error fetching chat history:", err);
-        setMessages([
-          { sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" },
-        ]);
-      } finally {
-        setLoading(false);
-      }
-    };
+  //         setMessages(
+  //           formatted.length
+  //             ? formatted
+  //             : [{ sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" }]
+  //         );
+  //       }
+  //     } catch (err) {
+  //       console.error("Error fetching chat history:", err);
+  //       setMessages([
+  //         { sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" },
+  //       ]);
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
 
-    fetchHistory();
-  }, [userId, API_BASE]);
+  //   fetchHistory();
+  // }, [userId, API_BASE]);
 
   // ---------------- GOOGLE FREE TRANSLATOR ----------------
 
