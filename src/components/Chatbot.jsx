@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useRef } from "react";
 import "../styles/Chatbot.css";
 
-const storedUserId = localStorage.getItem("sno_userId") || "guest";
+// ✅ Use consistent userId key (matches Login & MoodTracker)
+const storedUserId = localStorage.getItem("userId") || "guest";
 
 export default function Chatbot({ lang = "auto", userId = storedUserId }) {
   const [messages, setMessages] = useState([]);
@@ -134,6 +135,11 @@ export default function Chatbot({ lang = "auto", userId = storedUserId }) {
       });
 
       const data = await res.json();
+
+      if (data.error) {
+        setMessages((prev) => [...prev, { sender: "bot", text: `⚠️ Error: ${data.error}` }]);
+        return;
+      }
 
       if (data.text) {
         const finalText = await translateFromEnglish(data.text);
