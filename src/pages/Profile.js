@@ -21,6 +21,9 @@ export default function Profile() {
 
   const [isEditing, setIsEditing] = useState(false);
   const [previewAvatar, setPreviewAvatar] = useState(user.avatar);
+  const [communityNickname, setCommunityNickname] = useState(
+    localStorage.getItem("communityNickname") || "Anonymous"
+  );
 
   useEffect(() => {
     // Get user data from localStorage (set by Login.jsx)
@@ -52,6 +55,8 @@ export default function Profile() {
       longitude,
     });
     setPreviewAvatar(avatar);
+    // load community nickname if present
+    setCommunityNickname(localStorage.getItem("communityNickname") || "Anonymous");
   }, []);
 
   const handleChange = (e) => {
@@ -80,6 +85,13 @@ export default function Profile() {
     localStorage.setItem("sno_dob", user.dob);
     localStorage.setItem("sno_avatar", user.avatar);
     localStorage.setItem("sno_history", user.history);
+    // persist community nickname used in community pages
+    if (communityNickname && communityNickname.trim()) {
+      localStorage.setItem("communityNickname", communityNickname.trim());
+    } else {
+      localStorage.setItem("communityNickname", "Anonymous");
+      setCommunityNickname("Anonymous");
+    }
     setIsEditing(false);
   };
 
@@ -108,6 +120,8 @@ export default function Profile() {
             </label>
           )}
           <h2 className="username">{user.name}</h2>
+          {/* Show nickname under the user name when available */}
+          <div style={{ fontSize: 13, color: "#666", marginTop: 4 }}>Nickname: <strong style={{ fontSize: 14, color: "#333" }}>{communityNickname}</strong></div>
           <p className="user-id">ID: {user.id}</p>
           <p className="user-city">City: {user.city}</p>
         </div>
@@ -137,6 +151,15 @@ export default function Profile() {
           <div className="edit-section">
             <label>Name</label>
             <input name="name" value={user.name} onChange={handleChange} />
+
+            <label>Community Nickname</label>
+            <input
+              name="communityNickname"
+              value={communityNickname}
+              onChange={(e) => setCommunityNickname(e.target.value)}
+              placeholder="How you'll appear in community groups"
+              maxLength={20}
+            />
 
             <label>Email</label>
             <input name="email" value={user.email} onChange={handleChange} />
@@ -169,6 +192,7 @@ export default function Profile() {
             <p><strong>Emergency Number:</strong> {user.emergency}</p>
             <p><strong>Date of Birth:</strong> {user.dob}</p>
             <p><strong>Emergency / Medical Info:</strong> {user.history}</p>
+            <p><strong>Community Nickname:</strong> {communityNickname}</p>
             <button className="edit-btn" onClick={() => setIsEditing(true)}>
               Edit Profile
             </button>

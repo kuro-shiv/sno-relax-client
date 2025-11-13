@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ArrowLeft, Moon, Sun, Palette } from "lucide-react";
 import { ThemeContext } from "../context/ThemeContext";
@@ -6,15 +6,22 @@ import "../styles/Settings.css";
 
 export default function Settings() {
   const navigate = useNavigate();
-  const { theme, setSpecificTheme } = useContext(ThemeContext);
-
-  const themes = [
-    { id: "dark", name: "Dark Mode", icon: Moon, color: "#1e293b" },
-    { id: "light", name: "Light Mode", icon: Sun, color: "#f1f5f9" },
-  ];
+  const { theme, setSpecificTheme, themes: availableThemes } = useContext(ThemeContext);
+  // Map only light/dark themes (ThemeContext now provides them)
+  const themes = (availableThemes || []).map(t => ({
+    id: t.id,
+    name: t.name || t.id,
+    icon: t.id === "dark" ? Moon : Sun,
+    color: t.hex || "#f1f5f9"
+  }));
+  if (!themes.length) {
+    themes.push({ id: "light", name: "Light", icon: Sun, color: "#f1f5f9" });
+    themes.push({ id: "dark", name: "Dark", icon: Moon, color: "#0f172a" });
+  }
 
   return (
     <div className="settings-container">
+
       <div className="settings-header">
         <button className="back-btn" onClick={() => navigate(-1)}>
           <ArrowLeft size={24} /> Back
@@ -32,7 +39,7 @@ export default function Settings() {
 
           <div className="theme-grid">
             {themes.map((themeOption) => {
-              const Icon = themeOption.icon;
+              const Icon = themeOption.icon || Sun;
               return (
                 <button
                   key={themeOption.id}

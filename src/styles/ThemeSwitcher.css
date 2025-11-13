@@ -1,0 +1,86 @@
+/* Theme Switcher */
+.theme-switcher {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  font-size: 14px;
+}
+
+.theme-label {
+  font-weight: 600;
+  color: #333;
+  white-space: nowrap;
+}
+
+.theme-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.theme-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid;
+  background: transparent;
+  font-weight: 600;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.theme-btn:hover {
+  transform: scale(1.1);
+}
+
+.theme-btn.active {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+/* Compact theme switcher for sidebar */
+.theme-switcher-compact {
+  display: flex;
+  gap: 6px;
+  padding: 8px 12px;
+  background: transparent;
+  border-radius: 6px;
+}
+
+.theme-switcher-compact .theme-label {
+  font-size: 12px;
+}
+
+.theme-switcher-compact .theme-btn {
+  width: 28px;
+  height: 28px;
+  font-size: 10px;
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+  .theme-switcher {
+    flex-direction: column;
+    gap: 8px;
+    padding: 8px 12px;
+  }
+
+  .theme-buttons {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .theme-btn {
+    width: 32px;
+    height: 32px;
+    font-size: 11px;
+  }
+}

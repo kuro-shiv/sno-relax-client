@@ -1,238 +1,226 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { API_ENDPOINTS } from "../config/api.config";
 import "../styles/Chatbot.css";
-import "../styles/Chatbot-responsive.css";
-import "../styles/utilities.css";
 
-// ✅ Use consistent userId key (matches Login & MoodTracker)
-const storedUserId = localStorage.getItem("userId") || "guest";
-
-export default function Chatbot({ lang = "auto", userId = storedUserId }) {
-  const [messages, setMessages] = useState([]);
-  const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+export default function Chatbot() {
+  const userId = localStorage.getItem("userId") || "guest";
+  const [msgs, setMsgs] = useState([
+    { t: "bot", txt: "Hi! I'm SnoBot 🌱 I'm here to listen and support you. How are you feeling today?" }
+  ]);
+  const [inp, setInp] = useState("");
+  const [load, setLoad] = useState(false);
   const [listening, setListening] = useState(false);
-  const [selectedBot, setSelectedBot] = useState("snobot");
-  const messagesEndRef = useRef(null);
+  const [lang, setLang] = useState("en");
+  const r = useRef(null);
 
-  // ⭐ FIX: Add path prefix to history route
-  // --------  Note: Now that /api/chat/history is mounted before /api/chat,
-  //           requests to /api/chat/history will be properly routed
-  const API_BASE =
-    process.env.NODE_ENV === "production"
-      ? "https://sno-relax-server.onrender.com"
-      : "http://localhost:5000";
-
-  // ---------------- Auto-scroll ----------------
   useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+    r.current?.scrollIntoView({ behavior: "smooth" });
+  }, [msgs]);
 
-  // ---------------- Fetch previous chats ----------------
-  // useEffect(() => {
-  //   const fetchHistory = async () => {
-  //     setLoading(true);
-  //     try {
-  //       const res = await fetch(`${API_BASE}/api/chat/history?userId=${userId}`);
-  //       const data = await res.json();
-
-  //       if (Array.isArray(data)) {
-  //         const formatted = data.flatMap((chat) => [
-  //           { sender: "user", text: chat.userMessage },
-  //           { sender: "bot", text: chat.botReply },
-  //         ]);
-
-  //         setMessages(
-  //           formatted.length
-  //             ? formatted
-  //             : [{ sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" }]
-  //         );
-  //       }
-  //     } catch (err) {
-  //       console.error("Error fetching chat history:", err);
-  //       setMessages([
-  //         { sender: "bot", text: "Hello! I'm SnoBot 🌱 How are you feeling today?" },
-  //       ]);
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-
-  //   fetchHistory();
-  // }, [userId, API_BASE]);
-
-  // ---------------- GOOGLE FREE TRANSLATOR ----------------
-
-  const googleTranslate = async (text, from, to) => {
+  const translate = async (text, from, to) => {
+    if (from === to) return text;
     try {
-      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(
-        text
-      )}`;
-
-      const res = await fetch(url);
+      const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${from}&tl=${to}&dt=t&q=${encodeURIComponent(text)}`;
+      const res = await fetch(url, { timeout: 5000 });
+      if (!res.ok) return text;
       const data = await res.json();
-
+      if (!data || !Array.isArray(data[0])) return text;
       let translated = "";
-      data[0].forEach((chunk) => (translated += chunk[0]));
-
-      return translated;
+      data[0].forEach((chunk) => {
+        if (chunk && chunk[0]) translated += chunk[0];
+      });
+      return translated || text;
     } catch (err) {
-      console.error("Google Translate Error:", err);
+      console.warn("Translation failed:", err);
       return text;
     }
   };
 
-  const translateToEnglish = (text) =>
-    lang === "en" ? text : googleTranslate(text, lang, "en");
-
-  const translateFromEnglish = (text) =>
-    lang === "en" ? text : googleTranslate(text, "en", lang);
-
-  // ---------------- Voice Recognition ----------------
   const handleVoice = () => {
-    const SpeechRecognition =
-      window.SpeechRecognition || window.webkitSpeechRecognition;
-
-    if (!SpeechRecognition) return alert("Voice recognition not supported!");
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    if (!SpeechRecognition) return alert("Voice not supported!");
 
     const recognition = new SpeechRecognition();
-    // If user requested auto-detection, don't force a lang so browser may use default/automatic detection.
-    if (lang && lang !== "auto") {
-      recognition.lang = lang;
-    }
-    recognition.interimResults = false;
-    recognition.maxAlternatives = 1;
-
+    recognition.lang = lang;
     setListening(true);
     recognition.start();
 
     recognition.onresult = async (event) => {
       const transcript = event.results[0][0].transcript;
-      // Translate transcript to English (use 'auto' detection if lang === 'auto') before sending to backend
-      const source = lang === "auto" ? "auto" : lang;
-      const english = await googleTranslate(transcript, source, "en");
-      handleSend(english, true, transcript);
-    };
-
-    recognition.onerror = (err) => {
-      console.error("Voice recognition error:", err);
       setListening(false);
+      send(transcript, true);
     };
 
+    recognition.onerror = () => setListening(false);
     recognition.onend = () => setListening(false);
   };
 
-  // ---------------- Send Message ----------------
-  const handleSend = async (msg = input, isMic = false, originalSpeech = null) => {
-    if (!msg.trim()) return;
+  const speak = (text, language = "en") => {
+    const utter = new SpeechSynthesisUtterance(text);
+    utter.lang = language;
+    utter.rate = 1;
+    utter.pitch = 1;
+    utter.volume = 1;
+    // Prefer an American female voice when available
+    const voices = speechSynthesis.getVoices() || [];
+    const americanFemaleRegex = /female|woman|samantha|amy|allison|sara|sarah|gina|victoria/i;
 
-    // Add user message
-    setMessages((prev) => [
-      ...prev,
-      { sender: "user", text: originalSpeech || (lang === "en" ? msg : msg) },
-    ]);
+    let selected = null;
+    // 1) exact en-US female name match
+    selected = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("en-us") && americanFemaleRegex.test(v.name || ""));
+    // 2) any en-US voice
+    if (!selected) selected = voices.find(v => v.lang && v.lang.toLowerCase().startsWith("en-us"));
+    // 3) any voice whose name looks female
+    if (!selected) selected = voices.find(v => americanFemaleRegex.test(v.name || ""));
+    // 4) any voice matching requested language
+    if (!selected) selected = voices.find(v => v.lang && v.lang.toLowerCase().startsWith((language || "").toLowerCase()));
+    // 5) fallback to first available
+    if (!selected && voices.length) selected = voices[0];
 
-    setInput("");
-    setLoading(true);
+    if (selected) utter.voice = selected;
 
-    try {
-      const res = await fetch(`${API_BASE}/api/chat`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId,
-          message: msg,
-          lang,
-          persona: selectedBot,
-        }),
-      });
-
-      const data = await res.json();
-
-      if (data.error) {
-        setMessages((prev) => [...prev, { sender: "bot", text: `⚠️ Error: ${data.error}` }]);
-        return;
-      }
-
-      if (data.text) {
-        const finalText = await translateFromEnglish(data.text);
-
-        setMessages((prev) => [...prev, { sender: "bot", text: finalText }]);
-
-        // Voice output
-        if (isMic) {
-          const utter = new SpeechSynthesisUtterance(finalText);
-          utter.lang = lang === "auto" ? "en-IN" : lang;
-          speechSynthesis.cancel();
-          speechSynthesis.speak(utter);
-        }
-      } else {
-        setMessages((prev) => [...prev, { sender: "bot", text: "⚠️ No response from server." }]);
-      }
-    } catch (err) {
-      console.error("Chat send error:", err);
-      setMessages((prev) => [
-        ...prev,
-        { sender: "bot", text: "⚠️ Couldn’t connect to the server." },
-      ]);
-    } finally {
-      setLoading(false);
+    // If voices are not yet available (browser may load them asynchronously), attempt again when they load
+    if (!voices.length) {
+      speechSynthesis.onvoiceschanged = () => {
+        const vlist = speechSynthesis.getVoices();
+        let sel = vlist.find(v => v.lang && v.lang.toLowerCase().startsWith("en-us") && americanFemaleRegex.test(v.name || ""))
+          || vlist.find(v => v.lang && v.lang.toLowerCase().startsWith("en-us"))
+          || vlist.find(v => americanFemaleRegex.test(v.name || ""))
+          || vlist.find(v => v.lang && v.lang.toLowerCase().startsWith((language || "").toLowerCase()))
+          || vlist[0];
+        if (sel) utter.voice = sel;
+        speechSynthesis.cancel();
+        speechSynthesis.speak(utter);
+      };
+    } else {
+      speechSynthesis.cancel();
+      speechSynthesis.speak(utter);
     }
   };
 
-  // ---------------- UI ----------------
-  return (
-    <div className="chat-fullscreen">
-      <nav className="chat-nav" role="tablist" aria-label="Chatbot persona selector">
-        {/* Plain, non-interactive label for SnoBot (text + emoji) */}
-        <div className="bot-static" title="SnoBot" aria-hidden="true">SnoBot 🤖</div>
+  const send = async (msg = inp, isMic = false) => {
+    if (!msg.trim()) return;
+    setMsgs(p => [...p, { t: "user", txt: msg }]);
+    setInp("");
+    setLoad(true);
+    try {
+      // Translate user message to English if needed
+      let msgToSend = msg;
+      if (lang && lang !== "en") {
+        msgToSend = await translate(msg, lang, "en");
+      }
 
-        <button
-          role="tab"
-          aria-selected={selectedBot === "robot"}
-          className={`bot-tab ${selectedBot === "robot" ? "active" : ""}`}
-          onClick={() => setSelectedBot("robot")}
-          title="Robot"
-        >
-          <span className="emoji" aria-hidden> 🤖</span>
-          <span className="label">Robot</span>
-        </button>
-      </nav>
-      <div className="chat-window">
-        {messages.map((msg, i) => (
-          <div key={i} className={`message ${msg.sender}`}>
-            <div className="bubble">{msg.text}</div>
+      const res = await fetch(API_ENDPOINTS.CHAT.SEND_MESSAGE, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ userId, message: msgToSend, lang })
+      });
+      const d = await res.json();
+      if (d.text) {
+        let finalText = d.text;
+        // Translate response back to user's language if needed
+        if (lang && lang !== "en") {
+          finalText = await translate(d.text, "en", lang);
+        }
+        setMsgs(p => [...p, { t: "bot", txt: finalText }]);
+        
+        if (isMic) {
+          speak(finalText, lang || "en");
+        }
+      }
+    } catch (err) {
+      console.error("Send error:", err);
+      setMsgs(p => [...p, { t: "bot", txt: "⚠️ Connection error. Try again!" }]);
+    }
+    setLoad(false);
+  };
+
+  const handleHelp = () => {
+    const helpMsg = "I can help you with:\n• Mood tracking and emotional support\n• Mental health resources\n• Coping strategies\n• Community support groups\n• Professional help guidance\n\nWhat would you like help with?";
+    setMsgs(p => [...p, { t: "bot", txt: helpMsg }]);
+    speak(helpMsg, lang || "en");
+  };
+
+  return (
+    <div className="chatbot-container">
+      <div className="chat-header">
+        <div className="header-top">
+          <h3 className="chat-title">SnoBot</h3>
+          <div className="header-controls">
+            <div className="lang-select-header">
+              <select value={lang} onChange={(e) => setLang(e.target.value)} className="lang-dropdown-header">
+                <option value="en">EN</option>
+                <option value="es">ES</option>
+                <option value="fr">FR</option>
+                <option value="de">DE</option>
+                <option value="hi">HI</option>
+                <option value="zh">ZH</option>
+              </select>
+            </div>
+            <button 
+              className="help-nav-btn"
+              onClick={handleHelp}
+              title="Get help"
+              disabled={load}
+            >
+              ❓
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div className="chat-messages">
+        {msgs.map((m, i) => (
+          <div key={i} className={`message-row ${m.t}`}>
+            <div className={`message-bubble ${m.t}`}>
+              <span className="msg-avatar">{m.t === "bot" ? "🤖" : "👤"}</span>
+              <div className="msg-content">{m.txt}</div>
+            </div>
           </div>
         ))}
-
-        {loading && (
-          <div className="message bot">
-            <div className="typing-indicator">
-              <span></span>
-              <span></span>
-              <span></span>
+        {load && (
+          <div className="message-row bot">
+            <div className="message-bubble bot">
+              <span className="msg-avatar">🤖</span>
+              <div className="typing">
+                <span></span><span></span><span></span>
+              </div>
             </div>
           </div>
         )}
-
-        <div ref={messagesEndRef} />
+        <div ref={r} />
       </div>
 
-      <div className="chat-input">
-        <button
-          className={`mic-btn ${listening ? "listening" : ""}`}
-          onClick={handleVoice}
-        >
-          🎤
-        </button>
-
-        <input
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type a message..."
-          onKeyDown={(e) => e.key === "Enter" && handleSend()}
-        />
-
-        <button onClick={() => handleSend()}>➤</button>
+      <div className="chat-input-area">
+        <div className="input-controls">
+          <button 
+            className={`voice-btn ${listening ? "active" : ""}`}
+            onClick={handleVoice}
+            title="Voice input (🎤)"
+            disabled={load}
+          >
+            🎤
+          </button>
+          
+          <input 
+            value={inp} 
+            onChange={(e) => setInp(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && send()}
+            placeholder="Type a message..."
+            className="chat-input"
+            disabled={load}
+          />
+          
+          <button 
+            onClick={() => send()}
+            disabled={load || !inp.trim()}
+            className="send-btn"
+            title="Send message (➤)"
+          >
+            ➤
+          </button>
+        </div>
       </div>
     </div>
   );

@@ -9,6 +9,8 @@ import MoodTrackerPage from "./pages/MoodTrackerPage";
 import TherapistNotesPage from "./pages/TherapistNotesPage";
 import CommunityPage from "./pages/CommunityPage";
 import Settings from "./pages/Settings";
+import HelpPage from "./pages/Help";
+import GamesPage from "./pages/GamesPage";
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -66,8 +68,16 @@ function App() {
             element={isLoggedIn ? <CommunityPage /> : <Navigate to="/login" />}
           />
           <Route
+            path="/games"
+            element={isLoggedIn ? <GamesPage /> : <Navigate to="/login" />}
+          />
+          <Route
             path="/settings"
             element={isLoggedIn ? <Settings /> : <Navigate to="/login" />}
+          />
+          <Route
+            path="/help"
+            element={isLoggedIn ? <HelpPage /> : <Navigate to="/login" />}
           />
 
           {/* Fallback redirect */}
