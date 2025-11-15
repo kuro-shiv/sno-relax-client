@@ -97,7 +97,10 @@
   margin: 0;
   font-size: 14px;
   font-weight: 600;
-  color: var(--app-foreground, #333);
+  /* Ensure group names are visible on the white card background in the sidebar.
+     Use a neutral dark color by default and let the "active" state override to
+     the theme foreground (usually white) when the item is selected. */
+  color: #333;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -106,8 +109,14 @@
 .group-info p {
   margin: 4px 0 0 0;
   font-size: 12px;
-  color: var(--app-foreground, #999);
-  opacity: 0.75;
+  color: #666;
+  opacity: 0.85;
+}
+
+/* When a group-item is active (highlighted by the theme), show white text */
+.community-sidebar .group-item.active .group-info h4,
+.community-sidebar .group-item.active .group-info p {
+  color: var(--app-foreground, #fff);
 }
 
 .group-menu {
