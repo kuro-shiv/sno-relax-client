@@ -11,6 +11,7 @@ export default function CommunityPage() {
   const [groups, setGroups] = useState([]);
   const [selectedGroup, setSelectedGroup] = useState(null);
   const [messages, setMessages] = useState([]);
+  const [groupMembers, setGroupMembers] = useState([]);
   const [msgInput, setMsgInput] = useState("");
   const [loading, setLoading] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -34,6 +35,7 @@ export default function CommunityPage() {
   useEffect(() => {
     if (selectedGroup) {
       loadMessages();
+      loadGroupMembers();
     }
   }, [selectedGroup]);
 
@@ -61,6 +63,24 @@ export default function CommunityPage() {
     } catch (err) {
       console.error("Error loading messages:", err);
       setMessages([]);
+    }
+  };
+
+  const loadGroupMembers = async () => {
+    if (!selectedGroup) return;
+    try {
+      const res = await fetch(API_ENDPOINTS.COMMUNITY.GET_GROUP_MEMBERS(selectedGroup._id), {
+        credentials: "include"
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setGroupMembers(Array.isArray(data) ? data : []);
+      } else {
+        setGroupMembers([]);
+      }
+    } catch (err) {
+      console.error("Error loading group members:", err);
+      setGroupMembers([]);
     }
   };
 
@@ -103,8 +123,18 @@ export default function CommunityPage() {
         body: JSON.stringify({ userId, nickname })
       });
       if (res.ok) {
-        loadGroups();
+        const data = await res.json();
+        // refresh groups and members for the selected group
+        await loadGroups();
+        await loadGroupMembers();
+        // if the group wasn't selected before, set it
+        if (!selectedGroup || selectedGroup._id !== groupId) {
+          const g = groups.find(g => g._id === groupId);
+          if (g) setSelectedGroup(g);
+        }
       } else {
+        const txt = await res.text();
+        console.error('Join group failed:', res.status, txt);
         alert("Failed to join group");
       }
     } catch (err) {
@@ -163,6 +193,34 @@ export default function CommunityPage() {
       if (res.ok) {
         setMsgInput("");
         loadMessages();
+      } else if (res.status === 403) {
+        // Not a member — prompt to join
+        const shouldJoin = window.confirm('You are not a member of this group. Join now to send messages?');
+        if (shouldJoin) {
+          await joinGroup(selectedGroup._id);
+          // after joining, attempt to send again
+          try {
+            const retry = await fetch(API_ENDPOINTS.COMMUNITY.POST_GROUP_MESSAGE(selectedGroup._id), {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "include",
+              body: JSON.stringify({ senderId: userId, senderNickname: nickname, message: msgInput })
+            });
+            if (retry.ok) {
+              setMsgInput("");
+              loadMessages();
+            } else {
+              alert('Failed to send message after joining.');
+            }
+          } catch (err) {
+            console.error('Retry send error:', err);
+            alert('Failed to send message after joining.');
+          }
+        }
+      } else {
+        const txt = await res.text();
+        console.warn('Send message failed:', res.status, txt);
+        alert('Failed to send message');
       }
     } catch (err) {
       console.error("Error sending message:", err);
@@ -256,16 +314,25 @@ export default function CommunityPage() {
                 <p>{selectedGroup.description || "No description"}</p>
               </div>
               <div className="header-actions">
-                <button
-                  className="leave-btn"
-                  onClick={() => {
-                    if (window.confirm("Leave this group?")) {
-                      leaveGroup(selectedGroup._id);
-                    }
-                  }}
-                >
-                  Leave
-                </button>
+                  {groupMembers.some(m => m.userId === userId) ? (
+                    <button
+                      className="leave-btn"
+                      onClick={() => {
+                        if (window.confirm("Leave this group?")) {
+                          leaveGroup(selectedGroup._id);
+                        }
+                      }}
+                    >
+                      Leave
+                    </button>
+                  ) : (
+                    <button
+                      className="join-btn"
+                      onClick={() => joinGroup(selectedGroup._id)}
+                    >
+                      Join
+                    </button>
+                  )}
               </div>
             </div>
 
