@@ -4,7 +4,9 @@ import { API_ENDPOINTS } from "../config/api.config";
 import "../styles/Community.css";
 
 export default function CommunityPage() {
-  const userId = localStorage.getItem("userId") || localStorage.getItem("sno_user_id") || `u_${Math.random().toString(36).slice(2, 9)}`;
+  const storedUserId = localStorage.getItem("userId") || localStorage.getItem("sno_user_id");
+  const [currentUserId, setCurrentUserId] = useState(storedUserId || null);
+  const isLoggedIn = !!storedUserId; // true only when real userId exists
   const userRole = localStorage.getItem("userRole") || "user";
   
   // States
@@ -17,9 +19,12 @@ export default function CommunityPage() {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [groupName, setGroupName] = useState("");
   const [groupDesc, setGroupDesc] = useState("");
+  const [groupIsPrivate, setGroupIsPrivate] = useState(false);
   const [nickname, setNickname] = useState(localStorage.getItem("communityNickname") || "Anonymous");
   const [showViolationPopup, setShowViolationPopup] = useState(!localStorage.getItem("communityPolicyAccepted"));
   const messagesEndRef = useRef(null);
+  const inputAreaRef = useRef(null);
+  const [messagesMaxHeight, setMessagesMaxHeight] = useState("auto");
 
   // Load groups on mount
   useEffect(() => {
@@ -31,12 +36,58 @@ export default function CommunityPage() {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  // Load messages when group is selected
+  // Compute messages container max height = viewport height - input area height - 1rem (~16px)
   useEffect(() => {
-    if (selectedGroup) {
-      loadMessages();
-      loadGroupMembers();
-    }
+    const updateHeight = () => {
+      try {
+        const inputH = inputAreaRef.current ? inputAreaRef.current.offsetHeight : 0;
+        const newH = window.innerHeight - inputH - 16; // 16px = ~1rem
+        setMessagesMaxHeight(newH > 200 ? `${newH}px` : "200px");
+      } catch (e) {
+        setMessagesMaxHeight("auto");
+      }
+    };
+    updateHeight();
+    window.addEventListener("resize", updateHeight);
+    return () => window.removeEventListener("resize", updateHeight);
+  }, [selectedGroup]);
+
+  // Poll messages every 2s for the active chat section (skip when input focused)
+  useEffect(() => {
+    if (!selectedGroup) return;
+    const shouldPoll = !selectedGroup.isPrivate || isMember;
+    if (!shouldPoll) return;
+
+    let mounted = true;
+    const id = setInterval(async () => {
+      try {
+        // skip polling while input is focused to avoid interrupting typing
+        const active = document.activeElement;
+        if (inputAreaRef.current && active && inputAreaRef.current.contains(active)) return;
+        if (!mounted) return;
+        await loadMessages();
+      } catch (e) {
+        // ignore
+      }
+    }, 1000);
+
+    return () => {
+      mounted = false;
+      clearInterval(id);
+    };
+  }, [selectedGroup, isMember]);
+
+  // When a group is selected, load members first and only load messages if the user is a member or group is public
+  useEffect(() => {
+    if (!selectedGroup) return;
+    (async () => {
+      setMessages([]);
+      const members = await loadGroupMembers();
+      const isMember = Array.isArray(members) && members.some(m => m.userId === currentUserId);
+      if (!selectedGroup.isPrivate || isMember) {
+        await loadMessages();
+      }
+    })();
   }, [selectedGroup]);
 
   const loadGroups = async () => {
@@ -45,10 +96,13 @@ export default function CommunityPage() {
         credentials: "include"
       });
       const data = await res.json();
-      setGroups(Array.isArray(data) ? data : []);
+      const arr = Array.isArray(data) ? data : [];
+      setGroups(arr);
+      return arr;
     } catch (err) {
       console.error("Error loading groups:", err);
       setGroups([]);
+      return [];
     }
   };
 
@@ -74,13 +128,17 @@ export default function CommunityPage() {
       });
       if (res.ok) {
         const data = await res.json();
-        setGroupMembers(Array.isArray(data) ? data : []);
+        const arr = Array.isArray(data) ? data : [];
+        setGroupMembers(arr);
+        return arr;
       } else {
         setGroupMembers([]);
+        return [];
       }
     } catch (err) {
       console.error("Error loading group members:", err);
       setGroupMembers([]);
+      return [];
     }
   };
 
@@ -97,13 +155,15 @@ export default function CommunityPage() {
         body: JSON.stringify({
           name: groupName,
           description: groupDesc,
-          createdBy: userId
+          createdBy: currentUserId || 'guest',
+          isPrivate: !!groupIsPrivate
         })
       });
       const newGroup = await res.json();
       setGroups(p => [...p, newGroup]);
       setGroupName("");
       setGroupDesc("");
+      setGroupIsPrivate(false);
       setShowCreateModal(false);
       setSelectedGroup(newGroup);
     } catch (err) {
@@ -116,22 +176,35 @@ export default function CommunityPage() {
 
   const joinGroup = async (groupId) => {
     try {
+      const group = groups.find(g => g._id === groupId) || selectedGroup;
+      let code = null;
+      if (group && group.isPrivate) {
+        code = window.prompt('This group is private. Enter invite code to join:');
+        if (!code) return; // user cancelled or empty
+        code = String(code).trim();
+      }
+      // ensure we have a userId to send: create a guest id if needed
+      let sendUserId = currentUserId;
+      if (!sendUserId) {
+        sendUserId = `u_${Math.random().toString(36).slice(2, 9)}`;
+        localStorage.setItem('sno_user_id', sendUserId);
+        setCurrentUserId(sendUserId);
+      }
+
       const res = await fetch(API_ENDPOINTS.COMMUNITY.JOIN_GROUP(groupId), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ userId, nickname })
+        body: JSON.stringify({ userId: sendUserId, nickname, inviteCode: code })
       });
       if (res.ok) {
         const data = await res.json();
         // refresh groups and members for the selected group
-        await loadGroups();
+        const newGroups = await loadGroups();
         await loadGroupMembers();
-        // if the group wasn't selected before, set it
-        if (!selectedGroup || selectedGroup._id !== groupId) {
-          const g = groups.find(g => g._id === groupId);
-          if (g) setSelectedGroup(g);
-        }
+        // set selectedGroup from fresh list
+        const g = newGroups.find(g => g._id === groupId);
+        if (g) setSelectedGroup(g);
       } else {
         const txt = await res.text();
         console.error('Join group failed:', res.status, txt);
@@ -149,7 +222,7 @@ export default function CommunityPage() {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ userId: currentUserId })
       });
       if (res.ok) {
         setSelectedGroup(null);
@@ -167,7 +240,7 @@ export default function CommunityPage() {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ userId: currentUserId })
       });
       if (res.ok) {
         setSelectedGroup(null);
@@ -188,7 +261,7 @@ export default function CommunityPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ senderId: userId, senderNickname: nickname, message: msgInput })
+        body: JSON.stringify({ senderId: currentUserId, senderNickname: nickname, message: msgInput })
       });
       if (res.ok) {
         setMsgInput("");
@@ -204,7 +277,7 @@ export default function CommunityPage() {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               credentials: "include",
-              body: JSON.stringify({ senderId: userId, senderNickname: nickname, message: msgInput })
+              body: JSON.stringify({ senderId: currentUserId, senderNickname: nickname, message: msgInput })
             });
             if (retry.ok) {
               setMsgInput("");
@@ -235,7 +308,7 @@ export default function CommunityPage() {
         method: "DELETE",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ userId })
+        body: JSON.stringify({ userId: currentUserId })
       });
       if (res.ok) {
         loadMessages();
@@ -244,6 +317,9 @@ export default function CommunityPage() {
       console.error("Error deleting message:", err);
     }
   };
+
+  // whether current user is a member of the selected group
+  const isMember = selectedGroup && Array.isArray(groupMembers) && groupMembers.some(m => m.userId === currentUserId);
 
   return (
     <div className="community-page">
@@ -287,10 +363,10 @@ export default function CommunityPage() {
               onClick={() => setSelectedGroup(group)}
             >
               <div className="group-info">
-                <h4>{group.name}</h4>
+                <h4>{group.name}{group.isPrivate ? ' 🔒' : ''}</h4>
                 <p>{group.memberCount || 0} members</p>
               </div>
-              {(userRole === "admin" || group.adminId === userId) && (
+              {(userRole === "admin" || group.adminId === currentUserId) && (
                 <button className="group-menu" onClick={(e) => {
                   e.stopPropagation();
                   if (window.confirm("Delete this group?")) {
@@ -314,7 +390,7 @@ export default function CommunityPage() {
                 <p>{selectedGroup.description || "No description"}</p>
               </div>
               <div className="header-actions">
-                  {groupMembers.some(m => m.userId === userId) ? (
+                  {groupMembers.some(m => m.userId === currentUserId) ? (
                     <button
                       className="leave-btn"
                       onClick={() => {
@@ -336,55 +412,78 @@ export default function CommunityPage() {
               </div>
             </div>
 
-            <div className="messages-container">
-              {messages.length === 0 ? (
+            <div className="messages-container" style={{ maxHeight: messagesMaxHeight, overflowY: 'auto' }}>
+              {selectedGroup.isPrivate && !isMember ? (
                 <div style={{ textAlign: "center", color: "#999", marginTop: "20px" }}>
-                  No messages yet. Start a conversation!
+                  <p style={{ fontSize: 18, marginBottom: 12 }}>🔒 This is a private group</p>
+                  <p style={{ marginBottom: 12 }}>Join the group to view messages and members.</p>
+                  <div>
+                    <button
+                      className="join-btn"
+                      onClick={() => joinGroup(selectedGroup._id)}
+                      style={{ marginRight: 8 }}
+                    >
+                      Join
+                    </button>
+                  </div>
                 </div>
               ) : (
-                messages.map(msg => (
-                  <div key={msg._id} className={`message-item ${msg.senderId === userId ? "own" : ""}`}>
-                    <div className="msg-bubble">
-                      <div className="msg-sender">{msg.senderNickname || "Anonymous"}</div>
-                      <div className="msg-text">{msg.message}</div>
-                      {msg.isEdited && <span className="edited">(edited)</span>}
-                    </div>
-                    {msg.senderId === userId && (
-                      <button
-                        className="msg-delete"
-                        onClick={() => {
-                          if (window.confirm("Delete message?")) {
-                            deleteMessage(msg._id);
-                          }
-                        }}
-                      >
-                        ×
-                      </button>
-                    )}
+                messages.length === 0 ? (
+                  <div style={{ textAlign: "center", color: "#999", marginTop: "20px" }}>
+                    No messages yet. Start a conversation!
                   </div>
-                ))
+                  ) : (
+                messages.map(msg => (
+                    <div key={msg._id} className={`message-item ${msg.senderId === currentUserId ? "own" : ""}`}>
+                        <div className="msg-bubble">
+                          <div className="msg-sender">{msg.senderNickname || "Anonymous"}</div>
+                          <div className="msg-text">{msg.message}</div>
+                          {msg.isEdited && <span className="edited">(edited)</span>}
+                        </div>
+                        {msg.senderId === currentUserId && (
+                        <button
+                          className="msg-delete"
+                          onClick={() => {
+                            if (window.confirm("Delete message?")) {
+                              deleteMessage(msg._id);
+                            }
+                          }}
+                        >
+                          ×
+                        </button>
+                      )}
+                    </div>
+                  ))
+                )
               )}
               <div ref={messagesEndRef} />
             </div>
 
-            <div className="msg-input-area">
-              <div className="nickname-display">
-                <span>As: <strong>{nickname}</strong></span>
+            {/* show input only if group is public or user is a member */}
+              {(!selectedGroup.isPrivate || isMember) && (
+              <div className="msg-input-area" ref={inputAreaRef}>
+                <div className="nickname-display">
+                  <span>As: <strong>{nickname}</strong></span>
+                </div>
+                <form onSubmit={sendMessage}>
+                  <div className="input-controls">
+                    {/* optional voice button omitted here to keep community simple */}
+                    <input
+                      type="text"
+                      value={msgInput}
+                      onChange={(e) => setMsgInput(e.target.value)}
+                      onKeyDown={(e) => e.key === 'Enter' && sendMessage(e)}
+                      placeholder="Type message..."
+                      className="chat-input"
+                      disabled={loading}
+                    />
+                    <button type="submit" disabled={loading || !msgInput.trim()} className="send-btn">
+                      ➤
+                    </button>
+                  </div>
+                </form>
               </div>
-              <form onSubmit={sendMessage}>
-                <input
-                  type="text"
-                  value={msgInput}
-                  onChange={(e) => setMsgInput(e.target.value)}
-                  placeholder="Type message..."
-                  className="msg-input"
-                  disabled={loading}
-                />
-                <button type="submit" disabled={loading || !msgInput.trim()} className="msg-send">
-                  ➤
-                </button>
-              </form>
-            </div>
+            )}
           </>
         ) : (
           <div className="no-selection">
@@ -415,6 +514,10 @@ export default function CommunityPage() {
                 onChange={(e) => setGroupDesc(e.target.value)}
                 rows="3"
               />
+              <label style={{ display: 'flex', alignItems: 'center', gap: 8, margin: '8px 0 12px' }}>
+                <input type="checkbox" checked={groupIsPrivate} onChange={(e) => setGroupIsPrivate(e.target.checked)} />
+                <span style={{ fontSize: 13 }}>Private group (requires invite code to join)</span>
+              </label>
               <div className="modal-buttons">
                 <button type="submit" disabled={loading}>
                   {loading ? "Creating..." : "Create"}

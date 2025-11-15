@@ -51,11 +51,12 @@ export default function GroupList({ onSelect, selected, onJoin }) {
     e.stopPropagation();
 
     try {
+      const nickname = localStorage.getItem('communityNickname') || 'Anonymous';
       const res = await fetch(API_ENDPOINTS.COMMUNITY.JOIN_GROUP(groupId), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",
-        body: JSON.stringify({ userId }),
+        body: JSON.stringify({ userId, nickname }),
       });
 
       if (!res.ok) throw new Error("Failed to join group");

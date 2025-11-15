@@ -57,10 +57,29 @@ export default function GroupChat({ group, userId, userNickname = "Anonymous" })
       // Join group
       socket.emit("joinGroup", { groupId: group._id, userId });
 
+      // Request notification permission once
+      if (typeof window !== 'undefined' && window.Notification && Notification.permission === 'default') {
+        try { Notification.requestPermission(); } catch (e) { /* ignore */ }
+      }
+
       // Listen for new messages
       socket.on("receiveGroupMessage", (message) => {
         if (String(message.groupId) === String(group._id)) {
           setMessages((prev) => [...prev, message]);
+
+          // show desktop notification for messages not from current user
+          try {
+            const isFromMe = String(message.senderId) === String(userId);
+            if (!isFromMe && typeof window !== 'undefined' && window.Notification && Notification.permission === 'granted') {
+              const title = `${group.name} — ${message.senderNickname || 'Anonymous'}`;
+              const body = (message.message || '').slice(0, 120);
+              const n = new Notification(title, { body });
+              // close after a few seconds
+              setTimeout(() => n.close(), 5000);
+            }
+          } catch (e) {
+            // ignore notification errors
+          }
         }
       });
 
@@ -241,15 +260,20 @@ export default function GroupChat({ group, userId, userNickname = "Anonymous" })
                     style={{
                       fontWeight: "600",
                       fontSize: 12,
-                      color: msg.senderId === userId ? "#4a90e2" : "#666",
+                      color: msg.isAdmin ? '#a16207' : (msg.senderId === userId ? "#4a90e2" : "#666"),
                     }}
                   >
                     {msg.senderNickname || "Anonymous"}
                     {msg.senderId === userId && " (You)"}
+                    {msg.isAdmin && (
+                      <span style={{ marginLeft: 8, fontSize: 10, padding: '2px 6px', background: '#fef3c7', borderRadius: 6, color: '#92400e', fontWeight: 700 }}>
+                        Official
+                      </span>
+                    )}
                   </div>
                   <div
                     style={{
-                      background: msg.senderId === userId ? "#e8f4f8" : "#fff",
+                      background: msg.isAdmin ? '#fffbe6' : (msg.senderId === userId ? "#e8f4f8" : "#fff"),
                       padding: "8px 12px",
                       borderRadius: 8,
                       display: "inline-block",
