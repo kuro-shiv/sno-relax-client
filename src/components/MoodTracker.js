@@ -129,10 +129,6 @@ export default function MoodTracker() {
 
   return (
     <div className="mood-tracker-container">
-      <h1 className="mood-tracker-title">📊 Mood Tracker</h1>
-      <p className="mood-tracker-subtitle">
-        Track your emotions and visualize your mood trends.
-      </p>
 
       {/* Emojis */}
       <div className="emoji-row">
