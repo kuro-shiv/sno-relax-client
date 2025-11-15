@@ -52,11 +52,9 @@ export default function CommunityPage() {
     return () => window.removeEventListener("resize", updateHeight);
   }, [selectedGroup]);
 
-  // Poll messages every 2s for the active chat section (skip when input focused)
+  // Poll messages every 1s for the active chat section (skip when input focused)
   useEffect(() => {
     if (!selectedGroup) return;
-    const shouldPoll = !selectedGroup.isPrivate || isMember;
-    if (!shouldPoll) return;
 
     let mounted = true;
     const id = setInterval(async () => {
@@ -75,7 +73,7 @@ export default function CommunityPage() {
       mounted = false;
       clearInterval(id);
     };
-  }, [selectedGroup, isMember]);
+  }, [selectedGroup]);
 
   // When a group is selected, load members first and only load messages if the user is a member or group is public
   useEffect(() => {
