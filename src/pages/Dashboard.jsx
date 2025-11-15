@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import {
   User, Activity, BookOpen, Handshake, Users, HelpCircle,
   Settings, Bot, HeartPulse, Hospital, Menu, LogOut,
-  Paperclip
+  Paperclip,
+  GamepadIcon
 } from "lucide-react";
 import "../styles/Dashboard.css";
 
@@ -73,7 +74,7 @@ export default function Dashboard({ isLoggedIn, onLogout }) {
         <h2 className="logo">🌙 SnoRelax</h2>
         <nav>
           <button onClick={() => requireLogin("/profile")}><User size={18} /> Profile</button>
-          <button onClick={() => requireLogin("/games")}><Activity size={18} /> Games</button>
+          <button onClick={() => requireLogin("/games")}><GamepadIcon size={18} /> Games</button>
           <button onClick={() => requireLogin("/mood-tracker")}><BookOpen size={18} /> Mood Tracker</button>
           <button onClick={() => requireLogin("/therapist-notes")}><Paperclip size={18} /> Therapist Notes</button>
           <button onClick={() => requireLogin("/community")}><Users size={18} /> Community</button>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import "../styles/Profile.css";
 
 export default function Profile() {
@@ -75,7 +76,28 @@ export default function Profile() {
     reader.readAsDataURL(file);
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
+    // Build list of profile changes
+    const userId = user.id;
+    const changes = [];
+
+    const checkAndRecordChange = (fieldName, oldVal, newVal) => {
+      if (String(oldVal) !== String(newVal)) {
+        changes.push({ fieldName, oldValue: oldVal, newValue: newVal });
+      }
+    };
+
+    // Check each field for changes
+    checkAndRecordChange("firstName", localStorage.getItem("sno_firstName") || "", user.name.split(" ")[0] || "");
+    checkAndRecordChange("lastName", localStorage.getItem("sno_lastName") || "", user.name.split(" ").slice(1).join(" ") || "");
+    checkAndRecordChange("email", localStorage.getItem("sno_email") || "", user.email);
+    checkAndRecordChange("phone", localStorage.getItem("sno_phone") || "", user.phone);
+    checkAndRecordChange("emergency", localStorage.getItem("sno_emergency") || "", user.emergency);
+    checkAndRecordChange("dob", localStorage.getItem("sno_dob") || "", user.dob);
+    checkAndRecordChange("avatar", localStorage.getItem("sno_avatar") || "", user.avatar);
+    checkAndRecordChange("history", localStorage.getItem("sno_history") || "", user.history);
+    checkAndRecordChange("communityNickname", localStorage.getItem("communityNickname") || "Anonymous", communityNickname);
+
     // Save updated fields to localStorage
     localStorage.setItem("sno_firstName", user.name.split(" ")[0] || "");
     localStorage.setItem("sno_lastName", user.name.split(" ").slice(1).join(" ") || "");
@@ -92,6 +114,26 @@ export default function Profile() {
       localStorage.setItem("communityNickname", "Anonymous");
       setCommunityNickname("Anonymous");
     }
+
+    // Send profile changes to server for audit log
+    if (changes.length > 0 && userId) {
+      try {
+        const API_URL = process.env.REACT_APP_API_BASE || "https://sno-relax-server.onrender.com";
+        for (const change of changes) {
+          await axios.post(`${API_URL}/api/admin/profile-change`, {
+            userId,
+            fieldName: change.fieldName,
+            oldValue: change.oldValue,
+            newValue: change.newValue,
+            changedBy: "user"
+          });
+        }
+      } catch (err) {
+        console.warn('Failed to log profile changes to server:', err);
+        // Still allow the edit to complete even if logging fails
+      }
+    }
+
     setIsEditing(false);
   };
 

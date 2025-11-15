@@ -1,4 +1,5 @@
 import React, { createContext, useState, useEffect } from "react";
+import axios from "axios";
 
 export const ThemeContext = createContext();
 
@@ -12,11 +13,7 @@ export const ThemeProvider = ({ children }) => {
   // Available themes (only light and dark)
   const themes = [
     { id: "light", name: "Light", hex: "#f3f4f6" },
-    { id: "dark", name: "Dark", hex: "#0f172a" },
-    // Therapist specific theme (page-level control) — allows the Therapist Notes
-    // page to adopt a distinct dark appearance while still being selectable
-    // from the Settings screen.
-    { id: "therapist", name: "Therapist", hex: "#0b1220" }
+    { id: "dark", name: "Dark", hex: "#0f172a" }
   ];
 
   // Save theme to localStorage whenever it changes
@@ -72,24 +69,29 @@ export const ThemeProvider = ({ children }) => {
       document.documentElement.style.setProperty("--therapist-text", "#000000");
     }
 
-    // If a therapist-specific theme is selected, set explicit variables
-    // so the Therapist Notes page uses the requested appearance.
-    if (theme === "therapist") {
-      document.documentElement.style.setProperty("--app-foreground", "#ffffff");
-      document.documentElement.style.setProperty("--app-background", "#0b1220");
-      document.documentElement.style.setProperty("--therapist-chat-bg", "#0b1220");
-      // For dark/therapist themes use white text for readability over dark background
-      document.documentElement.style.setProperty("--therapist-text", "#ffffff");
-      // Slightly muted meta color for timestamps and small text
-      document.documentElement.style.setProperty("--therapist-meta", "#d1d5db");
-      // Override bubbles/input for therapist theme so white text works on dark bubbles
-      document.documentElement.style.setProperty("--bot-bubble-bg", "#0b1220");
-      document.documentElement.style.setProperty("--bot-text", "#ffffff");
-      // keep paper white for readability
-      document.documentElement.style.setProperty("--chat-paper-bg", "#ffffff");
-      document.documentElement.style.setProperty("--input-text", "#000000");
-    }
+    // 'therapist' theme removed from options. Keep per-theme variables limited to light/dark above.
   }, [theme]);
+
+  // On mount, try to fetch global theme from the server (admin-configured)
+  useEffect(() => {
+    const fetchServerTheme = async () => {
+      try {
+        const base = process.env.REACT_APP_API_BASE || "https://sno-relax-server.onrender.com";
+        const res = await axios.get(`${base}/api/admin/settings/theme`);
+        if (res && res.data && res.data.ok && res.data.theme) {
+          // If a global theme exists and differs from the current, apply it
+          const serverTheme = res.data.theme;
+          if (serverTheme && serverTheme !== theme) {
+            setTheme(serverTheme);
+          }
+        }
+      } catch (e) {
+        // ignore: server may not be configured or reachable in dev
+        // console.warn('Could not fetch server theme', e);
+      }
+    };
+    fetchServerTheme();
+  }, []);
   
 
   const toggleTheme = () => {
